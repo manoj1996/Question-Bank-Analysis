@@ -1,0 +1,2228 @@
+<outlines>
+<outline level="1" title="Front Cover">
+<dest><list size="3">
+<ref id="770" />
+<literal>FitH</literal>
+<number>668</number>
+</list></dest>
+<pageno>0</pageno>
+</outline>
+<outline level="1" title="brief contents">
+<dest><list size="5">
+<ref id="774" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>436</number>
+<null />
+</list></dest>
+<pageno>5</pageno>
+</outline>
+<outline level="1" title="contents">
+<dest><list size="5">
+<ref id="945" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>436</number>
+<null />
+</list></dest>
+<pageno>7</pageno>
+</outline>
+<outline level="1" title="preface">
+<dest><list size="5">
+<ref id="1499" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>436</number>
+<null />
+</list></dest>
+<pageno>13</pageno>
+</outline>
+<outline level="1" title="acknowledgments">
+<dest><list size="5">
+<ref id="1502" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>442</number>
+<null />
+</list></dest>
+<pageno>16</pageno>
+</outline>
+<outline level="2" title="H. Marmanis">
+<dest><list size="5">
+<ref id="1502" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>140</number>
+<null />
+</list></dest>
+<pageno>16</pageno>
+</outline>
+<outline level="2" title="D. Babenko">
+<dest><list size="5">
+<ref id="1503" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>412</number>
+<null />
+</list></dest>
+<pageno>17</pageno>
+</outline>
+<outline level="1" title="about this book">
+<dest><list size="5">
+<ref id="1504" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>436</number>
+<null />
+</list></dest>
+<pageno>18</pageno>
+</outline>
+<outline level="2" title="Roadmap">
+<dest><list size="5">
+<ref id="1505" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>555</number>
+<null />
+</list></dest>
+<pageno>19</pageno>
+</outline>
+<outline level="2" title="Who should read this book">
+<dest><list size="5">
+<ref id="1622" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>503</number>
+<null />
+</list></dest>
+<pageno>21</pageno>
+</outline>
+<outline level="2" title="Code Conventions">
+<dest><list size="5">
+<ref id="1622" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>281</number>
+<null />
+</list></dest>
+<pageno>21</pageno>
+</outline>
+<outline level="2" title="Author Online">
+<dest><list size="5">
+<ref id="1643" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>581</number>
+<null />
+</list></dest>
+<pageno>22</pageno>
+</outline>
+<outline level="2" title="About the cover illustration">
+<dest><list size="5">
+<ref id="1643" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>359</number>
+<null />
+</list></dest>
+<pageno>22</pageno>
+</outline>
+<outline level="1" title="What is the intelligent web?">
+<dest><list size="5">
+<ref id="1644" />
+<literal>XYZ</literal>
+<number>78</number>
+<number>674</number>
+<null />
+</list></dest>
+<pageno>23</pageno>
+</outline>
+<outline level="2" title="1.1 Examples of intelligent web applications">
+<dest><list size="5">
+<ref id="1646" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>616</number>
+<null />
+</list></dest>
+<pageno>25</pageno>
+</outline>
+<outline level="2" title="1.2 Basic elements of intelligent applications">
+<dest><list size="5">
+<ref id="1647" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>616</number>
+<null />
+</list></dest>
+<pageno>26</pageno>
+</outline>
+<outline level="2" title="1.3 What applications can benefit from intelligence?">
+<dest><list size="5">
+<ref id="1649" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>616</number>
+<null />
+</list></dest>
+<pageno>28</pageno>
+</outline>
+<outline level="3" title="1.3.1 Social networking sites">
+<dest><list size="5">
+<ref id="1649" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>525</number>
+<null />
+</list></dest>
+<pageno>28</pageno>
+</outline>
+<outline level="3" title="1.3.2 Mashups">
+<dest><list size="5">
+<ref id="1650" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>555</number>
+<null />
+</list></dest>
+<pageno>29</pageno>
+</outline>
+<outline level="3" title="1.3.3 Portals">
+<dest><list size="5">
+<ref id="1651" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>555</number>
+<null />
+</list></dest>
+<pageno>30</pageno>
+</outline>
+<outline level="3" title="1.3.4 Wikis">
+<dest><list size="5">
+<ref id="1985" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>542</number>
+<null />
+</list></dest>
+<pageno>31</pageno>
+</outline>
+<outline level="3" title="1.3.5 Media-sharing sites">
+<dest><list size="5">
+<ref id="1985" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>308</number>
+<null />
+</list></dest>
+<pageno>31</pageno>
+</outline>
+<outline level="3" title="1.3.6 Online gaming">
+<dest><list size="5">
+<ref id="2055" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>225</number>
+<null />
+</list></dest>
+<pageno>32</pageno>
+</outline>
+<outline level="2" title="1.4 How can I build intelligence in my own application?">
+<dest><list size="5">
+<ref id="2056" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>616</number>
+<null />
+</list></dest>
+<pageno>33</pageno>
+</outline>
+<outline level="3" title="1.4.1 Examine your functionality and your data">
+<dest><list size="5">
+<ref id="2056" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>251</number>
+<null />
+</list></dest>
+<pageno>33</pageno>
+</outline>
+<outline level="3" title="1.4.2 Get more data from the web">
+<dest><list size="5">
+<ref id="2057" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>437</number>
+<null />
+</list></dest>
+<pageno>34</pageno>
+</outline>
+<outline level="2" title="1.5 Machine learning, data mining, and all that">
+<dest><list size="5">
+<ref id="2060" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>206</number>
+<null />
+</list></dest>
+<pageno>37</pageno>
+</outline>
+<outline level="2" title="1.6 Eight fallacies of intelligent applications">
+<dest><list size="5">
+<ref id="2061" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>100</number>
+<null />
+</list></dest>
+<pageno>38</pageno>
+</outline>
+<outline level="3" title="1.6.1 Fallacy #1: Your data is reliable">
+<dest><list size="5">
+<ref id="2062" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>464</number>
+<null />
+</list></dest>
+<pageno>39</pageno>
+</outline>
+<outline level="3" title="1.6.2 Fallacy #2: Inference happens instantaneously">
+<dest><list size="5">
+<ref id="2063" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>616</number>
+<null />
+</list></dest>
+<pageno>40</pageno>
+</outline>
+<outline level="3" title="1.6.3 Fallacy #3: The size of data doesn’t matter">
+<dest><list size="5">
+<ref id="2063" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>525</number>
+<null />
+</list></dest>
+<pageno>40</pageno>
+</outline>
+<outline level="3" title="1.6.4 Fallacy #4: Scalability of the solution isn’t an issue">
+<dest><list size="5">
+<ref id="2063" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>356</number>
+<null />
+</list></dest>
+<pageno>40</pageno>
+</outline>
+<outline level="3" title="1.6.5 Fallacy #5: Apply the same good library everywhere">
+<dest><list size="5">
+<ref id="2063" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>186</number>
+<null />
+</list></dest>
+<pageno>40</pageno>
+</outline>
+<outline level="3" title="1.6.6 Fallacy #6: The computation time is known">
+<dest><list size="5">
+<ref id="2489" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>568</number>
+<null />
+</list></dest>
+<pageno>41</pageno>
+</outline>
+<outline level="3" title="1.6.7 Fallacy #7: Complicated models are better">
+<dest><list size="5">
+<ref id="2489" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>425</number>
+<null />
+</list></dest>
+<pageno>41</pageno>
+</outline>
+<outline level="3" title="1.6.8 Fallacy #8: There are models without bias">
+<dest><list size="5">
+<ref id="2489" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>347</number>
+<null />
+</list></dest>
+<pageno>41</pageno>
+</outline>
+<outline level="2" title="1.7 Summary">
+<dest><list size="5">
+<ref id="2489" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>204</number>
+<null />
+</list></dest>
+<pageno>41</pageno>
+</outline>
+<outline level="2" title="1.8 References">
+<dest><list size="5">
+<ref id="2559" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>490</number>
+<null />
+</list></dest>
+<pageno>42</pageno>
+</outline>
+<outline level="1" title="Searching">
+<dest><list size="5">
+<ref id="2560" />
+<literal>XYZ</literal>
+<number>78</number>
+<number>674</number>
+<null />
+</list></dest>
+<pageno>43</pageno>
+</outline>
+<outline level="2" title="2.1 Searching with Lucene">
+<dest><list size="5">
+<ref id="2561" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>334</number>
+<null />
+</list></dest>
+<pageno>44</pageno>
+</outline>
+<outline level="3" title="2.1.1 Understanding the Lucene code">
+<dest><list size="5">
+<ref id="2563" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>174</number>
+<null />
+</list></dest>
+<pageno>46</pageno>
+</outline>
+<outline level="3" title="2.1.2 Understanding the basic stages of search">
+<dest><list size="5">
+<ref id="2910" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>149</number>
+<null />
+</list></dest>
+<pageno>51</pageno>
+</outline>
+<outline level="2" title="2.2 Why search beyond indexing?">
+<dest><list size="5">
+<ref id="2955" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>503</number>
+<null />
+</list></dest>
+<pageno>54</pageno>
+</outline>
+<outline level="2" title="2.3 Improving search results based on link analysis">
+<dest><list size="5">
+<ref id="2956" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>112</number>
+<null />
+</list></dest>
+<pageno>55</pageno>
+</outline>
+<outline level="3" title="2.3.1 An introduction to PageRank">
+<dest><list size="5">
+<ref id="2957" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>490</number>
+<null />
+</list></dest>
+<pageno>56</pageno>
+</outline>
+<outline level="3" title="2.3.2 Calculating the PageRank vector">
+<dest><list size="5">
+<ref id="2958" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>248</number>
+<null />
+</list></dest>
+<pageno>57</pageno>
+</outline>
+<outline level="3" title="2.3.3 alpha: The effect of teleportation between web pages">
+<dest><list size="5">
+<ref id="2961" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>616</number>
+<null />
+</list></dest>
+<pageno>60</pageno>
+</outline>
+<outline level="3" title="2.3.4 Understanding the power method">
+<dest><list size="5">
+<ref id="2961" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>128</number>
+<null />
+</list></dest>
+<pageno>60</pageno>
+</outline>
+<outline level="3" title="2.3.5 Combining the index scores and the PageRank scores">
+<dest><list size="5">
+<ref id="3371" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>616</number>
+<null />
+</list></dest>
+<pageno>65</pageno>
+</outline>
+<outline level="2" title="2.4 Improving search results based on user clicks">
+<dest><list size="5">
+<ref id="3373" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>203</number>
+<null />
+</list></dest>
+<pageno>67</pageno>
+</outline>
+<outline level="3" title="2.4.1 A first look at user clicks">
+<dest><list size="5">
+<ref id="3374" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>451</number>
+<null />
+</list></dest>
+<pageno>68</pageno>
+</outline>
+<outline level="3" title="2.4.2 Using the NaiveBayes classifier">
+<dest><list size="5">
+<ref id="3376" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>490</number>
+<null />
+</list></dest>
+<pageno>70</pageno>
+</outline>
+<outline level="3" title="2.4.3 Combining Lucene indexing, PageRank, and user clicks">
+<dest><list size="5">
+<ref id="3711" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>189</number>
+<null />
+</list></dest>
+<pageno>73</pageno>
+</outline>
+<outline level="2" title="2.5 Ranking Word, PDF, and other documents without links">
+<dest><list size="5">
+<ref id="3715" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>542</number>
+<null />
+</list></dest>
+<pageno>77</pageno>
+</outline>
+<outline level="3" title="2.5.1 An introduction to DocRank">
+<dest><list size="5">
+<ref id="3715" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>294</number>
+<null />
+</list></dest>
+<pageno>77</pageno>
+</outline>
+<outline level="3" title="2.5.2 The inner workings of DocRank">
+<dest><list size="5">
+<ref id="3717" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>616</number>
+<null />
+</list></dest>
+<pageno>79</pageno>
+</outline>
+<outline level="2" title="2.6 Large-scale implementation issues">
+<dest><list size="5">
+<ref id="4025" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>373</number>
+<null />
+</list></dest>
+<pageno>83</pageno>
+</outline>
+<outline level="2" title="2.7 Is what you got what you want? Precision and recall">
+<dest><list size="5">
+<ref id="4028" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>616</number>
+<null />
+</list></dest>
+<pageno>86</pageno>
+</outline>
+<outline level="2" title="2.8 Summary">
+<dest><list size="5">
+<ref id="4029" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>360</number>
+<null />
+</list></dest>
+<pageno>87</pageno>
+</outline>
+<outline level="2" title="2.9 To do">
+<dest><list size="5">
+<ref id="4030" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>360</number>
+<null />
+</list></dest>
+<pageno>88</pageno>
+</outline>
+<outline level="2" title="2.10 References">
+<dest><list size="5">
+<ref id="4032" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>409</number>
+<null />
+</list></dest>
+<pageno>90</pageno>
+</outline>
+<outline level="1" title="Creating suggestions and recommendations">
+<dest><list size="5">
+<ref id="4196" />
+<literal>XYZ</literal>
+<number>78</number>
+<number>674</number>
+<null />
+</list></dest>
+<pageno>91</pageno>
+</outline>
+<outline level="2" title="3.1 An online music store: the basic concepts">
+<dest><list size="5">
+<ref id="4213" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>282</number>
+<null />
+</list></dest>
+<pageno>92</pageno>
+</outline>
+<outline level="3" title="3.1.1 The concepts of distance and similarity">
+<dest><list size="5">
+<ref id="4214" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>477</number>
+<null />
+</list></dest>
+<pageno>93</pageno>
+</outline>
+<outline level="3" title="3.1.2 A closer look at the calculation of similarity">
+<dest><list size="5">
+<ref id="4219" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>581</number>
+<null />
+</list></dest>
+<pageno>98</pageno>
+</outline>
+<outline level="3" title="3.1.3 Which is the best similarity formula?">
+<dest><list size="5">
+<ref id="4537" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>542</number>
+<null />
+</list></dest>
+<pageno>101</pageno>
+</outline>
+<outline level="2" title="3.2 How do recommendation engines work?">
+<dest><list size="5">
+<ref id="4560" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>616</number>
+<null />
+</list></dest>
+<pageno>102</pageno>
+</outline>
+<outline level="3" title="3.2.1 Recommendations based on similar users">
+<dest><list size="5">
+<ref id="4560" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>290</number>
+<null />
+</list></dest>
+<pageno>102</pageno>
+</outline>
+<outline level="3" title="3.2.2 Recommendations based on similar items">
+<dest><list size="5">
+<ref id="4899" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>386</number>
+<null />
+</list></dest>
+<pageno>111</pageno>
+</outline>
+<outline level="3" title="3.2.3 Recommendations based on content">
+<dest><list size="5">
+<ref id="4939" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>143</number>
+<null />
+</list></dest>
+<pageno>114</pageno>
+</outline>
+<outline level="2" title="3.3 Recommending friends, articles, and news stories">
+<dest><list size="5">
+<ref id="5239" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>568</number>
+<null />
+</list></dest>
+<pageno>121</pageno>
+</outline>
+<outline level="3" title="3.3.1 Introducing MyDiggSpace.com">
+<dest><list size="5">
+<ref id="5239" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>386</number>
+<null />
+</list></dest>
+<pageno>121</pageno>
+</outline>
+<outline level="3" title="3.3.2 Finding friends">
+<dest><list size="5">
+<ref id="5261" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>477</number>
+<null />
+</list></dest>
+<pageno>122</pageno>
+</outline>
+<outline level="3" title="3.3.3 The inner workings of DiggDelphi">
+<dest><list size="5">
+<ref id="5263" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>451</number>
+<null />
+</list></dest>
+<pageno>124</pageno>
+</outline>
+<outline level="2" title="3.4 Recommending movies on a site such as Netflix.com">
+<dest><list size="5">
+<ref id="5268" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>262</number>
+<null />
+</list></dest>
+<pageno>129</pageno>
+</outline>
+<outline level="3" title="3.4.1 An introduction of movie datasets and recommenders">
+<dest><list size="5">
+<ref id="5268" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>131</number>
+<null />
+</list></dest>
+<pageno>129</pageno>
+</outline>
+<outline level="3" title="3.4.2 Data normalization and correlation coefficients">
+<dest><list size="5">
+<ref id="5573" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>542</number>
+<null />
+</list></dest>
+<pageno>132</pageno>
+</outline>
+<outline level="2" title="3.5 Large-scale implementation and evaluation issues">
+<dest><list size="5">
+<ref id="5578" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>282</number>
+<null />
+</list></dest>
+<pageno>137</pageno>
+</outline>
+<outline level="2" title="3.6 Summary">
+<dest><list size="5">
+<ref id="5580" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>616</number>
+<null />
+</list></dest>
+<pageno>139</pageno>
+</outline>
+<outline level="2" title="3.7 To Do">
+<dest><list size="5">
+<ref id="5580" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>148</number>
+<null />
+</list></dest>
+<pageno>139</pageno>
+</outline>
+<outline level="2" title="3.8 References">
+<dest><list size="5">
+<ref id="5856" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>111</number>
+<null />
+</list></dest>
+<pageno>141</pageno>
+</outline>
+<outline level="1" title="Clustering: grouping things together">
+<dest><list size="5">
+<ref id="5878" />
+<literal>XYZ</literal>
+<number>78</number>
+<number>674</number>
+<null />
+</list></dest>
+<pageno>143</pageno>
+</outline>
+<outline level="2" title="4.1 The need for clustering">
+<dest><list size="5">
+<ref id="5879" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>282</number>
+<null />
+</list></dest>
+<pageno>144</pageno>
+</outline>
+<outline level="3" title="4.1.1 User groups on a website: a case study">
+<dest><list size="5">
+<ref id="5880" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>616</number>
+<null />
+</list></dest>
+<pageno>145</pageno>
+</outline>
+<outline level="3" title="4.1.2 Finding groups with a SQL order by clause">
+<dest><list size="5">
+<ref id="5881" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>284</number>
+<null />
+</list></dest>
+<pageno>146</pageno>
+</outline>
+<outline level="3" title="4.1.3 Finding groups with array sorting">
+<dest><list size="5">
+<ref id="5882" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>98</number>
+<null />
+</list></dest>
+<pageno>147</pageno>
+</outline>
+<outline level="2" title="4.2 An overview of clustering algorithms">
+<dest><list size="5">
+<ref id="5885" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>360</number>
+<null />
+</list></dest>
+<pageno>150</pageno>
+</outline>
+<outline level="3" title="4.2.1 Clustering algorithms based on cluster structure">
+<dest><list size="5">
+<ref id="6467" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>516</number>
+<null />
+</list></dest>
+<pageno>151</pageno>
+</outline>
+<outline level="3" title="4.2.2 Clustering algorithms based on data type and structure">
+<dest><list size="5">
+<ref id="6508" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>616</number>
+<null />
+</list></dest>
+<pageno>152</pageno>
+</outline>
+<outline level="3" title="4.2.3 Clustering algorithms based on data size">
+<dest><list size="5">
+<ref id="6509" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>616</number>
+<null />
+</list></dest>
+<pageno>153</pageno>
+</outline>
+<outline level="2" title="4.3 Link-based algorithms">
+<dest><list size="5">
+<ref id="6510" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>616</number>
+<null />
+</list></dest>
+<pageno>154</pageno>
+</outline>
+<outline level="3" title="4.3.1 The dendrogram: a basic clustering data structure">
+<dest><list size="5">
+<ref id="6510" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>499</number>
+<null />
+</list></dest>
+<pageno>154</pageno>
+</outline>
+<outline level="3" title="4.3.2 A first look at link-based algorithms">
+<dest><list size="5">
+<ref id="6512" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>581</number>
+<null />
+</list></dest>
+<pageno>156</pageno>
+</outline>
+<outline level="3" title="4.3.3 The single-link algorithm">
+<dest><list size="5">
+<ref id="6513" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>259</number>
+<null />
+</list></dest>
+<pageno>157</pageno>
+</outline>
+<outline level="3" title="4.3.4 The average-link algorithm">
+<dest><list size="5">
+<ref id="6515" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>555</number>
+<null />
+</list></dest>
+<pageno>159</pageno>
+</outline>
+<outline level="3" title="4.3.5 The minimum-spanning-tree algorithm">
+<dest><list size="5">
+<ref id="6873" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>308</number>
+<null />
+</list></dest>
+<pageno>161</pageno>
+</outline>
+<outline level="2" title="4.4 The k-means algorithm">
+<dest><list size="5">
+<ref id="6896" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>464</number>
+<null />
+</list></dest>
+<pageno>164</pageno>
+</outline>
+<outline level="3" title="4.4.1 A first look at the k-means algorithm">
+<dest><list size="5">
+<ref id="6896" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>386</number>
+<null />
+</list></dest>
+<pageno>164</pageno>
+</outline>
+<outline level="3" title="4.4.2 The inner workings of k-means">
+<dest><list size="5">
+<ref id="6897" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>386</number>
+<null />
+</list></dest>
+<pageno>165</pageno>
+</outline>
+<outline level="2" title="4.5 Robust Clustering Using Links &#40;ROCK&#41;">
+<dest><list size="5">
+<ref id="6900" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>568</number>
+<null />
+</list></dest>
+<pageno>168</pageno>
+</outline>
+<outline level="3" title="4.5.1 Introducing ROCK">
+<dest><list size="5">
+<ref id="6900" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>398</number>
+<null />
+</list></dest>
+<pageno>168</pageno>
+</outline>
+<outline level="3" title="4.5.2 Why does ROCK rock?">
+<dest><list size="5">
+<ref id="6901" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>240</number>
+<null />
+</list></dest>
+<pageno>169</pageno>
+</outline>
+<outline level="2" title="4.6 DBSCAN">
+<dest><list size="5">
+<ref id="7255" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>516</number>
+<null />
+</list></dest>
+<pageno>173</pageno>
+</outline>
+<outline level="3" title="4.6.1 A first look at density-based algorithms">
+<dest><list size="5">
+<ref id="7255" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>386</number>
+<null />
+</list></dest>
+<pageno>173</pageno>
+</outline>
+<outline level="3" title="4.6.2 The inner workings of DBSCAN">
+<dest><list size="5">
+<ref id="7257" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>153</number>
+<null />
+</list></dest>
+<pageno>175</pageno>
+</outline>
+<outline level="2" title="4.7 Clustering issues in very large datasets">
+<dest><list size="5">
+<ref id="7261" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>451</number>
+<null />
+</list></dest>
+<pageno>179</pageno>
+</outline>
+<outline level="3" title="4.7.1 Computational complexity">
+<dest><list size="5">
+<ref id="7261" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>256</number>
+<null />
+</list></dest>
+<pageno>179</pageno>
+</outline>
+<outline level="3" title="4.7.2 High dimensionality">
+<dest><list size="5">
+<ref id="7262" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>164</number>
+<null />
+</list></dest>
+<pageno>180</pageno>
+</outline>
+<outline level="2" title="4.8 Summary">
+<dest><list size="5">
+<ref id="7546" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>464</number>
+<null />
+</list></dest>
+<pageno>182</pageno>
+</outline>
+<outline level="2" title="4.9 To Do">
+<dest><list size="5">
+<ref id="7547" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>503</number>
+<null />
+</list></dest>
+<pageno>183</pageno>
+</outline>
+<outline level="2" title="4.10 References">
+<dest><list size="5">
+<ref id="7548" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>254</number>
+<null />
+</list></dest>
+<pageno>184</pageno>
+</outline>
+<outline level="1" title="Classification: placing things where they belong">
+<dest><list size="5">
+<ref id="7550" />
+<literal>XYZ</literal>
+<number>78</number>
+<number>674</number>
+<null />
+</list></dest>
+<pageno>186</pageno>
+</outline>
+<outline level="2" title="5.1 The need for classification">
+<dest><list size="5">
+<ref id="7551" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>100</number>
+<null />
+</list></dest>
+<pageno>187</pageno>
+</outline>
+<outline level="2" title="5.2 An overview of classifiers">
+<dest><list size="5">
+<ref id="7884" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>555</number>
+<null />
+</list></dest>
+<pageno>191</pageno>
+</outline>
+<outline level="3" title="5.2.1 Structural classification algorithms">
+<dest><list size="5">
+<ref id="8004" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>289</number>
+<null />
+</list></dest>
+<pageno>192</pageno>
+</outline>
+<outline level="3" title="5.2.2 Statistical classification algorithms">
+<dest><list size="5">
+<ref id="8006" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>451</number>
+<null />
+</list></dest>
+<pageno>194</pageno>
+</outline>
+<outline level="3" title="5.2.3 The lifecycle of a classifier">
+<dest><list size="5">
+<ref id="8007" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>581</number>
+<null />
+</list></dest>
+<pageno>195</pageno>
+</outline>
+<outline level="2" title="5.3 Automatic categorization of emails and spam filtering">
+<dest><list size="5">
+<ref id="8008" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>425</number>
+<null />
+</list></dest>
+<pageno>196</pageno>
+</outline>
+<outline level="3" title="5.3.1 Na&#239;veBayes classification">
+<dest><list size="5">
+<ref id="8009" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>164</number>
+<null />
+</list></dest>
+<pageno>197</pageno>
+</outline>
+<outline level="3" title="5.3.2 Rule-based classification">
+<dest><list size="5">
+<ref id="8588" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>212</number>
+<null />
+</list></dest>
+<pageno>210</pageno>
+</outline>
+<outline level="2" title="5.4 Fraud detection with neural networks">
+<dest><list size="5">
+<ref id="9245" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>272</number>
+<null />
+</list></dest>
+<pageno>221</pageno>
+</outline>
+<outline level="3" title="5.4.1 A use case of fraud detection in transactional data">
+<dest><list size="5">
+<ref id="9245" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>155</number>
+<null />
+</list></dest>
+<pageno>221</pageno>
+</outline>
+<outline level="3" title="5.4.2 Neural networks overview">
+<dest><list size="5">
+<ref id="9265" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>293</number>
+<null />
+</list></dest>
+<pageno>223</pageno>
+</outline>
+<outline level="3" title="5.4.3 A neural network fraud detector at work">
+<dest><list size="5">
+<ref id="9267" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>443</number>
+<null />
+</list></dest>
+<pageno>225</pageno>
+</outline>
+<outline level="3" title="5.4.4 The anatomy of the fraud detector neural network">
+<dest><list size="5">
+<ref id="9272" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>616</number>
+<null />
+</list></dest>
+<pageno>230</pageno>
+</outline>
+<outline level="3" title="5.4.5 A base class for building general neural networks">
+<dest><list size="5">
+<ref id="9556" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>245</number>
+<null />
+</list></dest>
+<pageno>236</pageno>
+</outline>
+<outline level="2" title="5.5 Are your results credible?">
+<dest><list size="5">
+<ref id="9900" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>105</number>
+<null />
+</list></dest>
+<pageno>241</pageno>
+</outline>
+<outline level="2" title="5.6 Classification with very large datasets">
+<dest><list size="5">
+<ref id="9925" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>425</number>
+<null />
+</list></dest>
+<pageno>245</pageno>
+</outline>
+<outline level="2" title="5.7 Summary">
+<dest><list size="5">
+<ref id="9927" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>399</number>
+<null />
+</list></dest>
+<pageno>247</pageno>
+</outline>
+<outline level="2" title="5.8 To do">
+<dest><list size="5">
+<ref id="9928" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>202</number>
+<null />
+</list></dest>
+<pageno>248</pageno>
+</outline>
+<outline level="2" title="5.9 References">
+<dest><list size="5">
+<ref id="10094" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>319</number>
+<null />
+</list></dest>
+<pageno>252</pageno>
+</outline>
+<outline level="3" title="Classification schemes">
+<dest><list size="5">
+<ref id="10094" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>296</number>
+<null />
+</list></dest>
+<pageno>252</pageno>
+</outline>
+<outline level="3" title="Books and articles">
+<dest><list size="5">
+<ref id="10094" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>182</number>
+<null />
+</list></dest>
+<pageno>252</pageno>
+</outline>
+<outline level="1" title="Combining classifiers">
+<dest><list size="5">
+<ref id="10096" />
+<literal>XYZ</literal>
+<number>78</number>
+<number>674</number>
+<null />
+</list></dest>
+<pageno>254</pageno>
+</outline>
+<outline level="2" title="6.1 Credit worthiness: a case study for combining classifiers">
+<dest><list size="5">
+<ref id="10098" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>503</number>
+<null />
+</list></dest>
+<pageno>256</pageno>
+</outline>
+<outline level="3" title="6.1.1 A brief description of the data">
+<dest><list size="5">
+<ref id="10099" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>412</number>
+<null />
+</list></dest>
+<pageno>257</pageno>
+</outline>
+<outline level="3" title="6.1.2 Generating artificial data for real problems">
+<dest><list size="5">
+<ref id="10495" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>616</number>
+<null />
+</list></dest>
+<pageno>261</pageno>
+</outline>
+<outline level="2" title="6.2 Credit evaluation with a single classifier">
+<dest><list size="5">
+<ref id="10541" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>555</number>
+<null />
+</list></dest>
+<pageno>265</pageno>
+</outline>
+<outline level="3" title="6.2.1 The na&#239;ve Bayes baseline">
+<dest><list size="5">
+<ref id="10541" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>451</number>
+<null />
+</list></dest>
+<pageno>265</pageno>
+</outline>
+<outline level="3" title="6.2.2 The decision tree baseline">
+<dest><list size="5">
+<ref id="10543" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>116</number>
+<null />
+</list></dest>
+<pageno>267</pageno>
+</outline>
+<outline level="3" title="6.2.3 The neural network baseline">
+<dest><list size="5">
+<ref id="10545" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>151</number>
+<null />
+</list></dest>
+<pageno>269</pageno>
+</outline>
+<outline level="2" title="6.3 Comparing multiple classifiers on the same data">
+<dest><list size="5">
+<ref id="10934" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>386</number>
+<null />
+</list></dest>
+<pageno>272</pageno>
+</outline>
+<outline level="3" title="6.3.1 McNemar’s test">
+<dest><list size="5">
+<ref id="10935" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>475</number>
+<null />
+</list></dest>
+<pageno>273</pageno>
+</outline>
+<outline level="3" title="6.3.2 The difference of proportions test">
+<dest><list size="5">
+<ref id="10937" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>272</number>
+<null />
+</list></dest>
+<pageno>275</pageno>
+</outline>
+<outline level="3" title="6.3.3 Cochran’s Q test and the F test">
+<dest><list size="5">
+<ref id="10939" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>457</number>
+<null />
+</list></dest>
+<pageno>277</pageno>
+</outline>
+<outline level="2" title="6.4 Bagging: bootstrap aggregating">
+<dest><list size="5">
+<ref id="10941" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>294</number>
+<null />
+</list></dest>
+<pageno>279</pageno>
+</outline>
+<outline level="3" title="6.4.1 The bagging classifier at work">
+<dest><list size="5">
+<ref id="10942" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>116</number>
+<null />
+</list></dest>
+<pageno>280</pageno>
+</outline>
+<outline level="3" title="6.4.2 A look under the hood of the bagging classifier">
+<dest><list size="5">
+<ref id="11246" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>242</number>
+<null />
+</list></dest>
+<pageno>282</pageno>
+</outline>
+<outline level="3" title="6.4.3 Classifier ensembles">
+<dest><list size="5">
+<ref id="11249" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>503</number>
+<null />
+</list></dest>
+<pageno>285</pageno>
+</outline>
+<outline level="2" title="6.5 Boosting: an iterative improvement approach">
+<dest><list size="5">
+<ref id="11251" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>418</number>
+<null />
+</list></dest>
+<pageno>287</pageno>
+</outline>
+<outline level="3" title="6.5.1 The boosting classifier at work">
+<dest><list size="5">
+<ref id="11252" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>555</number>
+<null />
+</list></dest>
+<pageno>288</pageno>
+</outline>
+<outline level="3" title="6.5.2 A look under the hood of the boosting classifier">
+<dest><list size="5">
+<ref id="11254" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>616</number>
+<null />
+</list></dest>
+<pageno>290</pageno>
+</outline>
+<outline level="2" title="6.6 Summary">
+<dest><list size="5">
+<ref id="11695" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>529</number>
+<null />
+</list></dest>
+<pageno>294</pageno>
+</outline>
+<outline level="2" title="6.7 To Do">
+<dest><list size="5">
+<ref id="11696" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>425</number>
+<null />
+</list></dest>
+<pageno>295</pageno>
+</outline>
+<outline level="2" title="6.8 References">
+<dest><list size="5">
+<ref id="11700" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>425</number>
+<null />
+</list></dest>
+<pageno>299</pageno>
+</outline>
+<outline level="1" title="Putting it all together: an intelligent news portal">
+<dest><list size="5">
+<ref id="11701" />
+<literal>XYZ</literal>
+<number>78</number>
+<number>674</number>
+<null />
+</list></dest>
+<pageno>300</pageno>
+</outline>
+<outline level="2" title="7.1 An overview of the functionality">
+<dest><list size="5">
+<ref id="11943" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>616</number>
+<null />
+</list></dest>
+<pageno>302</pageno>
+</outline>
+<outline level="2" title="7.2 Getting and cleansing content">
+<dest><list size="5">
+<ref id="11944" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>451</number>
+<null />
+</list></dest>
+<pageno>303</pageno>
+</outline>
+<outline level="3" title="7.2.1 Get set. Get ready. Crawl the Web!">
+<dest><list size="5">
+<ref id="11944" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>281</number>
+<null />
+</list></dest>
+<pageno>303</pageno>
+</outline>
+<outline level="3" title="7.2.2 Review of the search prerequisites">
+<dest><list size="5">
+<ref id="11945" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>197</number>
+<null />
+</list></dest>
+<pageno>304</pageno>
+</outline>
+<outline level="3" title="7.2.3 A default set of retrieved and processed news stories">
+<dest><list size="5">
+<ref id="11947" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>320</number>
+<null />
+</list></dest>
+<pageno>306</pageno>
+</outline>
+<outline level="2" title="7.3 Searching for news stories">
+<dest><list size="5">
+<ref id="11949" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>568</number>
+<null />
+</list></dest>
+<pageno>308</pageno>
+</outline>
+<outline level="2" title="7.4 Assigning news categories">
+<dest><list size="5">
+<ref id="11951" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>334</number>
+<null />
+</list></dest>
+<pageno>310</pageno>
+</outline>
+<outline level="3" title="7.4.1 Order matters!">
+<dest><list size="5">
+<ref id="12391" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>542</number>
+<null />
+</list></dest>
+<pageno>311</pageno>
+</outline>
+<outline level="3" title="7.4.2 Classifying with the NewsProcessor class">
+<dest><list size="5">
+<ref id="12416" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>555</number>
+<null />
+</list></dest>
+<pageno>316</pageno>
+</outline>
+<outline level="3" title="7.4.3 Meet the classifier">
+<dest><list size="5">
+<ref id="12417" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>503</number>
+<null />
+</list></dest>
+<pageno>317</pageno>
+</outline>
+<outline level="3" title="7.4.4 Classification strategy: going beyond low-level assignments">
+<dest><list size="5">
+<ref id="12419" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>179</number>
+<null />
+</list></dest>
+<pageno>319</pageno>
+</outline>
+<outline level="2" title="7.5 Building news groups with the NewsProcessor class">
+<dest><list size="5">
+<ref id="12747" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>353</number>
+<null />
+</list></dest>
+<pageno>322</pageno>
+</outline>
+<outline level="3" title="7.5.1 Clustering general news stories">
+<dest><list size="5">
+<ref id="12748" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>503</number>
+<null />
+</list></dest>
+<pageno>323</pageno>
+</outline>
+<outline level="3" title="7.5.2 Clustering news stories within a news category">
+<dest><list size="5">
+<ref id="12752" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>581</number>
+<null />
+</list></dest>
+<pageno>327</pageno>
+</outline>
+<outline level="2" title="7.6 Dynamic content based on the user’s ratings">
+<dest><list size="5">
+<ref id="12755" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>425</number>
+<null />
+</list></dest>
+<pageno>330</pageno>
+</outline>
+<outline level="2" title="7.7 Summary">
+<dest><list size="5">
+<ref id="13015" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>464</number>
+<null />
+</list></dest>
+<pageno>333</pageno>
+</outline>
+<outline level="2" title="7.8 To do">
+<dest><list size="5">
+<ref id="13016" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>581</number>
+<null />
+</list></dest>
+<pageno>334</pageno>
+</outline>
+<outline level="2" title="7.9 References">
+<dest><list size="5">
+<ref id="13020" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>148</number>
+<null />
+</list></dest>
+<pageno>338</pageno>
+</outline>
+<outline level="1" title="appendix A: Introduction to BeanShell">
+<dest><list size="5">
+<ref id="13021" />
+<literal>XYZ</literal>
+<number>78</number>
+<number>554</number>
+<null />
+</list></dest>
+<pageno>339</pageno>
+</outline>
+<outline level="2" title="A.1 What is BeanShell?">
+<dest><list size="5">
+<ref id="13021" />
+<literal>XYZ</literal>
+<number>78</number>
+<number>335</number>
+<null />
+</list></dest>
+<pageno>339</pageno>
+</outline>
+<outline level="2" title="A.2 Why use BeanShell?">
+<dest><list size="5">
+<ref id="13022" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>616</number>
+<null />
+</list></dest>
+<pageno>340</pageno>
+</outline>
+<outline level="2" title="A.3 Running BeanShell">
+<dest><list size="5">
+<ref id="13022" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>428</number>
+<null />
+</list></dest>
+<pageno>340</pageno>
+</outline>
+<outline level="2" title="A.4 References">
+<dest><list size="5">
+<ref id="13022" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>88</number>
+<null />
+</list></dest>
+<pageno>340</pageno>
+</outline>
+<outline level="1" title="appendix B: Web crawling">
+<dest><list size="5">
+<ref id="13305" />
+<literal>XYZ</literal>
+<number>78</number>
+<number>554</number>
+<null />
+</list></dest>
+<pageno>341</pageno>
+</outline>
+<outline level="2" title="B.1 An overview of crawler components">
+<dest><list size="5">
+<ref id="13305" />
+<literal>XYZ</literal>
+<number>78</number>
+<number>399</number>
+<null />
+</list></dest>
+<pageno>341</pageno>
+</outline>
+<outline level="3" title="B.1.1 The stages of crawling">
+<dest><list size="5">
+<ref id="13355" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>527</number>
+<null />
+</list></dest>
+<pageno>342</pageno>
+</outline>
+<outline level="3" title="B.1.2 Our simple crawler">
+<dest><list size="5">
+<ref id="13355" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>229</number>
+<null />
+</list></dest>
+<pageno>342</pageno>
+</outline>
+<outline level="3" title="B.1.3 Open source web crawlers">
+<dest><list size="5">
+<ref id="13356" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>245</number>
+<null />
+</list></dest>
+<pageno>343</pageno>
+</outline>
+<outline level="2" title="B.2 References">
+<dest><list size="5">
+<ref id="13357" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>516</number>
+<null />
+</list></dest>
+<pageno>344</pageno>
+</outline>
+<outline level="1" title="appendix C: Mathematical refresher">
+<dest><list size="5">
+<ref id="13358" />
+<literal>XYZ</literal>
+<number>78</number>
+<number>554</number>
+<null />
+</list></dest>
+<pageno>345</pageno>
+</outline>
+<outline level="2" title="C.1 Vectors and matrices">
+<dest><list size="5">
+<ref id="13358" />
+<literal>XYZ</literal>
+<number>78</number>
+<number>347</number>
+<null />
+</list></dest>
+<pageno>345</pageno>
+</outline>
+<outline level="2" title="C.2 Measuring distances">
+<dest><list size="5">
+<ref id="13359" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>438</number>
+<null />
+</list></dest>
+<pageno>346</pageno>
+</outline>
+<outline level="2" title="C.3 Advanced matrix methods">
+<dest><list size="5">
+<ref id="13361" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>616</number>
+<null />
+</list></dest>
+<pageno>348</pageno>
+</outline>
+<outline level="2" title="C.4 References">
+<dest><list size="5">
+<ref id="13361" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>317</number>
+<null />
+</list></dest>
+<pageno>348</pageno>
+</outline>
+<outline level="1" title="appendix D: Natural language processing">
+<dest><list size="5">
+<ref id="13362" />
+<literal>XYZ</literal>
+<number>78</number>
+<number>554</number>
+<null />
+</list></dest>
+<pageno>349</pageno>
+</outline>
+<outline level="2" title="D.1 References">
+<dest><list size="5">
+<ref id="13658" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>555</number>
+<null />
+</list></dest>
+<pageno>351</pageno>
+</outline>
+<outline level="1" title="appendix E: Neural networks">
+<dest><list size="5">
+<ref id="13681" />
+<literal>XYZ</literal>
+<number>78</number>
+<number>554</number>
+<null />
+</list></dest>
+<pageno>352</pageno>
+</outline>
+<outline level="2" title="E.1 References">
+<dest><list size="5">
+<ref id="13682" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>295</number>
+<null />
+</list></dest>
+<pageno>353</pageno>
+</outline>
+<outline level="1" title="index">
+<dest><list size="5">
+<ref id="13684" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>532</number>
+<null />
+</list></dest>
+<pageno>355</pageno>
+</outline>
+<outline level="2" title="Numerics">
+<dest><list size="5">
+<ref id="13684" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>453</number>
+<null />
+</list></dest>
+<pageno>355</pageno>
+</outline>
+<outline level="2" title="A">
+<dest><list size="5">
+<ref id="13684" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>390</number>
+<null />
+</list></dest>
+<pageno>355</pageno>
+</outline>
+<outline level="2" title="B">
+<dest><list size="5">
+<ref id="13685" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>501</number>
+<null />
+</list></dest>
+<pageno>356</pageno>
+</outline>
+<outline level="2" title="C">
+<dest><list size="5">
+<ref id="13685" />
+<literal>XYZ</literal>
+<number>197</number>
+<number>144</number>
+<null />
+</list></dest>
+<pageno>356</pageno>
+</outline>
+<outline level="2" title="D">
+<dest><list size="5">
+<ref id="13687" />
+<literal>XYZ</literal>
+<number>337</number>
+<number>583</number>
+<null />
+</list></dest>
+<pageno>358</pageno>
+</outline>
+<outline level="2" title="E">
+<dest><list size="5">
+<ref id="13688" />
+<literal>XYZ</literal>
+<number>206</number>
+<number>233</number>
+<null />
+</list></dest>
+<pageno>359</pageno>
+</outline>
+<outline level="2" title="F">
+<dest><list size="5">
+<ref id="13688" />
+<literal>XYZ</literal>
+<number>346</number>
+<number>112</number>
+<null />
+</list></dest>
+<pageno>359</pageno>
+</outline>
+<outline level="2" title="G">
+<dest><list size="5">
+<ref id="13689" />
+<literal>XYZ</literal>
+<number>197</number>
+<number>433</number>
+<null />
+</list></dest>
+<pageno>360</pageno>
+</outline>
+<outline level="2" title="H">
+<dest><list size="5">
+<ref id="13689" />
+<literal>XYZ</literal>
+<number>337</number>
+<number>562</number>
+<null />
+</list></dest>
+<pageno>360</pageno>
+</outline>
+<outline level="2" title="I">
+<dest><list size="5">
+<ref id="13689" />
+<literal>XYZ</literal>
+<number>337</number>
+<number>197</number>
+<null />
+</list></dest>
+<pageno>360</pageno>
+</outline>
+<outline level="2" title="J">
+<dest><list size="5">
+<ref id="16677" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>209</number>
+<null />
+</list></dest>
+<pageno>361</pageno>
+</outline>
+<outline level="2" title="K">
+<dest><list size="5">
+<ref id="16677" />
+<literal>XYZ</literal>
+<number>206</number>
+<number>433</number>
+<null />
+</list></dest>
+<pageno>361</pageno>
+</outline>
+<outline level="2" title="L">
+<dest><list size="5">
+<ref id="16677" />
+<literal>XYZ</literal>
+<number>206</number>
+<number>214</number>
+<null />
+</list></dest>
+<pageno>361</pageno>
+</outline>
+<outline level="2" title="M">
+<dest><list size="5">
+<ref id="17139" />
+<literal>XYZ</literal>
+<number>57</number>
+<number>423</number>
+<null />
+</list></dest>
+<pageno>362</pageno>
+</outline>
+<outline level="2" title="N">
+<dest><list size="5">
+<ref id="17139" />
+<literal>XYZ</literal>
+<number>337</number>
+<number>347</number>
+<null />
+</list></dest>
+<pageno>362</pageno>
+</outline>
+<outline level="2" title="O">
+<dest><list size="5">
+<ref id="17140" />
+<literal>XYZ</literal>
+<number>206</number>
+<number>273</number>
+<null />
+</list></dest>
+<pageno>363</pageno>
+</outline>
+<outline level="2" title="P">
+<dest><list size="5">
+<ref id="17140" />
+<literal>XYZ</literal>
+<number>346</number>
+<number>503</number>
+<null />
+</list></dest>
+<pageno>363</pageno>
+</outline>
+<outline level="2" title="Q">
+<dest><list size="5">
+<ref id="17141" />
+<literal>XYZ</literal>
+<number>197</number>
+<number>502</number>
+<null />
+</list></dest>
+<pageno>364</pageno>
+</outline>
+<outline level="2" title="R">
+<dest><list size="5">
+<ref id="17141" />
+<literal>XYZ</literal>
+<number>197</number>
+<number>408</number>
+<null />
+</list></dest>
+<pageno>364</pageno>
+</outline>
+<outline level="2" title="S">
+<dest><list size="5">
+<ref id="17142" />
+<literal>XYZ</literal>
+<number>206</number>
+<number>563</number>
+<null />
+</list></dest>
+<pageno>365</pageno>
+</outline>
+<outline level="2" title="T">
+<dest><list size="5">
+<ref id="17143" />
+<literal>XYZ</literal>
+<number>197</number>
+<number>307</number>
+<null />
+</list></dest>
+<pageno>366</pageno>
+</outline>
+<outline level="2" title="U">
+<dest><list size="5">
+<ref id="17144" />
+<literal>XYZ</literal>
+<number>66</number>
+<number>571</number>
+<null />
+</list></dest>
+<pageno>367</pageno>
+</outline>
+<outline level="2" title="V">
+<dest><list size="5">
+<ref id="17144" />
+<literal>XYZ</literal>
+<number>206</number>
+<number>615</number>
+<null />
+</list></dest>
+<pageno>367</pageno>
+</outline>
+<outline level="2" title="W">
+<dest><list size="5">
+<ref id="17144" />
+<literal>XYZ</literal>
+<number>206</number>
+<number>468</number>
+<null />
+</list></dest>
+<pageno>367</pageno>
+</outline>
+<outline level="2" title="X">
+<dest><list size="5">
+<ref id="17144" />
+<literal>XYZ</literal>
+<number>346</number>
+<number>548</number>
+<null />
+</list></dest>
+<pageno>367</pageno>
+</outline>
+<outline level="2" title="Y">
+<dest><list size="5">
+<ref id="17144" />
+<literal>XYZ</literal>
+<number>346</number>
+<number>338</number>
+<null />
+</list></dest>
+<pageno>367</pageno>
+</outline>
+<outline level="2" title="Z">
+<dest><list size="5">
+<ref id="17144" />
+<literal>XYZ</literal>
+<number>346</number>
+<number>260</number>
+<null />
+</list></dest>
+<pageno>367</pageno>
+</outline>
+<outline level="1" title="Back Cover">
+<dest><list size="3">
+<ref id="17145" />
+<literal>FitH</literal>
+<number>668</number>
+</list></dest>
+<pageno>368</pageno>
+</outline>
+</outlines>

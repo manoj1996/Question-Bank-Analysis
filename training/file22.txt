@@ -1,0 +1,112 @@
+2.8
+
+Summary
+
+65
+
+aware that interpolating the values, if you have a small number of queries, may not be 
+a good idea. It would be better to leave the values as points without connecting them. 
+  Good  precision-recall  points  are  located  in  the  upper-right  corner  of  the  graph 
+because  we  want  to  have  high  precision  and  high  recall.  These  plots  can  help  you 
+establish, objectively, the need for a particular tweak in an algorithm or the superiority 
+of one approach versus another. It could help you convince your ever-skeptical upper 
+management team to use the algorithms of this book! You can practice by using the 
+three approaches that we presented in this chapter (search with Lucene; Lucene and 
+PageRank;  Lucene,  PageRank,  and  user  clicks).  You  can  apply  them  on  the  dataset 
+that we provided you or another dataset that you can create yourself, and you can cre-
+ate a precision/recall plot that includes the results of 10–20 queries. 
+
+ In section 5.5, we’ll discuss many aspects of credibility that can be evaluated for a 
+particular algorithm and how to compare two algorithms. We’ll also talk about the way 
+that the validation experiments must be carried out in order to enhance the confi-
+dence that we have in our results. Precision and recall are the tip of the iceberg when 
+we consider the quality of our search results. We’ll postpone a more detailed analysis 
+of credibility until after we cover all the basic intelligent algorithms that we want to 
+present. This approach will allow us to use a general framework for assessing the qual-
+ity of intelligence.  
+
+Summary
+Since early 2000, a lot of online news article have proclaimed: “Search is king!” This 
+kind of statement could’ve been insightful, and perhaps prophetic, in the last millen-
+nium, but it’s a globally accepted truth today. If you don’t believe us, Google it! 
+
+ This chapter has shown that intelligently answering user queries on content-rich 
+material that’s spread across the globe deserves attention and effort beyond indexing. 
+We’ve demonstrated a searching strategy that starts with building on traditional infor-
+mation retrieval techniques provided by the Lucene library. We talked about collect-
+ing  content  from  the  Web  (web  crawling)  and  provided  our  own  crawler 
+implementation. We used a number of document parsers such as NekoHTML and the 
+TextMining library (tm-extractor), and passed the content to the Lucene analyzers. 
+The standard Lucene analyzers are powerful and flexible, and should be adequate for 
+most purposes. If they’re not suitable for you, we’ve discussed a number of potential 
+extensions  and  modifications  that  are  possible.  We  also  hinted  at  the  power  of  the 
+Lucene querying framework and its own extensibility and flexibility.
+
+ More importantly, we’ve described in great detail the most celebrated link analysis 
+algorithm—PageRank.  We  provided  a  full  implementation  that  doesn’t  have  any 
+dependencies and adopts the formulation of the G(oogle) matrix that’s amenable to 
+the large-scale implementation of sparse matrices. We also provided hints that’ll allow 
+you to complete this step and feel the pride of that great accomplishment yourself! 
+We’ve touched upon a number of intricacies of that algorithm and explained its key 
+characteristics, such as the teleportation component and the power method, in detail.
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com66
+
+CHAPTER 2  Searching
+
+2.9
+
+ We also presented user-click analysis, which introduced you to intelligent probabi-
+listic  techniques  such  as  our  NaiveBayes  classifier  implementation.  We’ve  provided 
+wrapper classes that expose all the important steps involved, but we’ve also analyzed 
+the code under the hood to a great extent. This kind of technique allows us to learn 
+the  preferences  of  a  user  toward  a  particular  site  or  topic,  and  it  can  be  greatly 
+enhanced and extended to include additional features.
+
+ Since one size doesn’t fit all, we’ve provided material that’ll help you deal with doc-
+uments that aren’t web pages, by employing a new algorithm that we called DocRank. 
+This algorithm has shown some promise, but more importantly it demonstrates that 
+the underlying mathematical theory of PageRank can be readily extended and studied 
+in other contexts by careful modifications. Lastly, we talked about some of the chal-
+lenges that may arise in dealing with very large networks, and we provided a simple yet 
+robust way of qualifying your search results and add credibility to your search engine.
+ The statement “search is king” might be true, but recommendation systems also 
+have royal blood! The next chapter covers exclusively the creation of suggestions and 
+recommendations. Adding both to your application can make a big difference in the 
+user experience of your application. But before you move on, make sure that you read 
+the To do items for search, if you haven’t done so already. They’re full of interesting 
+and valuable information.
+
+To do
+The last section of every chapter in the rest of this book will contain a number of to-do 
+items that will guide you in the exploration of various topics. Whenever appropriate, 
+our code has been annotated with “TODO” tags that you should be able to view in the 
+Eclipse IDE in the Tasks panel. By clicking on any of the tasks, the task link will show 
+the portion of the code associated with it. If you don’t use Eclipse then simply search 
+the code for the term “TODO”. 
+
+ Some of these to-do items aim at providing greater depth on a topic that’s been 
+covered in the main chapter, while others present a starting point for exploration on 
+topics that are peripheral to what we’ve already discussed. The completion of these 
+tasks will provide you with greater depth and breadth on intelligent algorithms. We 
+highly encourage you to peruse them. 
+
+ With that in mind, here is our to do list for chapter 2. 
+1 Build your own web search engine.  Use the crawler of your choice and crawl your 
+favorite site, such as http://jakarta.apache.org/, then use our crawler to pro-
+cess the retrieved data, build an index for it, and search through its pages. 
+
+How do the results vary if you add PageRank to them? 
+How about user clicks?
+You could write your own small web search engine by applying the material 
+
+of this chapter. Try it and let us know! 
+
+2 Experiment with boosting.  Uncomment the code between lines 83 to 85 in the 
+class  LuceneIndexBuilder  and  see  how  the  results  of  the  Lucene  ranking 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

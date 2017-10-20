@@ -1,0 +1,58 @@
+130
+
+4.2.2
+
+CHAPTER 4  Clustering: grouping things together
+
+Clustering algorithms based on data type and structure
+In figure 4.4, we show the categorization of clustering 
+algorithms based on data types and the data struc-
+ture. If you deal exclusively with numerical data—for 
+example, the geographic coordinates on a map or 
+the  historic  data  of  stock  prices—grid-based  algo-
+rithms may be more appropriate for your work. In 
+this  category,  algorithms  that  are  based  on  spectral
+and wavelet methods can provide significant advan-
+tages. The algorithm WaveCluster by Gholamhosein 
+Sheikholeslami et al. results in high-quality of clus-
+ters with minimum computational complexity.
+
+Figure 4.4  Categorizing the 
+clustering algorithms based on 
+data type and data structure
+
+  Another  category  of  clustering  algorithms  specializes  in  handling  categorical 
+data.  The  main  characteristic  of  these  algorithms  is  that  they  use  metrics  based  on 
+set  membership,  such  as  the  Jaccard  coefficient.  Typically,  categorical  data  lacks 
+ordering,  and  it’s  often  hard  to  find  a  numerical  representation  that  would  be 
+appropriate.  How  do  you  numerically  represent  a  list  of  names?  Whatever  way  you 
+come  up  with  will  depend  on  your  context  rather  than  a  magic  algorithm  that’ll 
+work well in all cases. In the case of people’s names, lexicographic ordering may be 
+good enough, but for the names for corporate entities, lexicographic ordering may 
+mix up companies that aren’t related in any way. As a result, a lot of clustering algo-
+rithms that work great with data that is inherently numeric fail to perform well with 
+categorical data. 
+
+ To further clarify this point, let’s revisit the approach we used in section 2.5. There, 
+we ranked a number of news articles by using a set of words that characterized the arti-
+cles rather than the hyperlinks between them. The natural representation of our data 
+was categorical (not numeric), and we took the number of shared terms as a measure 
+of the strength by which any two documents can be linked. One of the clustering algo-
+rithms that we’ll present in this chapter is similar to the technique of section 2.5, and 
+works well with categorical data. It’s called ROCK and it’s a hierarchical agglomerative 
+algorithm that employs the Jaccard similarity measure (see section 3.1.3) in order to 
+define the notion of neighborhood among news articles.
+
+ Constrained clustering algorithms are used when clusters must satisfy certain con-
+straints. The typical case here is clustering points on a two-dimensional surface, in the 
+presence of obstacles. Clearly, the clusters that we form should avoid the obstacles. In 
+these cases, the typical Euclidean distance won’t work well, and more meaningful met-
+rics are needed for measuring the distance between two points. One good candidate is 
+the  length  of  the  shortest  path  between  two  points;  the  shortest  path  calculation 
+incorporates  the  avoidance  of  the  obstacles.  Tung  et  al.  present  an  algorithm  that 
+deals  with  that  problem  satisfactorily.  We  won’t  cover  constrained  clustering  algo-
+rithms in this book.
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

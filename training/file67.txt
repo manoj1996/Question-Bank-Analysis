@@ -1,0 +1,126 @@
+116
+
+CHAPTER 3  Creating suggestions and recommendations
+
+have a fast and scalable recommender that produces bad recommendations! So, let’s 
+talk  about  evaluating  the  accuracy  of  a  recommendation  system.  If  you  search  the 
+related literature, you’ll find that there are dozens of quantitative metrics and several 
+qualitative methods for evaluating the results of recommendation systems. The pleth-
+ora of metrics and methods reflects the challenges of conducting a meaningful, fair, 
+and  accurate  evaluation  for  recommendations.  The  review  article  by  Herlocker, 
+Konstan, Terveen, and Riedl contains a wealth of information if you’re interested in 
+this topic.
+
+ We’ve written a class that evaluates our recommendations on the MovieLens data 
+by calculating the root mean square error (RMSE) of the predicted ratings. The RMSE is a 
+simple  but  robust  technique  of  evaluating  the  accuracy  of  your  recommendations. 
+This metric has two main features: (1) it always increases (you don’t get kudos for pre-
+dicting a rating accurately) and (2) by taking the square of the differences, the large 
+differences (>1) are amplified, and it doesn’t matter if you undershoot or you over-
+shoot the rating. 
+
+ We can argue that the RMSE is probably too naïve. Let’s consider two cases. In the 
+first case, we recommend to a user a movie with four stars and he really doesn’t like it 
+(he’d rate it two stars); in the second case, we recommend a movie with three stars but 
+the user loves it (he’d rate it five stars). In both cases, the contribution to the RMSE is 
+the same, but it’s likely that the user’s dissatisfaction would probably be larger in the 
+first case than in the second case; we know that our dissatisfaction would be!
+
+ You can find the code that calculates the RMSE in the class RMSEEstimator. List-
+ing  3.22  shows  you  how  you  can  evaluate  the  accuracy  of  our  MovieLensDelphi
+recommender.
+
+Listing 3.22  Calculating the root mean squared error for a recommender 
+
+MovieLensDataset ds = MovieLensData.createDataset(100000);   
+
+MovieLensDelphi delphi = new MovieLensDelphi(ds); 
+
+RMSEEstimator rmseEstimator = new RMSEEstimator();
+
+rmseEstimator.calculateRMSE(delphi);
+
+Create the 
+dataset but 
+reserve 
+100,000 
+ratings for 
+testing
+
+B
+
+We create a dataset that excludes 100K ratings from the one million ratings that are 
+available  in  the  large  MovieLens  dataset  B.  The  recommender  will  train  on  the 
+remaining 900K ratings and be evaluated on the 100K ratings; the rest of the script is 
+self-explanatory. If you run this with the code that we’ve described in this section then 
+your  RMSE  should  be  equal  to  1.0256.  This  isn’t  a  bad  RMSE  but  it’s  not  very  good 
+either. We highly recommend that you improve on that result and set as your goal an 
+RMSE that’s below 1. As a relative measure of success, we should mention that the best 
+teams that compete for the Netflix prize have an RMSE that is between 0.86 and 0.88. 
+So, even though the dataset is different, don’t be disappointed if your improvements 
+bring your RMSE to be approximately equal to 0.9—it would be a great success for you 
+and for us!
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com3.6
+
+To Do
+
+117
+
+Summary
+In this chapter, you’ve learned about the concepts of distance and similarity between 
+users and items. We’ve seen that one size doesn’t fit all, and we need to be careful in 
+our selection of a similarity metric. Throughout the chapter we encountered several 
+metrics: the Jaccard metric, the Pearson correlation, and variants of these metrics that 
+we introduced. Similarity formulas must produce results that are consistent with a few 
+basic rules, but otherwise we’re free to choose the ones that produce the best results 
+for our purposes.
+
+  We  discussed  the  two  broad  categories  of  techniques  for  creating  recommenda-
+tions—collaborative filtering and the content-based approach. We walked through the 
+construction of an online music store that demonstrated the underlying principles, in 
+detail but with clarity. In the process of building these examples, we’ve created the 
+infrastructure that you need for writing a general recommendation system for your 
+own application.
+
+ Finally, we tackled two more general examples. The first example was a hypotheti-
+cal website that used the Digg API and retrieved the content of our users for further 
+analysis of similarity between them, and in order to provide unseen article recommen-
+dations  to  them.  In  this  example,  we  pointed  out  the  existence  of  second-order 
+effects, and by extension of higher-order effects, and we suggested a way to leverage them 
+in order to improve the accuracy of our recommendations. Our second example dealt 
+with movie recommendations and introduced the concept of data normalization, as 
+well as the popular linear (Pearson) correlation coefficient. In the latter context, we 
+also introduced a class that evaluates the accuracy of our recommendations based on 
+the root mean squared error.
+
+  In  both  examples,  we  demonstrated  that  as  the  complexity  and  the  size  of  the 
+problem increase, it becomes imperative to leverage the combination of techniques 
+for improving the efficiency and quality of our recommendations. Thus, we discussed 
+the  possibility  of  reusing  what  you  learning  from  user  clicks  in  the  example  of 
+MyDiggSpace.com. This is a theme that we’ll encounter throughout this book—the 
+combination  of  techniques  that  capture  different  aspects  of  our  problem  can,  and 
+often does, result in recommendations of higher accuracy. 
+
+ In the next chapter, we’ll encounter another family of intelligent algorithms: clus-
+tering algorithms. Nevertheless, if you haven’t worked on the to-do topics yet then you 
+might want to have a look at them now, while all the recommendation related mate-
+rial still reverberates in your mind. 
+
+3.7
+
+To Do
+
+1 Similarity  metrics. 
+
+Implement  the  Jaccard  similarity  for  the  MusicUsers.  What 
+differences do you observe? A variation of the Jaccard metric is the Tanimoto met-
+ric, which is more appropriate for continuous values. The Tanimoto metric is 
+equal to the ratio of the intersection of two sets (Ni = |X∩Y|) over the union 
+(Nu = |X| + |Y|) minus the intersection—T = Ni/(Nu-Ni). 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

@@ -1,0 +1,35 @@
+78
+
+CHAPTER 3  Creating suggestions and recommendations
+
+similarity metric. Intuitively we expect these two users to be more similar than those 
+who listened to a single song and their opinions differed by 3 units (out of 5!). 
+
+ The naïve similarity “squeezes” the similarity values for small distances (because we 
+add 1) while leaving large distances (values of the distance much larger than 1) unaf-
+fected. What if we add another value? The general form of the naïve similarity is y = 
+beta / (beta + x), where beta is our free parameter and x is the Euclidean distance. Fig-
+ure 3.3 shows what the naïve similarity would look like for various values, between 1 
+and 2, of the parameter beta.
+
+ Keeping in mind the shortcomings of the naïve similarity, let’s look at the first sim-
+ilarity definition between two users as shown in listing 3.2, in the case 0 block. If the 
+users have some songs in common we divide the sum of their squared differences by 
+the number of common songs, take the positive square root, and pass on that value to 
+a special function. We’ve seen that function before: it’s the hyperbolic tangent func-
+tion. We subtract the value of the hyperbolic tangent from 1, so that our final value of 
+similarity ranges between 0 and 1, with zero implying dissimilarity and 1 implying the 
+highest  similarity.  Voilà!  We’ve  arrived  at  our  first  definition  of  similarity  of  users 
+based on their ratings.
+
+ The second similarity definition that we present in listing 3.2, in the case 1 block, 
+improves on the first similarity by taking into account the ratio of the common items ver-
+sus the number of all possible common items. That’s a heuristic that intuitively makes 
+sense. If I’ve listened to 30 songs and you’ve listened to 20, we could have up to 20 com-
+mon songs. Let’s say that we have only 5 songs in common and we agree fairly well on 
+
+Figure 3.3  NaÏve similarity curves as functions of the Euclidean distance
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

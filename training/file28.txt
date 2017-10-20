@@ -1,0 +1,308 @@
+Searching with Lucene
+
+23
+
+■ Seven documents related to business news; three are related to Google’s expan-
+sion into newspaper advertisement, another three discuss primarily about the 
+NVidia stock, and one about stock price and index movements.
+
+■ Three documents related to Lance Armstrong’s attempt to run the marathon in 
+
+New York.
+
+■ Four  documents  related  to  U.S.  politics  and,  in  particular,  the  congressional 
+
+elections (circa 2006).
+
+■ Five documents related to world news; four about Ortega winning the elections 
+
+in Nicaragua and one about global warming. 
+
+Lucene can help us analyze, index, and search these and any other document that can 
+be  converted  into  text,  so  it’s  not  limited  to  web  pages.  The  class  that  we’ll  use  to 
+quickly read the stored web pages is called  FetchAndProcessCrawler; this class can 
+also retrieve data from the internet. Its constructor takes three arguments: 
+
+■ The base directory for storing the retrieved data.
+■ The depth of the link structure that should be traversed.
+■ The maximum number of total documents that should be retrieved. 
+
+Listing 2.1 shows how you can use it from the BeanShell.
+
+Listing 2.1  Reading, indexing, and searching the default list of web pages 
+
+FetchAndProcessCrawler crawler = 
+➥  new FetchAndProcessCrawler("C:/iWeb2/data/ch02",5,200);
+
+crawler.setDefaultUrls();   
+
+Load files
+
+crawler.run();                  
+
+LuceneIndexer luceneIndexer = 
+➥  new LuceneIndexer(crawler.getRootDir());
+
+Gather and 
+process content
+
+luceneIndexer.run();   
+
+Index content in directory
+
+MySearcher oracle = new MySearcher(luceneIndexer.getLuceneDir());
+
+oracle.search("armstrong",5);   
+
+Search based on index just created
+
+The crawling and preprocessing stage should take only a few seconds, and when it fin-
+ishes you should have a new directory under the base directory. In our example, the 
+base directory was C:/iWeb2/data/ch02. The new directory’s name will start with the 
+string crawl- and be followed by the numeric value of the crawl’s timestamp in milli-
+seconds—for example, crawl-1200697910111. 
+
+ You can change the content of the documents, or add more documents, and rerun 
+the preprocessing and indexing of the files in order to observe the differences in your 
+search results. Figure 2.1 is a snapshot of executing the code from listing 2.1 in the 
+BeanShell, and it includes the results of the search for the term “armstrong.”
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com24
+
+CHAPTER 2  Searching
+
+bsh % FetchAndProcessCrawler c = 
+new FetchAndProcessCrawler("c:/iWeb2/data/ch02",5,200);
+bsh % c.setDefaultUrls();
+bsh % c.run();
+There are no unprocessed urls.
+Timer (s): [Crawler fetched data] 
+Timer (s): [Crawler processed data] --> 0.485
+bsh %
+bsh % LuceneIndexer lidx = new LuceneIndexer(c.getRootDir());
+bsh % lidx.run();
+Starting the indexing ... Indexing completed!
+
+--> 5.5
+
+bsh % MySearcher oracle = new MySearcher(lidx.getLuceneDir());
+bsh % oracle.search("armstrong",5);
+
+Search results using Lucene index scores:
+Query: armstrong
+
+-
+
+Document Title: Lance Armstrong meets goal in painful marathon 
+debut
+Document URL: file:/c:/iWeb2/data/ch02/sport 01.html -->  
+Relevance Score: 0.397706508636475
+______________________________________
+Document Title: New York 'tour' Lance's toughest
+Document URL: file:/c:/iWeb2/data/ch02/sport-03.html -->  
+Relevance Score: 0.312822639942169
+______________________________________ 
+Document Title: New York City Marathon
+Document URL: file:/c:/iWeb2/data/ch02/sport-02.html ->  
+Relevance Score: 0.226110160350800
+______________________________________
+
+-
+
+Figure 2.1  An example of retrieving, parsing, analyzing, indexing, and searching a set of web pages 
+with a few lines of code
+
+Those  are  the  high-level  mechanics:  load,  index,  search.  It  doesn’t  get  any  simpler 
+than that! But how does it really work? What are the essential elements that partici-
+pate in each stage?
+
+2.1.1 Understanding the Lucene code 
+
+Let’s examine the sequence of events that allowed us to perform our search. The job 
+of the FetchAndProcessCrawler class is to retrieve the data and parse it. The result of 
+that processing is stored in the subdirectory called processed. Take a minute to look 
+in that folder. For every group of documents that are processed, there are four subdi-
+rectories—fetched, knownurls, pagelinks, and processed. Note we’ve dissected the 
+web pages by separating metadata from the core content and by extracting the links 
+from one page to another—the so-called outlinks. The FetchAndProcessCrawler class 
+doesn’t use any code from the Lucene API.
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComSearching with Lucene
+
+25
+
+ The next thing that we did was create an instance of the LuceneIndexer class and 
+call its run() method. This is where we use Lucene to index our processed content. 
+The Lucene index files will be stored in a separate directory called lucene-index. The 
+LuceneIndexer class is a convenience wrapper that helps us invoke the LuceneIndex-
+Builder  class  from  the  Bean  shell.  The  LuceneIndexBuilder  class  is  where  the 
+Lucene API is used. Figure 2.2 shows the complete UML diagram of the main classes 
+involved in retrieving and indexing the documents. 
+
+Figure 2.2  A UML diagram of the classes that we used to crawl, index, and search a set of web pages
+
+Listing 2.2 shows the entire code from the LuceneIndexBuilder class.
+
+Listing 2.2  The LuceneIndexBuilder creates a Lucene index
+
+public class LuceneIndexBuilder implements CrawlDataProcessor {
+
+  private File indexDir;
+
+  public LuceneIndexBuilder(File indexDir) {
+
+      this.indexDir = indexDir; 
+
+       try {
+            IndexWriter indexWriter =               
+➥               new IndexWriter(indexDir, new StandardAnalyzer(), true);
+
+Create Lucene index
+
+            indexWriter.close(); 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com26
+
+CHAPTER 2  Searching
+
+} catch(IOException ioX) {
+            throw new RuntimeException("Error: ", ioX);
+        }
+    }
+    public void run(CrawlData crawlData) {
+
+        List<String> allGroups = 
+           crawlData.getProcessedDocsDB().getAllGroupIds();   
+
+Get all document 
+groups
+
+        for(String groupId : allGroups) {
+          buildLuceneIndex(groupId, crawlData.getProcessedDocsDB());
+        }
+    }
+
+    private void buildLuceneIndex(String groupId, 
+➥  ProcessedDocsDB parsedDocsService) {
+
+        try {
+
+            List<String> docIdList =              
+parsedDocsService.getDocumentIds(groupId);
+
+            IndexWriter indexWriter = 
+
+Get all documents 
+for group
+
+new IndexWriter(indexDir, new StandardAnalyzer(), false);
+
+            for(String docId : docIdList) {       
+
+                indexDocument(indexWriter, 
+➥  parsedDocsService.loadDocument(docId));
+            }
+
+Index all 
+documents
+
+            indexWriter.close(); 
+
+        } catch(IOException ioX) {
+            throw new RuntimeException("Error: ", ioX);
+        }
+    }
+
+    private void indexDocument(IndexWriter iw, 
+➥  ProcessedDocument parsedDoc) throws IOException {
+
+        org.apache.lucene.document.Document doc = 
+➥  new org.apache.lucene.document.Document();
+
+        doc.add(new Field("content", parsedDoc.getText(), 
+➥  Field.Store.NO, Field.Index.TOKENIZED));
+
+        doc.add(new Field("url", 
+➥  parsedDoc.getDocumentURL().toExternalForm(),
+➥  Field.Store.YES, Field.Index.NO));
+
+        doc.add(new Field("docid", parsedDoc.getDocumentId(), 
+➥  Field.Store.YES, Field.Index.NO));
+
+        doc.add(new Field("title", parsedDoc.getDocumentTitle(), 
+➥  Field.Store.YES, Field.Index.NO));        
+
+        doc.add(new Field("doctype", parsedDoc.getDocumentType(),
+➥  Field.Store.YES,Field.Index.NO));
+        iw.addDocument(doc);
+    }
+}
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComSearching with Lucene
+
+27
+
+The IndexWriter class is what Lucene uses to create an index. It comes with a large 
+number of constructors, which you can peruse in the Javadocs. The specific construc-
+tor that we use in our code takes three arguments:
+
+■ The directory where we want to store the index.
+■ The  analyzer  that  we  want  to  use—we’ll  talk  about  analyzers  later  in  this 
+
+section.
+
+■ A Boolean variable that determines whether we need to override the existing 
+
+directory.
+
+As you can see in listing 2.2, we iterate over the groups of documents that our crawler 
+has accumulated. The first group corresponds to the content of the initial URL list. 
+The second group contains the documents that we found while reading the content 
+of the initial URL list. The third group will contain the documents that are reachable 
+from  the  second  group,  and  so  on.  Note  that  the  structure  of  these  directories 
+changes  if  you  vary  the  parameter  maxBatchSize  of  the  BasicWebCrawler  class.  To 
+keep the described structure intact, make sure that the value of that parameter is set 
+to a sufficiently large number; for the purposes of this book, it’s set to 50.
+
+ This directory structure will be useful when you use our crawler to retrieve a much 
+larger dataset from the internet. For the simple web page structure that we’ll use in 
+the book, you can see the effect of grouping if you add only a few URLs—by using the 
+addUrl method of the  FetchAndProcessCrawler class—and let the crawler discover 
+the rest of the files. 
+
+ For each document within a group, we index its content. This takes place inside 
+the indexDocument method, which is shown at the bottom of listing 2.2. The Lucene
+Document class encapsulates the documents that we’ve retrieved so that we can add 
+them in the index; that same class can be used to encapsulate not only web pages but 
+also emails, PDF files, and anything else that you can parse and transform into plain 
+text. Every instance of the Document class is a virtual document that represents a col-
+lection of fields. Note that we’re using our dissection of the retrieved documents to 
+create various Field instances for each document:
+
+■ The content field, which corresponds to the text representation of each docu-
+ment, stripped of all the formatting tags and other annotations. You can find 
+these documents under the subdirectory processed/1/txt. 
+
+■ The url field represents the URL that was used to retrieve this document.
+■ The docid field, which uniquely identifies each document.
+■ The title field, which stores the title of each document.
+■ The doctype field, which stores the document type of each document, such as 
+
+HTML or Microsoft Word.
+
+The field content of every document is indexed but isn’t stored with the index files; 
+the other fields are stored with the index files but they aren’t indexed. The reason 
+being we want to be able to query against the content but we want to retrieve from the 
+index files the URL, the ID, and the title of each retrieved document. 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

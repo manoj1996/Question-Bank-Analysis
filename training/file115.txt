@@ -1,0 +1,108 @@
+222
+
+CHAPTER 5  Classification: placing things where they belong
+
+need to use some of them as a training set and some as the testing set. The 10-fold 
+cross-validation tells us to divide the 1,000 emails into 10 groups of 100 emails; each 
+batch of 100 emails should contain roughly the same proportion of legitimate to spam 
+emails as the 1,000 emails set does. Subsequently, we take 9 of these groups of emails 
+and we train the classifier. Once the training is completed, we test the classifier against 
+the group of 100 emails that we didn’t include in our training. We can measure met-
+rics, some of which we mentioned earlier, and typically people will measure the accu-
+racy of the classifier. This is repeated 10 times, and each time we leave out a different 
+group of 100 emails. In the end of these trials, we have 10 values of accuracy that we 
+can now use to obtain an average value of accuracy. 
+
+ You may wonder whether your accuracy will change if you divide your original set 
+into 8 or 12 parts. Yes, of course, it’s unlikely that you’ll obtain an identical answer. 
+Nevertheless, the new averaged value of accuracy should be close enough to what you 
+obtained before. Results from a large number of tests, on various datasets and with 
+many different classifiers, suggest that the 10-fold cross-validation will produce fairly 
+representative measurements for your classifier.
+
+ Taking the 10-fold cross-validation to its extreme case, you can always use as a train-
+ing set all the email instances except for one, and use the one that you left out for test-
+ing.  Naturally,  this  technique  is  called  leave-one-out.  It  has  certain  theoretical 
+advantages,  but  on  real  datasets  (with  hundreds  of  thousands,  if  not  millions,  of 
+instances)  the  computational  cost  is  often  prohibitive.  You  could  opt  to  leave  one 
+instance out but not do it for all instances in your dataset. This leads to a technique 
+called bootstrap. The basic idea of bootstrap is that we can create a training set by sam-
+pling the original dataset with replacements. In other words, we can use an instance 
+from the original dataset more than once and create a training set of 1,000 emails in 
+which  a  particular  email  instance  may  appear  more  than  once.  If  you  do  that  then 
+you’ll end up with a testing set of about 368 email instances that weren’t used in the 
+training  set.  The  size  of  your  training  set  remains  equal  to  1,000  email  instances 
+because some of the remaining 632 email instances are repeated in the training set; 
+for more mathematical explanation of these numbers, see Witten & Frank. 
+
+ It’s been found that plotting the TP rate (TPR) versus the FP rate (FPR) can be use-
+ful  in  analyzing  the  credibility  of  a  classifier.  These  plots  are  called  ROC  curves  and 
+originated in signal detection theory in the ’70s. In recent years, there’s been a large 
+amount of work in machine learning that utilizes ROC graphs for analyzing the perfor-
+mance of one or more classifiers. The basic idea is that the ROC curve should be as far 
+away from the diagonal of a TPR/FPR plot as possible. We’ll defer the analysis of ROC
+graphs to the excellent technical report by Tom Fawcett, which includes pseudoalgo-
+rithms and many tips about issues that appear in practice.
+
+ In the real world, classification systems are used often as decision support systems; 
+mistakes of classification can lead to wrong decisions. In some cases, making wrong 
+decisions, although undesirable, can be relatively harmless. But in other cases, it may 
+be the difference between life and death; think of a physician who misses a cancer 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com5.6
+
+Classification with very large datasets
+
+223
+
+diagnosis  or  an  emergency  situation  for  an  astronaut  in  deep  space  relying  on  the 
+result of your classifier. The evaluation of classification systems should examine both 
+the degree of credibility and the associated cost of making classifications. In the case 
+of binary classification, the idea is to assign a cost function that’s a function of the FP
+and FN rates. For assigning cost in the multiclass classification cases, see the related to-
+do item. 
+
+ In summary, one of the most important aspects of a classifier is the credibility of its 
+results. In this section, we described a number of metrics that can help us evaluate the 
+credibility of classifiers such as the precision, the accuracy, the recall, and the specificity. 
+Combinations of these metrics can yield new metrics, such as the F-score. We also dis-
+cussed the idea of crossvalidating the results by splitting the training set in different 
+ways and looking at the variation of these classifier metrics as the datasets change. We 
+discussed the concept of a ROC curve, which is a simple plot between TPR and FPR. In 
+the following section, we’ll discuss a number of issues that are related to large datasets. 
+
+Classification with very large datasets
+Many datasets used for academic and research purposes are quite small when com-
+pared to real-world implementations. Transactional datasets of large corporations are 
+anywhere between 10 million to 100 million records, if not larger; insurance claims, 
+telecommunications log files, recordings of stock prices, click trace logs, audit logs, 
+and so on (the list is long) are on the same order of magnitude. So, dealing with large 
+datasets is the rule rather than the exception in production applications, whether or 
+not they are web-based. The classification of very large datasets deserves special atten-
+tion for (at least) three reasons: (1) the proper representation of the dataset in the 
+training set; (2) the computational complexity of the training phase; (3) the runtime 
+performance of the classifier on a very large dataset.
+
+ Regardless of the specific domain of your application and the functionality that 
+your classifier supports, you must ensure that your training data is representative of 
+the data that will be seen in production. You shouldn’t expect that a classifier will per-
+form as well as the validation stage measurements suggest, unless your training data is 
+very representative of your production data. We repeat ourselves to stress that point! 
+In many cases, early excitement quickly turns to disappointment simply because this 
+condition isn’t met. So, you wonder, in that case, how can I ensure that my training 
+data is representative?
+
+  The  case  of  binary  classification  is  easier  to  address  because  there  are  only  two 
+classes—an email message is either spam or it isn’t, a transaction is fraudulent or it 
+isn’t, and so on. In that case, assuming that you have a reasonable number of training 
+instances from both classes, our focus should be on the coverage of the attribute val-
+ues  among  the  training  instances.  Your  assessment  can  be  purely  empirical  (“Yeah, 
+that’s good enough. We have enough values; let’s roll it to production!”), utterly scien-
+tific (sampling your data over time and testing whether the samples come from the 
+same  statistical  distribution  as  the  training  data),  or  somewhere  in  between  these 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

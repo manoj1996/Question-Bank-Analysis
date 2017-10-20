@@ -1,0 +1,54 @@
+Machine learning, data mining, and all that
+
+15
+
+WEB SERVICES
+Web services are APIs that facilitate the communication between applications. A large 
+number of web services frameworks are available and many of them are open source. 
+Apache Axis (http://ws.apache.org/axis/) is an open source implementation of the 
+Simple Access Object Protocol (SOAP), which “can be used for exchanging structured 
+and typed information between peers in a decentralized, distributed environment.”6
+Apache Axis is a popular framework and it was completely redesigned in version 2. 
+Apache Axis2 supports SOAP 1.1 and SOAP 1.2 as well as the widely popular REST style 
+of web services, and contains a staggering number of features.
+
+  Another  Apache  project  worth  mentioning  is  Apache  CXF  (http://incubator. 
+apache.org/cxf/), the result of the merger of Celtix by  IONA and Codehaus  XFire. 
+Apache  CXF  supports  the  following  standards:  JAX-WS  2.0,  JAX-WSA,  JSR-181, 
+SAAJ, SOAP 1.1, 1.2, WS-I Basic Profile, WS-Security, WS-Addressing, WS-RM, WS-Policy, 
+WSDL 1.1 and 2.0. It also supports multiple transport mechanisms, bindings, and for-
+mats. If you’re considering using web services, you should have a look at this project.
+
+ Aside from the many frameworks available for web services, there are even more 
+web service providers. Nearly every company uses web services for integrating applica-
+tions that are quite different, in terms of their functionality or their technology stack. 
+That situation could be the result of companies merging or uncoordinated parallel 
+development efforts in a single, typically large, company. In the vertical space, nearly 
+all big financial and investment institutions use web services for seamless integration. 
+Xignite  (http://preview.xignite.com/Default.aspx)  offers  a  variety  of  financial  web 
+services. Software giants (such as SAP, Oracle, and Microsoft) also offer support for 
+web services. In summary, web services-based integration is ubiquitous and, as one of 
+the major integration enablers, it’s an important infrastructure element in the design 
+of intelligent applications.
+
+ At this point, you must have thought of the possible enhancements in your existing 
+applications or you got a new idea for the next smashing startup! You checked that 
+you have all the required data or that, at least, you can access the data. Now, let’s look 
+at the kind of intelligence that we plan to inject in our applications and its relation-
+ship to some terms that may be already familiar to you. 
+
+1.5 Machine learning, data mining, and all that
+
+We talk about “intelligence” throughout this book, but what exactly do we mean? Are 
+we talking about the field of artificial intelligence? How about machine learning? Is it 
+about data mining and soft computing? Academics of the respective fields may argue 
+for years about the precise definition of what we’re about to present. From a practical 
+perspective, most distinctions are benign and mainly a matter of context rather than 
+substance. This book is a distillation of techniques that belong to all these areas. So, 
+let’s discuss them.
+
+6 http://www.w3.org/TR/soap12-part0/ - L1153
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

@@ -1,0 +1,58 @@
+122
+
+CHAPTER 4  Clustering: grouping things together
+
+  Broadly  speaking,  the  term  clustering  refers  to  the  process  of  grouping  similar 
+things  together.  Let’s  say  that  you  have  a  set  of  records  in  a  database  that  contains 
+book information. In particular, let’s say that you have an identity (ID) for each book, 
+a title, an ISBN, a foreign key to the author’s table (say, author_ID), and other perti-
+nent fields. If you execute a  SQL  SELECT query with an  ORDER  BY  author_ID clause, 
+you’ll retrieve the list of books ordered by the author’s ID. If you navigate through the 
+list, you’ll start with books by the first author, followed by the second author, and so 
+on. In effect, the books have been grouped on the basis of authorship. In the context 
+of clustering, the groups of books are called book clusters, and what we just described is 
+a straightforward, but limited, clustering algorithm for your books. 
+
+  Clustering  is  useful  in  many  situations,  but  it’s  not  always  possible  to  achieve  a 
+desired objective by issuing simple SQL queries. In many cases, the elements that we 
+need to use for identifying the desired groups aren’t unique identifiers, so we need to 
+develop techniques that work well with arbitrary data. 
+
+ In the preceding chapters, we saw that it’s possible to define the notion of distance 
+and the related notion of similarity for a large variety of objects. Our ability to define 
+the distance between two arbitrary objects will come in handy again in this chapter, 
+since any two objects will belong to the same cluster only if they’re sufficiently “close” 
+to each other and sufficiently “apart” from members of other clusters.
+
+  We’ll  begin  with  an  example  that  illustrates  some  reasons  for  using  clustering. 
+Since the subject of clustering is vast, and we can’t cover it in its entirety, we offer an 
+overview of clustering algorithms according to cluster structure, cluster data type, and 
+data  size.  The  rest  of  the  chapter  will  deal  with  a  number  of  specific  algorithms  in 
+great detail. We’ll also devote one section on advanced clustering topics such as their 
+computational complexity and the issue of high dimensionality. 
+
+The need for clustering
+This section demonstrates the identification of user groups in a web application—a 
+common use case. You could use it to perform targeted advertisement, enhance the user 
+experience by displaying posts by like-minded individuals to each user, facilitate the cre-
+ation of social networks in your site, and so on. The problem of identifying groups of 
+users lends itself naturally to the use of clustering methods. 
+
+ Our goal is to show that if you didn’t know what clustering is, you’d have to invent 
+it in order to solve this and similar problems in a satisfactory manner. In other words, 
+we want to present a series of simple approaches that you may have taken to solve this 
+kind of problem, had you never before read about clustering. We present clustering as 
+a generalization of sorting in the case of records with many attributes, as well as arbi-
+trary metrics of ordering based on these attributes.
+
+ To begin, we show that a straightforward approach based on SQL statements is limited 
+to a few cases and explain why, in general, a solution based on plain SQL queries is de-
+ficient and impractical. We resort to sorting and show that although we do gain flexibility 
+in terms of using arbitrary metrics of ordering, we’re still unable to handle cases with 
+many attributes effectively. Thus, we arrive at general-purpose clustering techniques. 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+4.1
+
+Download at Boykma.Com

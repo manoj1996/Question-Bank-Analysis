@@ -1,0 +1,265 @@
+56
+
+CHAPTER 2  Searching
+
+docRank.setAlpha(0.9);
+docRank.setEpsilon(0.00000001);
+docRank.build();                     
+
+Create DocRank 
+engine
+
+oracle.search("nvidia",5, docRank); 
+
+Figure 2.10 shows that a search for “nvidia” returns as the highest ranked result the 
+undesirable spam-biz-02.doc file—a result similar to the case of the HTML documents. 
+Of course, in the case of Word, PDF, and other text documents, the chance of having 
+spam documents is fairly low, but you could have documents with unimportant repeti-
+tions of terms in them.
+
+ So far, everything has been the same as in listing 2.9. The new code is invoked by 
+the  class  DocRank.  That  class  is  responsible  for  creating  a  measure  of  relevance 
+between  documents  that’s  equivalent  to  the  relevance  which  PageRank  assigns 
+between web pages. Unlike the PageRank class, it takes an additional argument whose 
+role we’ll explain later on. Similar to the previous sections, we want to have a matrix 
+that  represents  the  importance  of  page  Y  based  on  page  X.  Our  problem  is  that, 
+unlike  with  web  pages,  we  don’t  have  an  explicit  linkage  between  our  documents. 
+Those web links were only used to create a matrix whose values told us how important 
+page Y is according to page X. If we could find a way to assign a measure of impor-
+tance for document Y according to document X we could use the same mathematical 
+theory that underpins the PageRank algorithm. Our code provides such a matrix.
+
+bsh % oracle.search("nvidia", 5);
+
+Search results using Lucene index sco
+res:
+Query: nvidia
+
+-biz-
+
+ 
+
+02.doc  -->  
+
+Document Title: NVIDIA shares plummet into cheap medicine for 
+you!
+Document URL: file:/c:/iWeb2/data/ch02/spam
+Relevance Score: 0.458221405744553
+_____________________________________________________________
+Document Title: Nvidia shares up on PortalPlayer buy
+Document URL: file:/c:/iWeb2/data/ch02/biz-05.doc   -->  
+Relevance Score: 0.324011474847794
+_____________________________________________________________
+Document Title: NVidia Now a Supplier for MP3 Players
+Document URL: file:/c:/iWeb2/data/ch02/biz-04.doc  -->  
+Relevance Score: 0.194406896829605
+_____________________________________________________________
+Document Title: Nov. 6, 2006, 2:38PM?Chips Snap: Nvidia, Altera 
+Shares Jump
+Document URL: file:/c:/iWeb2/data/ch02/biz 06.doc  -->  
+Relevance Score: 0.185187965631485
+_____________________________________________________________
+
+-
+
+Figure 2.10 
+and spam
+
+Index based searching for “nvidia” in the Word documents that contain business news 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComRanking Word, PDF, and other documents without links
+
+57
+
+2.5.2
+
+The inner workings of DocRank
+Our measure of importance is to a large degree arbitrary, and its viability depends cru-
+cially on two properties that are related to the elements of our new H matrix. The ele-
+ments of that matrix should be such that:
+
+■ They are all positive numbers.
+■ The sum of the values in any row is equal to 1.
+
+Whether our measure will be successful depends on the kind of documents that we’re 
+processing. Listing 2.15 shows the code from class DocRankMatrixBuilder that builds 
+matrix H in the case of our Word documents.
+
+Listing 2.15  DocRankMatrixBuilder: Ranking text documents based on content 
+
+public class DocRankMatrixBuilder implements CrawlDataProcessor {
+    private final int TERMS_TO_KEEP = 3;
+
+    private int termsToKeep=0;
+    private String indexDir;
+    private PageRankMatrixH matrixH;
+
+    public void run() {
+        try {
+            IndexReader idxR = 
+➥  IndexReader.open(FSDirectory.getDirectory(indexDir));
+            matrixH = buildMatrixH(idxR);
+        }
+        catch(Exception e) {
+            throw new RuntimeException("Error: ", e);
+        }
+    }
+
+    // Collects doc ids from the index for documents with matching doc type
+    private List<Integer> getProcessedDocs(IndexReader idxR) 
+        throws IOException {
+        List<Integer> docs = new ArrayList<Integer>();
+        for(int i = 0, n = idxR.maxDoc(); i < n; i++) {
+            if( idxR.isDeleted(i) == false ) {
+                Document doc = idxR.document(i);
+                if( eligibleForDocRank(doc.get("doctype") ) ) {
+                    docs.add(i);
+                }
+            }
+        }
+        return docs;   
+    }
+
+// Is the index entry eligible? 
+
+    private boolean eligibleForDocRank(String doctype) {
+        return ProcessedDocument.DOCUMENT_TYPE_MSWORD
+➥       .equalsIgnoreCase(doctype);
+    }
+
+    private PageRankMatrixH buildMatrixH(IndexReader idxR) 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com58
+
+CHAPTER 2  Searching
+
+        throws IOException {
+
+     // consider only URLs with fetched and parsed content
+        List<Integer> allDocs = getProcessedDocs(idxR);
+
+        PageRankMatrixH docMatrix = 
+➥    new PageRankMatrixH( allDocs.size() );
+
+        for(int i = 0, n = allDocs.size(); i < n; i++) {
+
+             for(int j = 0, k = allDocs.size(); j < k; j++) {
+
+                    double similarity = 0.0d;
+
+                Document docX = idxR.document(i);
+                    String xURL= docX.get("url");
+
+                    if ( i == j ) {
+
+                      // Avoid shameless self-promotion ;-)
+                      docMatrix.addLink(xURL, xURL, similarity);
+
+                    } else {
+
+                     TermFreqVector x = 
+➥    idxR.getTermFreqVector(i, "content");
+                     TermFreqVector y = 
+➥    idxR.getTermFreqVector(j, "content");
+
+                     similarity = getImportance(x.getTerms(), 
+➥    x.getTermFrequencies(), y.getTerms(), y.getTermFrequencies());
+                     
+                     // add link from docX to docY 
+                     Document docY = idxR.document(j);
+                     String yURL = docY.get("url");
+
+                     docMatrix.addLink(xURL, yURL, similarity);
+                 }
+             }
+        }        
+        docMatrix.calculate();
+
+        return docMatrix;
+    }
+
+    // Calculates importance of document Y in the context of document X
+    private double getImportance(String[] xTerms, int[] xTermFreq, 
+                                 String[] yTerms, int[] yTermFreq){
+
+     // xTerms is an array of the most frequent terms for first document
+        Map<String, Integer> xFreqMap = 
+➥    buildFreqMap(xTerms, xTermFreq);
+
+       // yTerms is an array of the most frequent terms for second document
+        Map<String, Integer> yFreqMap = 
+➥    buildFreqMap(yTerms, yTermFreq);
+
+        // sharedTerms is the intersection of the two sets
+        Set<String> sharedTerms = 
+➥    new HashSet<String>(xFreqMap.keySet());
+        sharedTerms.retainAll(yFreqMap.keySet());
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComRanking Word, PDF, and other documents without links
+
+59
+
+        double sharedTermsSum = 0.0;
+
+        // Note that this isn't symmetrical.
+        // If you swap X with Y then you get a different value; 
+        // unless the frequencies are equal, of course!
+
+        double xF, yF;
+        for(String term : sharedTerms) {
+
+             xF = xFreqMap.get(term).doubleValue();
+             yF = yFreqMap.get(term).doubleValue();
+
+             sharedTermsSum += Math.round(Math.tanh(yF/xF));
+        }
+
+        return sharedTermsSum;
+    }
+
+    private Map<String, Integer> buildFreqMap(String[] terms, int[] freq) {
+
+int topNTermsToKeep = (termsToKeep == 0)? TERMS_TO_KEEP: termsToKeep;
+
+Map<String, Integer> freqMap = 
+➥  TermFreqMapUtils.getTopNTermFreqMap(terms, freq, topNTermsToKeep);
+
+        return freqMap;
+    }
+}
+
+There are two essential ingredients in our solution. First, note that we use the Lucene 
+term vectors, which are pairs of terms and their frequencies. If you recall our discussion 
+about indexing documents with Lucene, we mentioned that the text of a document is 
+first parsed, then analyzed before it’s indexed. During the analysis phase, the text is 
+dissected into tokens (terms); the way that the text is tokenized depends on the ana-
+lyzer that’s used. The beautiful thing with Lucene is that we can retrieve that informa-
+tion later on and use it. In addition to the terms of the text, Lucene also provides us 
+with the number of times that each term appears in a document. That’s all we need 
+from Lucene: a set of terms and their frequency of occurrence in each document.
+
+  The  second  ingredient  of  our  solution  is  the  choice  of  assigning  importance  to 
+each document. The method getImportance in listing 2.15 shows that, for each docu-
+ment X, we calculate the importance of document Y by following two steps: (1) we 
+find the intersection between the most frequent terms of document X and the most 
+frequent terms of document Y and (2) for each term in the set of shared terms (inter-
+section), we calculate the ratio of the number of times the term appears in document 
+Y (Y-frequency of occurrence) over the number of times the term appears in docu-
+ment X (X-frequency of occurrence). The importance of document Y in the context 
+of document X is given as the sum of all these ratios and filtered by the hyperbolic tan-
+gent function (Math.tanh) as well as the rounding function (Math.round). The end 
+result of these operations will be the entry in the H matrix for row X and column Y. 
+
+ We use the hyperbolic tangent function because we want to gauge whether a par-
+ticular term between the two documents should be considered a good indicator for 
+assigning importance. We aren’t interested in the exact value; we’re interested only in 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

@@ -1,0 +1,227 @@
+5.7
+
+Summary
+
+225
+
+classified  in  10  minutes,  then  you’d  process  10  million  records  in  about  10  million 
+minutes! You probably wouldn’t have that much time available, so you should either 
+pick a different classifier or improve the performance of the one that you have. Fre-
+quently, in production systems, people have to trade classifier accuracy for speed; if a 
+classifier is extremely accurate and extremely slow, it’s most likely useless!  
+
+ Pay attention to the idiosyncrasies of your classification system. If you use a rule-
+based system, you may encounter what’s known as the utility problem. The learning pro-
+cess—the accumulation of rules—can result in the overall slowdown of the system in 
+production.  There  are  ways  to  avoid  or  at  least  mitigate  the  utility  problem  (see 
+Doorenbos) but you need to be aware of them and ensure that your implementation 
+is compatible with these techniques. Of course, the degradation of performance isn’t 
+the only problem in that case. You’d also need to provide ways to manage and orga-
+nize  these  rules,  which  is  an  engineering  problem  with  a  solution  that’ll  depend 
+strongly on the specific domain of your application. In general, the more complicated 
+the classifier implementation, the more careful you should be to understand the per-
+formance characteristics (both speed and quality) of your classifier. 
+
+Summary
+Classification is one of the essential components of intelligent applications. We started 
+this chapter by presenting a number of cases in which some form of classification is 
+used. We discussed reference schemes that are relevant in diverse application areas, 
+from library catalogs to medical insurance manuals, and thereby established that clas-
+sification is ubiquitous and valuable. We also introduced the three building blocks of 
+classification—concepts, instances, and attributes. These three blocks define an ontol-
+ogy—a complete description of a particular area of expertise. If semantic information 
+is also available then we speak of a semantic ontology. Classification can always be cast 
+as the problem of assigning the “best” concept to a given instance. Classifiers differ 
+from each other in the way that they represent and measure that optimal assignment. 
+Nevertheless, they all share a similar lifecycle that consists of three stages: training, val-
+idation, and the production stage.  
+
+ You’ve learned that, broadly speaking, all classifiers fall into two categories—binary 
+and multiclass—depending on whether the decision that the classifier has to make is 
+between two or multiple choices, respectively. You also learned that, with respect to the 
+underlying technique, classifiers are either statistical or structural. We provided what 
+seems to be the greatest common denominator in the literature, and proceeded with a 
+high-level presentation of regression algorithms, Bayesian algorithms, rule-based algo-
+rithms, functional algorithms, nearest neighbor algorithms, and neural networks. 
+
+  You’ve  also  learned  two  powerful  algorithms  for  performing  text  classification. 
+The first algorithm was the naïve Bayes algorithm as applied to a single string attri-
+bute. The second was the Drools rule engine, an object-oriented implementation of 
+the Rete algorithm, which allows us to declare and apply rules for the purpose of clas-
+sification. It’s likely that your email client already contains some form of a rule engine; 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com226
+
+CHAPTER 5  Classification: placing things where they belong
+
+when  you  declare  that  an  email  with  a  particular  word  in  its  subject  sent  from  the 
+domain  *.foo.com  should  be  considered  spam,  in  essence,  you’re  defining  a  rule. 
+Now, you should be ready to apply our algorithms to many other freeform or semi-
+structured text classification tasks. 
+
+ In addition, we introduced the construction of computational neural networks and 
+presented a basic but robust implementation that can be used to build general neural 
+networks. We provided designing guidelines as well as observations about the struc-
+ture of the data and the importance of using training and validation data sets that are 
+representative of the production data.  
+
+ Although the benefits of classification are numerous, we pointed out that it’s also 
+important  to  investigate  known  issues  related  to  the  credibility  and  computational 
+requirements of classification, before we introduce it in our application. 
+
+ In conclusion, we can say that: 
+■ Classification algorithms are important for building an intelligent application 
+because they help us leverage (automatically) and augment (systematically) our 
+knowledge about the world. 
+
+■ We classify always with respect to a reference structure, which could be as sim-
+
+ple as a binary set (true and false classes) or a large ontology.
+
+■ At the highest level, classifiers can be viewed as statistical versus structural.
+■ The choice of the classifier depends strongly on your data and the nature of the 
+
+classification problem.
+
+■ Special  attention  is  required  with  regard  to  the  credibility  and  cost  of 
+
+classification.
+
+■ Very large datasets, very large ontologies, online requirements, or any combina-
+
+tion of these three may cause trouble. 
+
+■ Each one of the classification algorithms that we described will do its job well. 
+But no single classifier can provide infallible decision-making capability. In fact, 
+if you’re looking for infallibility, you’re out of luck! 
+
+In the next chapter, we’re going to look at several techniques of combining classifiers 
+in order to improve the results of any one of the single classifiers that we described so far.
+
+5.8
+
+To do
+
+1 The  tradeoff  between  specialization  and  generalization  Every  classification  algo-
+rithm that you can think of uses a number of variables as input and produces a 
+number of variables as output. The input consists of two kinds of variables. The 
+first kind are variables associated with the attribute values of our instances; the 
+second kind are associated with a number of model variables that are specific to 
+the classifier at hand. During the training stage, we estimate the model variables 
+based on the input and output variables of the training set. In other words, we 
+calibrate  these  arbitrary  model  parameters  in  such  a  way  that,  provided  the 
+input of the training set, the output variables take on the desired values. 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComTo do
+
+227
+
+Clearly,  you  can  “cheat”  and  introduce  as  many  model  parameters  as  your 
+data points, thus achieving very high, if not perfect, accuracy of classification 
+for your training set. That is called overfitting and makes your classifier a special-
+ist on your training set but probably a poor performer on a dataset that’s quite 
+different from your training set. In general, overfitting (we could also call it spe-
+cialization) isn’t good and should be avoided. Conversely, you may have too few 
+model parameters and be unable to capture the information content of your train-
+ing set. That is called underfitting. Using fewer parameters, but still enough of 
+them to represent the information content of the training set, might increase 
+your accuracy for unseen data—data points that weren’t included in your train-
+ing set. The ability to do so is generally referred to as generalization. 
+
+It  becomes  clear  that  a  good  classifier  should  aim  to  reach  a  fine  balance 
+between specialization and generalization. Experiment with the datasets that we 
+provided in this chapter and introduce new testing instances in your data. Plot 
+the error of your classifier as a function of the number of instances in the train-
+ing set. Plot two curves. The first should plot the error for instances that belong 
+in  the  training  set,  and  the  second  should  plot  the  error  for  instances  that 
+weren’t included in the training set. Do you see the tradeoff between specializa-
+tion and generalization for a given classifier? You could also introduce a third 
+dimension  that  captures  the  model’s  complexity.  Expressing  the  model  com-
+plexity for rules and decision trees may be straightforward (for example, num-
+ber of rules), but how would you express the model complexity in the case of a 
+classifier  based  on  Bayes  theorem  such  as  our  own  NaiveBayes  class?  How 
+about the case of a neural network?  
+
+2 Occam’s razor and the number of training attributes 
+
+In the same spirit as item 1, we 
+can argue that the more training attributes we include in our model, the better 
+results we’ll get. There are two problems with that approach. First, from a real-
+world  implementation  perspective,  we  typically  have  a  finite  amount  of 
+resources and a small amount of time available for classification. Thus, our clas-
+sification schemes should be easy to maintain, easy to test, and they should pro-
+duce results rather quickly; you don’t want to wait five minutes for your email to 
+be classified as spam or not. Of course, there are cases that call for long-running 
+calculations, such as discovering a location that may be rich in petroleum or cre-
+ating reports that help your users make critical (strategic) business decisions. 
+
+The  second  problem  with  using  as  many  training  attributes  as  possible  is 
+related to the fact that “more data” doesn’t necessarily mean more information 
+content. There are many metrics that we can use to define information content, 
+but let’s bypass the mathematical jargon and think of it in the following way. 
+We’re typically interested in the value of some variables that are relevant in our 
+application; it could be the value of one or more stocks in NASDAQ, the appro-
+priate category of an email message, a Boolean variable describing whether we 
+should purchase an item on eBay, and so on. We usually assume that there’s an 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com228
+
+CHAPTER 5  Classification: placing things where they belong
+
+underlying model that describes the problem at hand and whose solution con-
+sists of the variables that we want to evaluate. By providing a set of data and a 
+classifier, we’re attempting to approximate that physical model as best we can. If 
+we use data that isn’t relevant to the physical model or if we overwhelm the clas-
+sifier with redundant information, we might end up with a distorted representa-
+tion  of  that  physical  model.  By  referring  to  information  content,  we  mean  data 
+that can help us improve the representation of the underlying physical model. 
+If we add a training attribute that has no effect in the accuracy of the classifier 
+we can safely say that the new training attribute didn’t carry significant informa-
+tion content in it. 
+
+Of  course,  we  need  to  be  careful  in  our  selection  of  training  attributes 
+because different classifiers might be able to exploit more or less the data of a 
+particular training attribute. In general, we can use the principle of Occam’s 
+razor:  if  two  approaches  produce  the  same  results,  the  simplest  approach  is 
+preferable.  So,  consider  the  email  filtering  example  of  section  5.3  and  add 
+more training attributes to your classifier. You could start by splitting the single 
+attribute  that  we  used  in  5.3.1  into  two  attributes,  one  for  the  subject  of  the 
+email and one for the main body. Are the results of your classification substan-
+tially different? In the context of information content, how do you interpret the 
+applicability of rules in classifying email messages? 
+
+3 A general-purpose RuleEngine class  Our implementation of the RuleEngine class 
+is  using  the  Email  class  as  an  argument  in  the  executeRules  method.  That’s 
+okay  for  classifying  a  single  email  message  but  isn’t  sufficient  for  a  general 
+implementation. In the general case, you’d insert all the facts into your working 
+memory before you fire the rules. Modify the existing RuleEngine class so that 
+it can be used under more general conditions. 
+
+Moreover,  build  a  use  case  for  a  rule  engine  that  deals  with  more  compli-
+cated  rules,  conditions,  and  actions.  The  ClassificationResult  class  can 
+guide you in customizing your conditions and your actions. Note that due to 
+the objected-oriented nature of the Drools engine, you can build complicated 
+rules with involved conditions and quite elaborate actions. It’s a good practice 
+to use auxiliary classes such as the ClassificationResult and put all your Java 
+code in them; avoid writing code inside the Drools rule file itself.
+
+How  would  you  proceed  to  build  a  general-purpose  classification  system 
+based on rules? Imagine a system that can classify an arbitrary text into many 
+classes; it could be an email, a Word document, a PDF document, and so on. 
+What rules do you need? What conditions do you need? And how would you 
+express them in code?
+
+4 The importance of data normalization and effects of the neural network topology  Note 
+that the data values that we pass as input to the neural network are all normal-
+ized values. The transaction amount is normalized, based on the minimum and 
+maximum value of the legitimate transactions, so that it’s always a value within 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

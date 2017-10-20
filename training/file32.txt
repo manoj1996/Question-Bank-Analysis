@@ -1,0 +1,58 @@
+Improving search results based on link analysis
+
+33
+
+bsh % oracle.search("armstrong",5);
+
+Search results using Lucene index scores:
+Query: armstrong
+
+Document Title: Cheap medicine -- low interest loans
+Document URL: file:/c:/iWeb2/data/ch02/spam-01.html --> Relevance
+Score: 0.591894507408142
+____________________________________________________
+Document Title: Lance Armstrong meets goal in painful marathon 
+debut
+Document URL: file:/c:/iWeb2/data/ch02/sport-01.html  --> 
+Relevance Score: 0.370989531278610
+____________________________________________________
+Document Title: New York 'tour' Lance's toughest
+Document URL: file:/c:/iWeb2/data/ch02/sport-03.html --> 
+Relevance Score: 0.291807949542999
+____________________________________________________
+Document Title: New York City Marathon
+Document URL: file:/c:/iWeb2/data/ch02/sport-02.html --> 
+Relevance Score: 0.210920616984367
+____________________________________________________
+
+bsh %
+
+Figure 2.4  A single deceptive web page significantly altered the ranking of the results for the query 
+“Armstrong.”
+
+It propelled Google from anonymity to world domination in that space and advanced 
+many other areas of research and development.  
+
+ Link analysis is a structural characteristic of the internet. Another characteristic of 
+the internet is user click analysis, which is behavioral. In short, user click analysis refers 
+to the recording of the user’s clicks as she navigates the search pages, and the subse-
+quent processing of these recordings for the purpose of improving the ranking of the 
+results for this particular user. It’s based on the premise that if you search for a term 
+and find a page that’s relevant (based on your criteria) you’ll most likely click on that 
+page. Conversely, you wouldn’t click pages that are irrelevant to your search term and 
+your  search  intention.  We  emphasize  the  term  because  this  is  a  deviation  from  tradi-
+tional applications, where the response of the system was based on the user’s direct 
+input alone. If the application can detect your intentions then it has achieved a major 
+milestone toward intelligence, which is the ability to learn about the user without the 
+programmer entering the answer from a “back door.”
+
+2.3
+
+Improving search results based on link analysis
+In our effort to search beyond indexing, we’ll present the link analysis algorithm that 
+makes Google special—PageRank. The PageRank algorithm was introduced in 1998, at 
+the seventh international World Wide Web conference (WWW98), by Sergey Brin and 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

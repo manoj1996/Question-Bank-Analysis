@@ -1,0 +1,59 @@
+160
+
+CHAPTER 4  Clustering: grouping things together
+
+4.8
+
+max(D) is equal to 0.577. In other words, as the dimensionality increases, the ratio 
+of  the  minimum  distance  over  the  maximum  distance  approaches  the  value  of  1. 
+This means that no matter which direction you look at, and what distance you mea-
+sure, it all looks the same! 
+
+ As a result, all the algorithms that rely on distance calculations will run into trou-
+ble rather quickly as the number of dimensions increases. In this example, we used 
+the standard Euclidean distance, but you can use whatever (proper) distance metric 
+you like and convince yourself that the problem persists. Some people (Kevin Beyer et 
+al.) have even questioned whether it’s meaningful to talk about the concept of nearest 
+neighbors in high-dimensional data. For an interesting approach to tackling this prob-
+lem, refer to the paper by C.C. Aggarwal. 
+
+Summary
+Clustering algorithms are valuable as a data exploration tool. We can construct a hier-
+archical  structure  that  contains  many  levels  of  clusters  or  we  can  build  a  predeter-
+mined number of clusters for our data. There are many application areas for which 
+clustering can be applied. In theory, any dataset that consists of objects that can be 
+defined in terms of attribute values is eligible for clustering. But attention is required 
+in  the  choice  of  measuring  distances  between  our  objects  and  the  selection  of  an 
+appropriate algorithm. 
+
+ In this chapter, we covered grouping forum postings and identifying similar web-
+site users. The complexity of these algorithms varies from simple SQL statements to 
+fairly advanced mathematical techniques. We presented a general overview of cluster-
+ing types and full implementations for six algorithms: single link, average link, MST
+single link, k-means, ROCK, and DBSCAN. 
+
+  The  single-link,  average-link,  and  MST  single-link  algorithms  are  agglomerative 
+hierarchical algorithms and assume that all data is present at the time of computation. 
+The computational complexity, in both space and time, isn’t very good because it var-
+ies as the square of the number of data points. Thus, although they’re easily imple-
+mented, these algorithms won’t perform well on large data sets. One caveat here is the 
+MST-based single-link algorithm. We can improve the time complexity of the MST sin-
+gle-link algorithm and make it almost proportional to the number of data objects.
+
+ The k-means algorithm is an iterative partitional algorithm that’s very efficient and 
+often  results  in  good  results.  But  it  doesn’t  handle  categorical  data  well  because  it 
+relies  on  the  geometric  notion  of  a  centroid,  which  may  not  be  readily  applicable 
+when we deal with categorical data. Another disadvantage is its inability to handle out-
+liers—points that are far away from the main clusters.
+
+ The  ROCK algorithm is particularly well-suited for Boolean and categorical data 
+because  it  relies  on  the  number  of  links  rather  than  a  distance.  It’s  a  hierarchical 
+agglomerative  algorithm  whose  space  complexity  isn’t  good—O  (n2)—and  its  time 
+complexity is even worse—O (log(n) n2). 
+
+  The  DBSCAN  algorithm  introduced  the  notion  of  density,  and  implicitly  distin-
+guishes between core points and border points in a cluster. It handles outliers well, 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

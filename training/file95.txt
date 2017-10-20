@@ -1,0 +1,139 @@
+Clustering issues in very large datasets
+
+157
+
+ The second case is rare; it typically arises in high-dimensional clustering and is usu-
+ally associated with a bad distance metric. So, the first thing that you want to do is to 
+examine whether you really need all the attributes. The second solution that you can 
+try is to use a different distance metric that may be more appropriate for your data. 
+These are the core ideas and the basic steps of an actual implementation for DBSCAN. 
+The original article by Ester et al. provides a lot more details of the algorithm, and it 
+should be easier to understand after reading this section. 
+
+ All the algorithms that we described so far will work well with most datasets. Some 
+will perform better than others depending on the nature of your data, as we discussed. 
+Nevertheless,  the  quality  of  the  results  isn’t  the  single  factor  that  we  need  to  worry 
+about, and it’s certainly not the only one. In the next section, we’ll take a closer look 
+at some clustering issues that are ubiquitous when we deal with very large datasets.
+
+Clustering issues in very large datasets
+There are two broad categories of issues that appear in very large datasets. The first 
+issue is the number of data points that we want to cluster. This leads us to consider the 
+computational  complexity  of  the  clustering  algorithms  and  its  effect  on  their  perfor-
+mance. In other words, we want to know the number of computations that we need to 
+make as a function of the number of data points that we need to cluster. The second 
+issue is the number of attributes (dimensions) that may be significant for our cluster-
+ing. The world that we’re familiar with has three dimensions, so our intuition is devel-
+oped for three or fewer dimensions. In higher dimensions, the nature of geometrical 
+objects  and  the  notion  of  proximity  are  different.  The  implications  of  that  fact  are 
+twofold. First, with more dimensions, you need to do more computations and that, in 
+turn, will slow you down. Second, there are a number of issues that appear and are 
+related  with  the  special  nature  of  high-dimensional  spaces,  which  are  summarily 
+referred to as the curse of dimensionality. Let’s look at each of these topics separately. 
+
+Computational complexity
+It’s important to know the performance characteristics of a clustering algorithm as a 
+function of the number of data points that we want to cluster. There’s a huge differ-
+ence  between  trying  to  find  clusters  of  users  in  MySpace  (with  O  (108)  registered 
+users) versus clusters in the database of some local newspaper (with a few hundred 
+registered users) or a community college (with a few thousand students). If we want to 
+quantify the impact of the number of data points (n), then it’s important to under-
+stand the computational complexity of the algorithms in space and time. This means the 
+size of memory and the number of operations that are required, respectively, in order 
+to execute a particular clustering algorithm. Table 4.2 shows both of these metrics for 
+the algorithms that we’ve implemented in this chapter; here k denotes the number of 
+clusters and t the number of iterations (in the case of k-means). 
+
+ Notice the prominence of the n2 factor. It’s exactly that quadratic dependency on 
+the  number  of  data  points  that  causes  a  problem  with  many  clustering  algorithms. 
+
+4.7
+
+4.7.1
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com158
+
+CHAPTER 4  Clustering: grouping things together
+
+Table 4.2  The space and time complexity of our clustering algorithms
+
+Algorithm name
+
+Space complexity
+
+Time complexity
+
+Single link
+
+Average link
+
+MST single link
+
+k-means
+
+ROCK
+
+DBSCAN
+
+O (n2)
+
+O (n2)
+
+O (n2)
+
+O (n)
+
+O (n2)
+
+O (n2)
+
+O (k n2)
+
+O (k n2)
+
+O (n2)
+
+O (t k n)
+
+O (n2 log(n) ) or
+
+O (n log(n) ) with spatial indices
+
+O (n2)
+
+Data Mining by Margaret Dunham (see references) offers a more detailed comparison 
+of  clustering  algorithms  in  that  form.  From  an  efficiency  perspective,  the  k-means 
+algorithm is a clear winner, and in practice, it’s used widely, probably due to its effi-
+ciency. But remember that it doesn’t handle categorical data. The time complexity of 
+DBSCAN can be improved, as indicated, by using spatial indices on the data points; 
+since we’re dealing with density on metric spaces, it’s natural to view the values of the 
+attributes as coordinates for the data points. Typically, R-trees are used for the spatial 
+indices, and most commercial databases offer R-tree implementations for spatial data. 
+Nevertheless, you should be aware of the difficulties involved in indexing spatial data 
+in high dimensions. That’s an active area of research and although many good ideas 
+have been published, the last word on this problem (efficiently indexing high-dimen-
+sional data) hasn’t been said. 
+
+  Of  course,  a  wealth  of  other  clustering  algorithms  has  been  devised  to  address 
+these efficiency issues. BIRCH is a well-studied and quite popular clustering algorithm 
+that’s designed specifically for large data sets. Its space and time complexity are both 
+linear—O (n)—and it requires only one scan of the database. This algorithm belongs 
+in a category of algorithms that are based on data squashing. That is, they create data 
+structures  that  store  compressed  information  about  the  data.  A  description  of  such 
+algorithms would lead us outside the scope of this book. If you want to learn more 
+about data squashing algorithms, please consult the references.
+
+4.7.2 High dimensionality
+
+The second broad category of issues for very large datasets is the high dimensionality 
+of the data. In very large datasets, it’s possible that our data points have many attri-
+butes, and unless we neglect a number of them from the outset, our metric space can 
+span several dimensions—sometimes even hundreds of dimensions! We alerted you 
+about high dimensionality earlier, but we didn’t specify what “high” means. Typically, 
+high dimensionality implies that we’re dealing with more than 16 attributes—we favor 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

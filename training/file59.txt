@@ -1,0 +1,63 @@
+98
+
+CHAPTER 3  Creating suggestions and recommendations
+
+bsh % Delphi delphiIC = 
+new Delphi(ds,RecommendationType.ITEM_CONTENT_BASED);
+
+bsh % delphiIC.setVerbose(true);
+bsh % ContentItem biz1 = ds.pickContentItem("biz-01.html");
+bsh % delphiIC.findSimilarItems(biz1);
+
+Items like item biz-01.html:
+
+    name: biz-03.html    , similarity: 0.600000
+    name: biz-02.html    , similarity: 0.600000
+    name: biz-04.html    , similarity: 0.100000
+    name: biz-07.html    , similarity: 0.100000
+
+bsh % ContentItem usa1 = ds.pickContentItem("usa-01.html");
+bsh % delphiIC.findSimilarItems(usa1);
+
+Items like item usa-01.html:
+
+    name: usa-02.html    , similarity: 0.300000
+    name: usa-03.html    , similarity: 0.300000
+    name: world-03.html  , similarity: 0.100000
+    name: world-05.html  , similarity: 0.100000
+    name: usa-04.html    , similarity: 0.100000
+
+bsh % ContentItem sport1 = ds.pickContentItem("sport-01.html");
+bsh % delphiIC.findSimilarItems(sport1);
+
+Items like item sport-01.html:
+
+    name: sport-03.html  , similarity: 0.400000
+    name: sport-02.html  , similarity: 0.300000
+
+Figure 3.7 
+
+Items that belong in the same category as the query item are correctly identified as similar.
+
+bsh % Delphi delphiUIC = new Delphi(
+➥
+    ds,RecommendationType.USER_ITEM_CONTENT_BASED);
+bsh % delphiUIC.setVerbose(true);
+bsh % delphiUIC.recommend(nu1);
+
+Recommendations for user Bob:
+
+    Item: biz-06.html      , predicted rating: 2.500000
+    Item: biz-04.html      , predicted rating: 1.500000
+    Item: usa-02.html      , predicted rating: 0.500000
+    Item: world-03.html    , predicted rating: 0.500000
+    Item: world-05.html    , predicted rating: 0.500000
+
+Figure 3.8  We obtain item recommendations based on the content that’s associated with the user Bob. 
+
+number of items. The content-based approach isn’t widely used, but it does have cer-
+tain  advantages  and  can  be  used  in  combination  with  collaborative  filtering  to 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

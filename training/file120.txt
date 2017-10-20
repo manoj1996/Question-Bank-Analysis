@@ -1,0 +1,124 @@
+To do
+
+229
+
+the interval 0 and 1. We also use the JaccardCoefficient in order to achieve 
+the same result for the description of a transaction. For the transaction loca-
+tions we do something a bit more elaborate. We normalize the location of the 
+user’s centroid and the location of the transactions, and subsequently calculate 
+the  distance  between  these  two  locations.  That  distance  is  one  of  our  three 
+input values in the neural network TransactionNN. Why do we do that? Does it 
+matter? Experiment by using the same code but switching to input that’s not 
+normalized. Use identical training and test data, so that you can compare the 
+effect of the algorithms only. You probably want to change one thing at a time 
+so you can relate the effect of your changes to their cause.
+
+A second type of experiment that can be fairly instructive is the effect of the 
+network  topology  on  the  results  of  your  classifier.  The  best  network  topology 
+depends on the nature of the input data and the nature of your problem. The 
+fraud detection use case and the TransactionNN base implementation provide 
+a baseline that can help you investigate this dependency. Implement your own 
+network topology and compare the results of the resulting classifiers. For exam-
+ple, you could try to explicitly provide the x and y coordinates as input to the 
+network, rather than provide only the distance of each location from the user’s 
+location  centroid.  You  could  also  provide  the  description  in  more  than  one 
+node. One way to do this would be to tokenize the description and use the sim-
+ilarity of each token with the top five description tokens, which would result in 
+five input nodes related to the description; or more generally, the similarity of 
+each token with the top N description tokens, which would result in N input 
+nodes related to the description. How do your results vary as you increase N? 
+How do the results of these neural networks compare with respect to the base 
+TransactionNN implementation?
+
+5 Unsupervised  learning:  Hebbian  learning  and  self-organizing  maps  (SOM) 
+
+In  this 
+chapter, we covered only supervised learning techniques, which are very com-
+mon as well as useful. But unsupervised learning techniques are also useful and 
+deserve your attention. In supervised learning, you always have that feeling that 
+you entered the answer from the “back door”— mathematicians call that interpo-
+lation, which is a less conspicuous and more honorable term. In any case, the 
+fact is that we tell the classifier what it should know and it tries to assimilate that 
+knowledge by modifying its parameters, whether by calculating prior and condi-
+tional probabilities, in the case of Bayesian methods, or by adjusting the various 
+weights, in the case of neural networks, or by shamelessly “writing down” every-
+thing, in the case of a rule-based systems. The amazing thing with unsupervised 
+learning is that it can “remember” what it saw without feedback from a human.  
+In 1949, in his book The Organization of Behavior, Donald Hebb introduced a 
+simple model that nicely illustrates the ability to learn without supervision. If you 
+don’t tell the classifier what’s correct, how does it work? Consider a neural net-
+work whose nodes are fully connected through symmetrical bidirectional links 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com230
+
+CHAPTER 5  Classification: placing things where they belong
+
+(synapses); symmetrical here means that the weight of the link from node i to node 
+j is equal to the weight of the link from node j to node i. What kind of activation 
+rules and learning rules can help us build an unsupervised neural network? 
+
+6 Counting  the  cost  of  classification  errors 
+
+In  the  real  world,  classification  systems 
+are used often as decision support systems, hence the mistakes of classification 
+can lead to wrong decisions. In some cases, making wrong decisions, although 
+undesirable, can be relatively harmless. But in other cases, it may be the differ-
+ence between life and death; think of a physician who misses a cancer diagnosis 
+or an emergency situation for an astronaut in deep space relying on the result 
+of  your  classifier.  So,  the  evaluation  of  classification  systems  should  examine 
+both the degree of credibility and the associated cost of making classifications. 
+In the case of binary classification, the idea is to assign a cost function that’s a 
+function of the FP and FN rates. How would you generalize that idea in the case 
+of multiclass classification?
+
+In the case of multiclass classification, if you have N classes and you make 
+an error, there are N-1 possibilities. So, we need a way to assign the cost for N x 
+(N-1) cases. Naturally, a matrix would be the most appropriate tool to achieve 
+this goal. In multiclass classification, the confusion matrix is an N x N matrix, 
+and we can also define a cost matrix that’s also N x N but has the value 0 along 
+its diagonal (you shouldn’t penalize the classifier for the right answers). Work 
+out the details and evaluate, for example, the NaiveBayes classifier with differ-
+ent cost matrices. 
+
+5.9
+
+References
+
+Classification schemes
+
+ The dewey Decimal classification (DDC) system. http://www.oclc.org/dewey/
+ International Classification of Diseases (ICD). World Health Organization (WHO).  
+
+http://www.who.int/classifications/icd/en/.
+
+ The Library of Congress: Cataloging Distribution Service. http://www.loc.gov/cds/
+ Myhre, A.P., and M. L. Richardson, “A Web-based Tutorial for Teaching the Schatzker Classifi-
+
+cation for Tibial Plateau Fractures.” http://uwmsk.org/schatzker/.
+
+ Occupational Injury and Illness Classification Manual. Bureau of Labor Statistics, U.S. Depart-
+
+ment of Labor. http://www.bls.gov/iif/oshoiics.htm.
+
+Books and articles
+
+ Antoniou, G., and F. van Harmelen. A Semantic Web Primer. The MIT Press, 2004.
+ Doorenbos, R.B. Production Matching for Large Learning Systems. Ph.D. Thesis, Carnegie Mellon 
+
+University, 1995. 
+
+ Dunham, M.H. Data Mining: Introductory and Advanced Topics. Prentice Hall, Pearson Education 
+
+Inc. 2003.
+
+ Fawcett, T. “ROC Graphs: Notes and practical considerations for researchers.” 2004.  
+
+http://home.comcast.net/~tom.fawcett/public_html/papers/ROC101.pdf.
+
+ Friedman-Hill, E. Jess in Action. Manning Publications, 2003.
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

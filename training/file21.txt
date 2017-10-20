@@ -1,0 +1,70 @@
+64
+
+2.7
+
+CHAPTER 2  Searching
+
+Is what you got what you want? Precision and recall
+Google and Yahoo! spend a considerable amount of time studying the quality of their 
+search engines. Similar to the process of validation and verification (QA) of software 
+systems,  search  quality  is  crucial  to  the  success  of  a  search  engine.  If  you  submit  a 
+query to a search engine, you may or may not find what you want. There are various 
+metrics that quantify the degree of success for a search engine. The two most common 
+metrics—precision and recall—are easy to implement and understand qualitatively.
+
+ Figure 2.13 shows the possibilities of results from a typical query. That is, provided 
+a set of documents, a subset of these documents will be relevant to your query and 
+another subset will be retrieved. Clearly the goal is to retrieve all the relevant docu-
+ments, but that’s rarely the case. So, our atten-
+tion turns quickly to the intersection between 
+these two sets, as indicated in figure 2.13.
+
+ In information retrieval, precision is the 
+ratio  of  the  number  of  relevant  documents 
+that  are  retrieved  (RR)  divided  by  the  total 
+number of retrieved documents (Rd)—preci-
+sion = RR/Rd. In figure 2.13, precision would 
+be about 1/5 or 0.2. That’s measured with the 
+“eye  norm”;  it’s  not  exact,  we’re  engineers 
+after all! On the other hand, recall is the ratio 
+of the number of relevant documents that are 
+retrieved divided by the total number of rele-
+vant documents (Rt)—recall = RR/Rt. 
+
+             Relevant
+
+Retrieved
+
+All documents
+
+Figure 2.13  This diagram shows the set of 
+relevant documents and the set of retrieved 
+documents; their intersection is used to define 
+the search metrics precision and recall.
+
+ Qualitatively, these two measures answer different questions. Precision answers, “To 
+what extent do I get what I want?” Recall answers, “Does what I got include everything 
+that I can get?” Clearly it’s easier to find precision than it is to find recall, because find-
+ing recall implies that we already know the set of all relevant documents for a given 
+query. In reality, that’s hardly ever the case. We plot these two measures together so that 
+we can assess to what extent the good results blend with bad results. If what I get is the 
+truth, the whole truth, and nothing but the truth, then the precision and recall values 
+for my queries will both be close to one.
+
+  During  the  evaluation  of  the  algorithms  and 
+tweaks  involved  in  tuning  a  search  engine,  you 
+should employ plots of these two quantities for rep-
+resentative queries that span the range of questions 
+that  your  users  are  trying  to  answer.  Figure  2.14 
+shows  a  typical  plot  of  these  quantities.  For  each 
+query, we enter a point that corresponds to the pre-
+cision and recall values of that query. If you execute 
+many queries and plot these points, you’ll get a line 
+that  looks  like  the  one  shown  in  figure  2.14.  Be 
+
+Figure 2.14  A typical precision/
+recall plot for a search engine
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

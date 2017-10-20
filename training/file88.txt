@@ -1,0 +1,62 @@
+The k-means algorithm 
+
+145
+
+■
+
+■
+
+■
+
+It works well with many metrics.
+It’s easy to derive versions of the algorithm that are executed in parallel—when 
+the data are divided into, say, N sets and each separate data set is clustered, in 
+parallel, on N different computational units.
+It’s insensitive with respect to data ordering.
+
+At this point you may wonder, what happens if the algorithm doesn’t stop? Don’t worry! 
+It’s guaranteed that the iterations will stop in a finite number of steps. In practice, the 
+algorithm  converges  quickly  (that’s  the  mathematical  jargon).  Of  course,  we  should 
+always be careful with variations of the algorithm. If your metric isn’t the Euclidean dis-
+tance, you may run into problems; see, for example, the article on clustering very large 
+document collections by Inderjit S. Dhillon, James Fan, and Yuqiang Guan, where the 
+use of cosine similarity is inferior to the Euclidean distance. In a different case, some of 
+the  same  authors  reported  some  advantage  in  using  Kullback-Leibler  divergences
+(these things aren’t even distances!) instead of squared Euclidean distances.
+
+ The k-means algorithm is fast, especially compared to other clustering algorithms. 
+Its computational complexity is typically O (N), where N is the number of data points 
+that we want to cluster. It suffices to say that the name of the procedure for k-means, 
+in the commercial package SAS, is FASTCLUS (for fast clustering).
+
+ Note that, unlike with agglomerative algorithms, the k-means algorithm requires 
+the number of clusters that must be formed as an input. The question that arises natu-
+rally is: what should be the value of k? The answer depends on your data (again): you 
+should  run  k-means  with  different  values  of  k  and  examine  the  resulting  clusters. 
+Sometimes, as with very large data or when hierarchical clustering is required, it’s use-
+ful to first run the k-means algorithm with a low value and subsequently run a hierar-
+chical clustering algorithm inside the large partitions that were formed by k-means. 
+This approach lends itself naturally to parallelization, and you can take advantage of 
+additional computational bandwidth if you have it!
+
+ Note also that the k-means algorithm is appropriate for data points whose attri-
+butes are numeric. The challenge for using the k-means algorithm in the case of cate-
+gorical  data  (such  as  string  values)  is  reduced  to  finding  an  appropriate  numerical 
+representation for the nonnumeric attribute values. In the latter case, the choice of 
+metric is also important.
+
+ You should know that the selection of the initial centroids is crucial for quickly ter-
+minating the iterations as well as producing good quality clusters. From a mathematical 
+perspective,  the  k-means  algorithm  tries  to  minimize  the  average  squared  distance 
+between points in the same cluster. So, if you select your initial centroids in regions with 
+a high concentration of data points, it seems reasonable that you may get your results 
+faster and achieve high-quality clusters. That’s exactly what David Arthur and Sergei 
+Vassilvitskii proposed in a recent article that describes what they called k-means++. 
+
+ In summary, the previous sections provided a number of algorithms that allow you 
+to identify groups of users on a website. Of course, by being creative, you can apply the 
+same algorithms in different circumstances. Combining algorithms is also possible, and 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

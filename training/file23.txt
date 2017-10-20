@@ -1,0 +1,58 @@
+To do
+
+67
+
+change.  Depending  on  your  application,  you  can  devise  a  unique  strategy  of 
+boosting  your  documents  that  depends  on  factors  that  are  specific  to  the 
+domain of your application.
+3 Scaling the PageRank values.  
+
+In our example of a combined Lucene (index) 
+and PageRank (ranking) search, we use a scaling factor that boosted the value 
+of the PageRank. Our choice of function for the exponent had only one param-
+eter—m = (1 – 1/n), where n is the size of the H matrix—and its behavior was 
+such that for large networks our scaling factor is approaching the value 1, while 
+for small networks the value is between 0 and 1. In reality, you get zero only in 
+the degenerate case where you have a single page, but that’s not a very interest-
+ing network anyway! 
+
+Experiment with such scaling factors  and observe the impact on the rank-
+ings. You may want to change that value to a higher power of n—another valid 
+formula would be m = (1 – 1 / Math.pow(n,k) ), because as k takes on values 
+greater than 1, the PageRank value approaches its calculated value faster. 
+
+4 Altering the G matrix: Dangling nodes.  We’ve assigned a value of 1/n to all the 
+nodes for each entry in a dangling node row. In the absence of additional infor-
+mation about the browsing habits of our users, or under the assumption that 
+there’s a sufficient number of users that covers all browsing habits, that’s a rea-
+sonable assignment. But what if we make different kind of assumptions that are 
+equally reasonable would the whole mechanism work? 
+
+Let’s assume that a user encounters a dangling node. Upon arriving at the 
+dangling node, it seems natural to assume that the user is more likely to select a 
+search engine as his next destination, or a website similar to the dangling node, 
+rather than a website that’s dissimilar to the content of the dangling node. That 
+kind of assumption would result in an adjustment of the dangling node values: 
+higher values for search engines and similar content pages, and lower values for 
+everybody else. How does that change affect the PageRank values? How about 
+the results of the queries? Did your precision recall graph change in that case?
+In our original implementation, the telepor-
+tation contribution has been assigned in an egalitarian manner—all pages are 
+assigned  a  contribution  equal  to  (1-alpha)/n,  where  n  is  the  number  of  the 
+pages. But the potential of that component is enormous. If chosen appropri-
+ately, it can create an online bourgeois, and if it’s chosen at a user level, it can 
+target  the  preferences  of  each  user  much  like  the  technique  of  user  clicks 
+allowed us to do. The latter reason is why the teleportation contribution is also 
+known as the personalization vector.
+
+5 Altering the G matrix: Teleportation. 
+
+Try to modify it so that certain pages get more weight than others. Does it 
+work? Are your PageRank values higher for these pages? What issues do you see 
+with such an implementation? If we assume that we assign a personalization vec-
+tor  to  each  user,  what  does  this  imply  in  terms  of  computational  effort?  Is  it 
+worth it? Is it feasible? The papers by Haveliwala, Jeh & Widom, and Richardson 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

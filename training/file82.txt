@@ -1,0 +1,142 @@
+136
+
+CHAPTER 4  Clustering: grouping things together
+
+    Cluster c = new Cluster(e);
+    initialClusters.add(c);
+  }
+
+  dnd.addLevel(String.valueOf(d), initialClusters);
+  d = 1.0;
+  int k = initialClusters.size();
+
+C
+
+  while( k > 1 ) {   
+    int oldK = k;
+    List<Cluster> clusters = buildClusters(d);
+    k = clusters.size();
+    if( oldK != k ) {
+      dnd.addLevel(String.valueOf(d), clusters);
+    }
+    d = d + 1; 
+  }
+  return dnd;
+}
+
+private List<Cluster> buildClusters(double distanceThreshold) {
+
+  boolean[] usedElementFlags = new boolean[elements.length];
+
+  List<Cluster> clusters = new ArrayList<Cluster>();
+
+  for(int i = 0, n = a.length; i < n; i++) {
+
+    List<DataPoint> clusterPoints = new ArrayList<DataPoint>();
+
+    for(int j = i, k = a.length; j < k; j++) {                          
+
+D
+
+      if( a[i][j] <= distanceThreshold && usedElementFlags[j] == false ) {
+        clusterPoints.add(elements[j]);
+        usedElementFlags[j] = true;
+      }
+    }
+
+    if( clusterPoints.size() > 0 ) {
+      Cluster c = new Cluster(clusterPoints);
+      clusters.add(c);
+    }
+  }
+  return clusters;
+}
+
+Initially, we load every data point to its own cluster B. We iterate until there’s only 
+one cluster that contains all data points C. At every iteration, the clustering is hap-
+pening  inside  the  buildClusters  method,  and  the  distance  threshold  increases  by 
+one unit.
+
+ Note that even though we leverage the symmetry of the adjacency matrix (the sec-
+ond loop starts from the index i, rather than zero) D, the algorithm requires a number 
+of operations that grow as the square of the number of elements that we want to cluster. 
+We say that the computational complexity of the algorithm, in space and time, is O (N 2). 
+This isn’t important for small datasets, but it’s vital when we cluster real-world datasets. 
+We’ll talk more about these real-world aspects of clustering in section 4.4. Figure 4.8 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComLink-based algorithms
+
+137
+
+shows the results that we obtain from the single-
+link algorithm when we use the sample dataset 
+from  table  4.1;  the  output  is  set  to  print  the 
+clusters for the value level that’s equal to 4.
+
+4.3.4
+
+The average-link algorithm
+The  average-link  algorithm,  shown  in  list- 
+ing 4.6, is similar to the single-link algorithm, 
+but it merges two clusters on a different condi-
+tion. In particular, it checks whether the average distance between any two points in the 
+two target clusters is below the proximity threshold. Note that in this algorithm, we 
+increase the threshold proximity by half a point (0.5) rather than a whole point. This 
+is an arbitrary increment; you can vary its value and observe the effect that this has on 
+the results.
+
+Figure 4.8  Clustering results based on the 
+single link algorithm for level 4
+
+Listing 4.6  Merge clusters based on the average distance
+
+public Dendrogram cluster() {
+
+  Dendrogram dnd = new Dendrogram("Distance");   
+  double d = 0.0;
+
+Initialization
+
+  for(DataPoint e : elements) {
+     Cluster c = new Cluster(e);
+     allClusters.add(c);
+  }
+
+  dnd.addLevel(String.valueOf(d), allClusters.getAllClusters());
+  d = 1.0;
+
+  while( allClusters.size() > 1 ) {   
+
+    int K = allClusters.size();
+
+    mergeClusters(d);
+
+Top-level loop for 
+building hierarchy
+
+    // it's possible that there were no clusters to merge for current d.
+
+    if( K > allClusters.size() ) {
+       dnd.addLevel(String.valueOf(d), 
+➥   allClusters.getAllClusters());                
+       K = allClusters.size();                
+    }            
+    d = d + 0.5;
+  }
+  return dnd;
+}
+
+private void mergeClusters(double distanceThreshold) {
+
+  int nClusters = allClusters.size();
+
+  ObjectToIndexMapping<Cluster> idxMapping = 
+➥  new ObjectToIndexMapping<Cluster>();
+
+  double[][] clusterDistances = new double[nClusters][nClusters];
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

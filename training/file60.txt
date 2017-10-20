@@ -1,0 +1,128 @@
+3.3
+
+3.3.1
+
+Recommending friends, articles, and news stories
+
+99
+
+improve the quality of the recommendations. Usually, production systems employ a 
+combination of these techniques. Let’s look at the concept of combining recommen-
+dation engines.
+
+Recommending friends, articles, and news stories
+In this section, we present a more realistic example that’ll help us illustrate combining
+the  techniques  that  we’ve  discussed  so  far.  We’ll  work  with  a  hypothetical  website 
+whose  purpose  is  to  identify  individuals  with  similar  opinions,  articles  with  similar 
+comments,  and  news  stories  with  similar  content.  Let’s  call  our  website 
+MyDiggSpace.com. As the name suggests, the site would use the Digg API to retrieve 
+the articles that you submitted through your Digg account (information about your 
+Digg account could be provided upon registration). Then it would identify and pres-
+ent to you stories similar to the ones that you “dug.” In addition, it would allow you to 
+rate the stories that you read, so that in the future the system can sharpen its selection 
+of recommended stories based on your feedback. As if that weren’t enough, the site 
+would present you with groups of common interest that you can join if you’d like, thus 
+facilitating social interaction with similar minded individuals. 
+
+Introducing MyDiggSpace.com
+Let’s  take  the  steps  of  building  such  a  site  one  by  one.  True  to  our  promise  in  the 
+introduction, we won’t address issues such as the design of the UI, persistence, and 
+other important engineering components. To  keep things interesting, we’ll use the 
+Digg  API  to  retrieve  data  and  make  our  example  more  realistic.  First,  we  need  to 
+explain  that  Digg  is  a  website  (http://digg.com/)  where  users  share  content  that 
+they’ve discovered anywhere on the Web. The idea is that content isn’t aggregated by 
+editors who know what’s best for you (or not), but from the users themselves. Whether 
+the item that you want to talk about comes from a high-profile commercial news out-
+let or an obscure blog, Digg will let you post your selections and let the best content 
+be revealed through the votes of the participating users. 
+
+ The Digg API allows third parties to interact programmatically with Digg. Most of the 
+data that lives in the Digg website is available through the API. You can get lists of stories 
+based on popularity, time, or category (topic of discussion). We’ve written a set of wrap-
+per classes that use the Digg API, and you can later extend them for your own purposes.
+  We’ll  build  the  dataset  of  MyDiggSpace.com  by  executing  several  simple  steps. 
+First, we’ll collect the top stories from each category in Digg. This will create a list of 
+users and a list of stories (items) for each user.
+
+ For each story of each user, we’ll identify 10 stories that were submitted by other users, 
+based on the content similarity between the stories. In other words, we’ll create a con-
+tent-based item-item recommendation engine and we’ll find the top 10 similar stories.
+ To complete our dataset, we pretend that the users provide ratings for these stories 
+and therefore we assign a random rating for each story. The assigned rating follows 
+the same convention that we used in our earlier examples—the users whose names 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com100
+
+CHAPTER 3  Creating suggestions and recommendations
+
+start with the letters A through D assign ratings that are equal to either 4 or 5; the rest 
+of the users assign ratings that are equal to 1, 2, or 3.
+
+ The purpose of this example is to introduce you to the concept of combining the 
+results of different recommendation engines in order to get better results than any 
+one engine alone could give you. This appears to be a wise practice across an area of 
+applications  that’s  much  wider  than  recommendation  engines.  Later  in  the  book, 
+we’ll talk about combining the results of classification engines. This example is the 
+prelude to a broad and promising field. It also contains a bigger message that we want 
+to convey in this book—the importance of the synergy of various elements of intelli-
+gence in delivering high-quality results for real applications.
+
+3.3.2
+
+Finding friends
+Let’s run our script, as shown in listing 3.15, and get in action with the hypothetical
+MyDiggSpace.com data.2 
+
+Listing 3.15  MyDiggSpace.com: an example of combining recommendation engines
+
+BaseDataset ds = DiggData
+➥  .loadDataFromDigg("C:/iWeb2/data/ch03/digg_stories.csv");   
+
+// BaseDataset ds = DiggData
+[CA].loadData("C:/iWeb2/data/ch03/digg_stories.csv");   
+
+iweb2.ch3.collaborative.model.User user = ds.getUser(1);   
+
+DiggDelphi delphi = new DiggDelphi(ds);   
+
+Save data 
+from Digg
+
+Or load local data
+
+Pick user
+Create instance of recommender
+
+delphi.findSimilarUsers(user);   
+
+Find similar users
+
+delphi.recommend(user);   
+
+Recommend stories
+
+Similar users could be presented on a side panel, for example, as the user is reviewing 
+her stories. The recommended stories could also be presented in a special panel and, 
+in order to improve our recommendations for each user, we could use a click-based 
+approach similar to the one described in chapter 2. We could also offer the ability to 
+rate each recommended story in order to achieve an even higher level of confidence 
+in the user’s preferences. We’ll discuss these improvements in a bit, but first, let’s look 
+at the results that our script produced while we were writing the book. 
+
+ We collected 146 items (stories) from 7 categories, for 33 users; you can control the 
+number  and  the  content  of  categories  in  the  class  iweb2.ch3.content.digg.Digg-
+Category. For these users, we’ve assigned 811 item ratings. For each user, the selection 
+of items and the ratings are random, except that we follow the same convention that 
+we used before in terms of clustering the ratings based on the initial letter of the user-
+name. The minimum number of ratings that a user has made on that set is 7, the max-
+imum is 31, and the median is 26. 
+
+2 Disclaimer: The data that the script enables you to collect is publicly available. Obviously, we can’t be respon-
+sible for the content that may be retrieved when you run our example. Our goal is to provide a working exam-
+ple of using the Digg API and demonstrate how you can do something useful with it.
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

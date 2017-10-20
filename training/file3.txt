@@ -1,0 +1,112 @@
+1.1
+
+Examples of intelligent web applications
+
+3
+
+Examples of intelligent web applications
+Let’s review applications that have been leveraging this kind of intelligence over the last 
+decade. As already mentioned, a turning point in the history of the web was the advent 
+of search engines. A lot of what the web had to offer remained untapped until 1998 
+when link analysis (see chapter 2) emerged in the context of search and took the market 
+by storm. Google Inc. has grown, in less than 10 years, from a startup to a dominant 
+player in the technology sector due primarily to the success of its link-based search and 
+secondarily to a number of other services such as Google News and Google Finance.
+
+ Nevertheless, the realm of intelligent web applications extends well beyond search 
+engines. The online retailer Amazon was one of the first online stores that offered rec-
+ommendations to its users based on their shopping patterns. You may be familiar with 
+that feature. Let’s say that you purchase a book on JavaServer Faces and a book on 
+Python. As soon as you add your items to the shopping cart, Amazon will recommend 
+additional items that are somehow related to the ones you’ve just selected; it could 
+recommend books that involve AJAX or Ruby on Rails. In addition, during your next 
+visit to the Amazon website, the same or other related items may be recommended.
+
+ Another intelligent web application is Netflix,1 which is the world’s largest online 
+movie rental service, offering more than 7 million subscribers access to 90,000 DVD
+titles plus a growing library of more than 5,000 full-length movies and television epi-
+sodes that are available for instant watching on their  PCs. Netflix has been the top-
+rated website for customer satisfaction for five consecutive periods from 2005 to 2007, 
+according to a semiannual survey by ForeSee Results and FGI Research. 
+
+ Part of its online success is due to its ability to provide users with an easy way to 
+choose movies, from an expansive selection of movie titles. At the core of that ability is 
+a  recommendation  system  called  Cinematch.  Its  job  is  to  predict  whether  someone 
+will  enjoy  a  movie  based  on  how  much  he  liked  or  disliked  other  movies.  This  is 
+another great example of an intelligent web application. The predictive power of Cin-
+ematch is of such great value to Netflix that, in October 2006, it led to the announce-
+ment of a million-dollar prize2 for improving its capabilities. By October 2007, there 
+have been 28,845 contestants from 165 countries. In chapter 3, we offer extensive cov-
+erage of the algorithms that are required for building a recommendation system such 
+as Cinematch.
+
+  Leveraging  the  opinions  of  the  collective  in  order  to  provide  intelligent  predic-
+tions  isn’t  limited  to  book  or  movie  recommendations.  The  company  PredictWall-
+Street collects the predictions of its users for a particular stock or index in order to 
+spot  trends  in  the  opinions  of  the  traders  and  predict  the  value  of  the  underlying 
+asset. We don’t suggest that you should withdraw your savings and start trading based 
+on their predictions, but they’re yet another example of creatively applying the tech-
+niques of this book in a real-world scenario.
+
+1 Source: Netflix, Inc. website at http://www.netflix.com/MediaCenter?id=5379
+2 Source: http://www.netflixprize.com//rules
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com4
+
+1.2
+
+CHAPTER 1  What is the intelligent web?
+
+Basic elements of intelligent applications
+Let’s take a closer look at what distinguishes the applications that we referred to in the 
+previous  section  as  intelligent  and,  in  particular,  let’s  emphasize  the  distinction 
+between  collaboration  and  intelligence.  Consider  the  case  of  a  website  where  users 
+can collaboratively write a document. Such a website could well qualify as an advanced 
+web application under a number of definitions for the term advanced. It would cer-
+tainly facilitate the collaboration of many users online, and it could offer a rich and 
+easy-to-use UI, a frictionless workflow, and so on. But should that application be con-
+sidered an intelligent web application? 
+
+ A document created in that website will be larger in volume, greater in depth, and 
+perhaps more accurate than other documents written by each participant individually. 
+In that respect, the document captures not just the knowledge of each individual con-
+tributor but also the effect that the interaction between the users has on the end prod-
+uct. Thus, a document created in this manner captures the collective knowledge of 
+the contributors. 
+
+ This is not a new notion. The process of defining a standard, in any field of science 
+or engineering, is almost always conducted by a technical committee. The committee 
+creates a first draft of the document that brings together the knowledge of experts 
+and  the  opinions  of  many  interest  groups,  and  addresses  the  needs  of  a  collective 
+rather than the needs of a particular individual or vendor. Subsequently, the first draft 
+becomes available to the public and a request for comments is initiated. The purpose 
+of this process is that the final document is going to represent the total body of knowl-
+edge  in  the  community  and  will  express  guidelines  that  meet  several  requirements 
+found in the community. 
+
+ Let’s return to our application. As defined so far, it allows us to capture collective 
+knowledge and is the result of a collective effect, but it’s not yet intelligent. Collective 
+intelligence—a term that’s quite popular but often misunderstood—requires collec-
+tive knowledge and is built by collective effects, but these conditions, although neces-
+sary, aren’t sufficient for characterizing the underlying software system as intelligent. 
+ In order to understand the essential ingredients of what we mean by intelligence, 
+let’s further assume that our imaginary website is empowered with the following fea-
+tures: As a user types her contribution, the system identifies other documents that may 
+be relevant to the typed content and retrieves excerpts of them in a sidebar. These 
+documents could be from the user’s own collection of documents, documents that are 
+shared among the contributors of the work-in-progress, or simply public, freely avail-
+able, documents.
+
+ A user can mark a piece of the work-in-progress and ask the system to be notified 
+when documents pertaining to the content of that excerpt are found on the internet 
+or, perhaps more interestingly, when the consensus of the community about that con-
+tent has changed according to certain criteria that the user specifies.
+
+ Creating an application with these capabilities requires much more than a pretty UI
+and  a  collaborative  platform.  It  requires  the  understanding  of  freely  typed  text.  It 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

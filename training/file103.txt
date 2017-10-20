@@ -1,0 +1,53 @@
+An overview of classifiers
+
+171
+
+game (Yes and No) in which Scrooge’s nephew had to think of something and the rest 
+had to figure out what it was, while he would answer only yes or no, depending on 
+their  question.  Versions  of  this  game  exist  in  many  cultures—it’s  fairly  popular  in 
+Spanish-speaking countries among children, where it’s known as veo, veo. Similar to 
+these familiar games, the idea behind most DT algorithms is to ask questions whose 
+answers will eliminate as many candidates as possible based on the provided informa-
+tion. Decision-tree algorithms have several advantages, such as ease of use and compu-
+tational  efficiency.  Their  disadvantages  are  usually  prominent  when  we  deal  with 
+continuous variables, because we’re forced to perform a discretization—the contin-
+uum of the values must be divided into a finite number of bins in order to construct 
+the tree. In general, decision-tree algorithms don’t have good generalization proper-
+ties, and as a result, they don’t perform well with unseen data. A commonly used algo-
+rithm  in  this  category  is  C5.0  (on  Unix  machines)  or  See5  (on  Microsoft  Windows 
+machines). It can be found in a number of commercial products, such as Clementine
+(http://www.spss.com/clementine/) and RuleQuest (http://www.rulequest.com/).
+
+ The second branch of structural algorithms is composed of distance-based algo-
+rithms. In the previous chapters, we introduced and extensively used the notions of 
+similarity measure and generalized distance. These algorithms are fairly intuitive, but 
+it’s easy to misuse them and end up with bad classification results because a lot of the 
+data point attributes aren’t directly related to each other. A single similarity measure 
+can’t  expediently  capture  the  differences  in  the  way  that  the  attributes  should  be 
+measured; careful normalization and analysis of the attribute space is crucial to the 
+success  of  distance-based  algorithms.  Nevertheless,  in  many  low-dimensional  cases, 
+with  low  complexity,  these  algorithms  perform  well  and  are  fairly  simple  to  imple-
+ment.  We  can  further  divide  distance-based  algorithms  into  functional  and  nearest 
+neighbor-type algorithms.
+
+ Functional classifiers approximate the data by function, as the name suggests. This 
+is similar to regression, but we differentiate between them on the basis of the rationale 
+behind  the  use  of  the  function.  In  regression,  we  use  a  function  as  a  model  of  the 
+probability distribution (Dunham); in the case of functional classifiers, we’re merely 
+interested in the numerical approximation of the data. In practice, it’s hard (and per-
+haps  pointless)  to  distinguish  between  linear  regression  and  linear  approximation 
+through the minimization of the squared error. 
+
+ Nearest-neighbor algorithms attempt to find the nearest class for each data point. 
+By  using  the  same  formulas  that  we’ve  seen  earlier  about  generalized  distances,  we 
+can calculate the distance of each data point from each available class. The class that’s 
+closest to the object is assigned to that object. Perhaps the most common classification 
+algorithm  of  that  type  is  K  nearest  neighbors  (kNN),  although  another  algorithm 
+known as learning vector quantization (LVQ) is also well studied and broadly adopted.
+ Neural network (NN) algorithms belong in a subcategory of structural algorithms by 
+themselves. These algorithms require a good deal of mathematical background to be 
+presented properly. We’ll do our best to present them from a computational perspective 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

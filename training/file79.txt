@@ -1,0 +1,124 @@
+4.2.3
+
+An overview of clustering algorithms 
+
+131
+
+Clustering algorithms based on data size 
+Figure 4.5 depicts the categorization of 
+clustering algorithms that are designed 
+for  large  datasets.  We  treat  this  cate-
+gory of clustering algorithms in some-
+what special ways. The space and time 
+complexity  of  many  clustering  algo-
+rithms  increases  as  the  square  of  the 
+number of data points that you want to 
+cluster.  If  you  aren’t  careful,  you  may 
+run out of memory quickly or wait for-
+ever for your clustering to complete! 
+
+Figure 4.5  The categorization of clustering 
+algorithms based on the size of the data
+
+ For that reason, Paul S. Bradley, Usama M. Fayyad, and Cory A. Reina proposed a 
+framework that required the following properties from algorithms that deal with large 
+databases for online applications:
+
+■
+
+If possible, you should scan the database only once.
+
+■ You should allow for online behavior—a good answer is available at any time.
+■ The algorithm should be able to suspend, stop, and resume its activity.
+■ You should support incremental updates to account for new data.
+■ You should respect RAM limitations, if any.
+■ You  should  utilize  various  scan  modes,  such  as  sequential,  index-based,  and 
+
+sampling, if they’re available.
+
+■ You should prefer algorithms that can work with the forward-only cursor over a 
+view of the database, because these views are typically the result of computation-
+ally expensive joins.
+
+These requirements result in different kinds of algorithms that tend to mix the concep-
+tually cleaner versions of basic algorithms with heuristics and other techniques (such as 
+compression and sampling), thus trading complexity for efficiency and performance.
+ As you can imagine, an algorithm could satisfy more than one criterion; a single 
+algorithm can belong in more than one category. For example, the BIRCH algorithm
+(balanced iterative reducing and clustering using hierarchies) can be categorized as both a 
+clustering  algorithm  for  very  large  databases  (VLDB)  and  a  hierarchical  cluster- 
+ing algorithm.
+
+ This was a lengthy overview, but it turns out that what seemed to be a fairly straight-
+forward  problem—identifying  groups  of  similar  objects—is  a  fascinating  subject  of 
+great  depth.  We  have  many  clustering  algorithms  to  choose  from  and  our  choices 
+depend on many factors, such as the nature of our data, the type of desired output, 
+and computational limitations. In the following sections, we’ll present a number of 
+clustering algorithms that cover a good portion of what we discussed here and we’ll 
+also address, in more detail, clustering very large datasets. So, let’s roll up our sleeves 
+and get to work!
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com132
+
+4.3
+
+4.3.1
+
+CHAPTER 4  Clustering: grouping things together
+
+Link-based algorithms
+In this section, we’ll continue using the data that we described in section 4.1 and try to 
+find what kind of user groups can be identified on that fictitious open source reposi-
+tory. We’ll start with the description of the dendrogram data structure, which is helpful 
+when  it  comes  to  clustering  and  is  used  throughout  the  code  of  this  chapter.  We’ll 
+describe the core ideas behind link-based algorithms and will present three of them in 
+detail. In particular, we’ll cover the single link, the average link, and the minimum 
+spanning tree algorithms. 
+
+The dendrogram: a basic clustering data structure
+The basic structure that we will use throughout clustering is encapsulated by the class 
+Dendrogram.  The  structure  of  a  dendrogram  is  shown  in  figure  4.6.  It’s  a  tree  data 
+structure1 that helps us capture the hierarchical formation of clusters. You can think 
+of it as a set of ordered triples—[d, k, {…}], where the first element is the proximity 
+threshold  (d), the second element is the number of clusters (k), and the third ele-
+ment is the set of clusters. 
+
+ Figure 4.6 gives a visual representa-
+tion of a dendrogram that has four lev-
+els;  as  an  ordered  set  it  could  be 
+represented by the following set: {[0,5,{ 
+{A},{B},{C},{D},{E}}], [1, 3, {{A,B},{C}, 
+{D,E}}], [2, 2, {{A,B,C}, {D,E}}], [3,1,{A, 
+B,C,D,E}]}.  Thus,  the  dendrogram  is 
+equipped to capture a set of clusters, not 
+just one cluster. In turn, this allows us to 
+capture the formation of the clusters, as 
+they emerge from the single elements, 
+in  a  single  structure.  All  hierarchi- 
+cal agglomerative algorithms would do 
+the following:
+
+Figure 4.6  Visualizing hierarchical clusters: A 
+simple dendrogram.
+
+1 Define an initial dendrogram for which all elements are single element clusters.
+Increase the distance threshold by a notch and decide what elements should 
+2
+form new clusters.
+
+3 Take all the new clusters and add a level to the dendrogram.
+4 Continue the execution of steps 2 and 3 until all elements belong to one big 
+
+cluster.
+
+From  an  implementation  perspective,  we  capture  the  structure  of  the  dendrogram 
+with two linked hash maps, as shown in listing 4.3; we omitted two auxiliary printing 
+methods from this listing.
+
+1 Dendro means “tree” in Greek.
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

@@ -1,0 +1,272 @@
+146
+
+4.5
+
+CHAPTER 4  Clustering: grouping things together
+
+sometimes it’s recommended. The algorithm of choice in the industry is k-means and 
+its variants. The k-means algorithm is preferred due to its simplicity (in implementa-
+tion), its speed, and its ability to run on a parallel computational platform.
+
+Robust Clustering Using Links (ROCK)
+In this section, we continue our coverage of clustering with an algorithm that differs 
+from what we’ve seen so far in two ways. First, the algorithm is particularly well-suited 
+for categorical data, such as keywords, Boolean attributes, enumerations, and so forth. 
+Second, this algorithm is designed to work well on very large datasets. Our example 
+will be a collection of data from Digg.com. 
+
+ For illustration purposes, we’ll use a fixed dataset that you can find in the directory 
+data/ch4 called ch4_digg_stories.csv. The data was collected using the Digg API, from 
+chapter 3. The data contains 49 Digg stories, with several attributes, submitted by 10 
+random users. In the data, we’ve fabricated 8 clusters that are easily identifiable by a 
+human; you can open the file with your favorite text editor and have a look. Is it possi-
+ble to identify these clusters with our algorithms rather than our eyes? Let’s see!
+
+4.5.1
+
+Introducing ROCK
+Listing  4.10  loads  the  data,  initializes  ROCKAlgorithm,  and  uses  the  by-now  familiar 
+Dendrogram class to capture the structure of the clusters.
+
+Listing 4.10  Clustering large collections of web stories with ROCK
+
+MyDiggSpaceDataset ds = MyDiggSpaceData.createDataset(15);   
+
+DataPoint[] dps = ds.getData();
+
+ROCKAlgorithm rock = new ROCKAlgorithm(dps, 5, 0.2);   
+
+Load Digg stories, 
+use only top 15 
+terms
+
+Dendrogram dnd = rock.cluster();
+
+dnd.print(21);
+
+Initialize ROCK to seek 
+5 desired clusters
+
+In the print method of the Dendrogram class, we’ve restricted the output to clusters 
+that have more than one element. In other words, we don’t show the single elements, 
+also known as singletons in the industry, in order to improve the visual quality of the 
+groupings. Figure 4.13 shows the results of the execution for listing 4.10. 
+
+ Note that the text used by the algorithm for identifying similar stories from our 
+forum isn’t just the titles, but rather the titles and the descriptions. The descriptions can 
+be significantly different from a syntax point of view (see for example the stories related 
+to  blood  donors  and  Facebook),  which  would  rule  out  a  direct  string  comparison 
+between their content. The key is that the Jaccard coefficient doesn’t depend on the syn-
+tax  of  the  words  in  the  text,  but  it  rather  compares  the  number  of  common  terms 
+between the descriptions. As you can see, at level 21, six out of the eight clusters have 
+been correctly identified. You can use your own data and see what kind of clusters you’d 
+get with your documents, stories, articles, and so on—the list is long! As long as you place 
+your data in an array of the DataPoint class, you should be good to go.
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComRobust Clustering Using Links (ROCK)
+
+147
+
+bsh % dnd.print(21);
+Clusters for: level=21, Goodness=1.044451296741812
+__________________________________________________
+{5619782:Lack Of Democracy on Digg and Wikipedia?,
+ 5611165:Lack Of Democracy on Digg and Wikipedia?}
+__________________________________________________
+{5571841:Lack Of Democracy on Digg and Wikipedia?,
+ 5543643:Lack Of Democracy on Digg and Wikipedia?}
+__________________________________________________
+{5142233:The Confederacy's Special Agent,
+ 5620839:The Confederacy's Special Agent, 
+ 5586183:The Confederacy's Special Agent, 
+ 5610584:The Confederacy's Special Agent, 
+ 5598008:The Confederacy's Special Agent, 
+ 5613383:The Confederacy's Special Agent, 
+ 5613380:The Confederacy's Special Agent}
+_____________________________________________________
+{5585930:Microsoft, The Jekyll And Hyde Of Companies,
+ 5524441:Microsoft, The Jekyll And Hyde Of Companies,
+ 5609070:Microsoft, The Jekyll And Hyde Of Companies,
+ 5618201:Microsoft, The Jekyll And Hyde Of Companies,
+ 5620878:Microsoft, The Jekyll And Hyde Of Companies,
+ 5609797:Microsoft, The Jekyll And Hyde Of Companies}
+__________________________________________________  ________
+{5607788:Recycle or go to Hell, warns Vatican -- part I,
+ 5592940:Recycle or go to Hell, warns Vatican -- part II,
+ 5618262:Recycle or go to Hell, warns Vatican -- part III,
+ 5595841:Recycle or go to Hell, warns Vatican --- part IV}
+____________________________________________________________
+{5608052:Contract Free on AT&T,
+ 5620493:Contract Free on AT&T,
+ 5621623:Contract Free on AT&T,
+ 4955184:Contract Free on AT&T,
+ 5594161:Contract Free on AT&T}
+
+Figure 4.13  The clustering results of listing 4.10
+
+4.5.2 Why does ROCK rock?
+
+Let’s  have  a  closer  look  at  the  inner  workings  of  the  ROCK  algorithm.  Listing  4.11 
+shows the constructor and the core method cluster of the ROCKAlgorithm class. The 
+key idea of ROCK is to use links as a similarity measure, rather than a measure that’s 
+based only on distances. Of course, in order to determine the points that “link” to any 
+given point, we’ll still have to use our familiar distance metrics. The objective will be 
+to cluster together points that have many common links. 
+
+Listing 4.11  ROCKAlgorithm: the cluster method of Robust clustering using links
+
+public ROCKAlgorithm(DataPoint[] points, int k, double th) {
+
+   this.points = points;   
+
+Data points to cluster
+
+   this.k = k;   
+
+Minimum number of clusters
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com148
+
+CHAPTER 4  Clustering: grouping things together
+
+   this.th = th;   
+
+Link creation threshold
+
+   this.similarityMeasure = new JaccardCoefficient();   
+
+Similarity matrix
+
+   this.linkMatrix = 
+➥  new LinkMatrix(points, similarityMeasure, th);   
+}
+
+Link matrix
+
+public Dendrogram cluster() {
+
+  List<Cluster> initialClusters = new ArrayList<Cluster>();       
+  for(int i = 0, n = points.length; i < n; i++) {              
+      Cluster cluster = new Cluster(points[i]);
+      initialClusters.add(cluster);
+  }
+
+B
+
+  double g = Double.POSITIVE_INFINITY;        
+
+  Dendrogram dnd = new Dendrogram("Goodness");
+
+  dnd.addLevel(String.valueOf(g), initialClusters);
+
+  MergeGoodnessMeasure goodnessMeasure = 
+➥  new MergeGoodnessMeasure(th);            
+
+C
+
+  ROCKClusters allClusters = new ROCKClusters(initialClusters,
+➥  linkMatrix, goodnessMeasure);                                      
+
+D
+
+ 
+
+  int nClusters = allClusters.size();
+
+while( nClusters > k ) {                  
+
+E
+
+      int nClustersBeforeMerge = nClusters; 
+
+      g = allClusters.mergeBestCandidates();
+
+      nClusters = allClusters.size();
+
+      if( nClusters == nClustersBeforeMerge ) {
+        // there are no linked clusters to merge
+        break; 
+      }
+      dnd.addLevel(String.valueOf(g), 
+➥  allClusters.getAllClusters());
+  }        
+  return dnd;
+}
+
+The arguments of the constructor are the following:
+
+■ The data points that we want to cluster.
+■ The minimum number of clusters that we want to have; ROCK is a bottom-up 
+hierarchical agglomerative algorithm—we start with every point on its own clus-
+ter and keep merging until all points belong to a single cluster. This parameter 
+allows us to stop before all points are grouped into a single cluster by providing 
+a minimum number of clusters that we want to have.
+
+■ A parameter that determines the proximity that’s required between two points 
+
+in order to form a link between them.
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComB
+C
+
+D
+
+E
+
+Robust Clustering Using Links (ROCK)
+
+149
+
+In  the  constructor,  we  create  an  instance  of  the  Jaccard  similarity  (Jaccard-
+Coefficient)  and  an  instance  of  a  new  class  (LinkMatrix)  whose  purpose  is  to 
+encapsulate the structure of the links between the data points. You can use a differ-
+ent distance measure, such as the CosineSimilarity, and examine whether you get 
+better,  worse,  or  about  the  same  clusters.  Can  you  explain  the  similarities  and  the 
+differences  in  the  results?  Through  experimentation,  you’ll  soon  realize  that  the 
+value  of  the  threshold  will  be  different  for  each  distance  measure,  but  in  the  end, 
+your results will agree to a large extent; that’s why we call this algorithm “robust.”
+
+ Of course, this class can’t do all the heavy lifting for ROCK. It delegates to various 
+other classes that we’ll examine shortly. The following are the steps involved in the 
+method cluster in listing 4.11: 
+This is the initialization stage, where we create a new cluster for every data point.
+This step creates a “goodness measure” that will be used to evaluate whether or not we 
+should  merge  two  clusters.  In  every  clustering  algorithm,  an  essential  question  to 
+answer  is:  “What  are  the  best  clusters?”  If  we  can  define  the  “best”  clusters,  we  can 
+devise algorithms that aim to produce them. ROCK adopts the position that the best 
+clusters are those that maximize the value of the goodness measure.
+The ROCKClusters class encapsulates all the relevant data and algorithms that are re-
+quired to identify the best clusters that must be formed, based on the goodness measure.
+This step iterates the process of identifying best clusters and enforces two termination 
+criteria. First, if the number of clusters already formed is equal to the desired mini-
+mum number of clusters the algorithm stops. Recall that if we let the algorithm run 
+without such a criterion, we’ll end up with all the data points inside a single cluster, 
+which  isn’t  very  informative.  Second,  if  the  number  of  clusters  doesn’t  change 
+between two iterations there’s no reason to proceed and the algorithm terminates. 
+Let’s  more  closely  examine  the  class  MergeGoodnessMeasure.  As  we  already  men-
+tioned, this class encapsulates our criterion for evaluating how good a cluster is. Algo-
+rithms that are based on similarity distance alone can’t easily distinguish between two 
+clusters that aren’t “well separated” because it’s possible for data points that belong in 
+different clusters to be near neighbors. Thus, other algorithms may merge two clus-
+ters because two of their elements (one on each side) are close to each other, even 
+though these two points may not have a large number of common neighbors. 
+
+ So, the first thing that we want to do is make sure that our criterion for good clusters 
+can help us deal effectively with these cases. To accomplish that goal, the ROCK algo-
+rithm uses links, as its name suggests. What’s a link? We say that there’s a link between 
+two data points if a common neighbor between these two data points exists. When we 
+consider whether to merge cluster X and Y, our interest is in the number of links between 
+all pairs of points between X and Y, one point of the pair taken from cluster X, and the 
+other point of the pair taken from cluster Y. A large number of links should indicate a 
+higher probability that two points belong in the same cluster, and should give us the best 
+clusters. Let’s look at the mechanics; listing 4.12 shows the relevant code.
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

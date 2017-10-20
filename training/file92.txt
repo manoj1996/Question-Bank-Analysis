@@ -1,0 +1,276 @@
+152
+
+CHAPTER 4  Clustering: grouping things together
+
+As you can see, using the DBSCAN algorithm is as easy as using any of the other algo-
+rithms that we’ve presented. The only step that precedes the instantiation of the class 
+DBSCANAlgorithm, aside from loading our data, is the definition of an appropriate dis-
+tance metric. In this case, we used the CosineDistance, but any class that implements 
+the distance interface would do. 
+
+ Of course, we could’ve integrated the distance metric into the implementation of 
+the algorithm, but the choice of the distance metric turns out to be important. So, it’s 
+better to define it explicitly as an argument in the constructor. The choice of the dis-
+tance metric defines the shape (surface or volume) of a “neighborhood” and, in turn, 
+the  neighborhood  defines  various  density-related  parameters,  which  we’ll  examine 
+shortly. But, first, let’s look at the results. Executing the script from listing 4.13 will 
+produce the output shown in figures 4.15(a) and 4.15(b).
+
+ These are fairly good results! Note that the algorithm correctly identified the obvious 
+clusters, but it has also discovered a not-so-obvious cluster of articles (cluster 8). The 
+algorithm has also identified the data points that don’t belong to any given cluster as 
+
+bsh % dbscan.cluster();
+DBSCAN Clustering with NeighborThreshold=0.8 minPoints=2
+Clusters:
+1:
+{5605887:A Facebook Application To Find Blood Donors Fast,
+5611687:A Facebook Application To Find Blood Donors Fast,
+5608576:A Facebook Application To Find Blood Donors Fast}
+____________________________________________________________
+2:
+{5142233:The Confederacy's Special Agent,
+5613383:The Confederacy's Special Agent,
+5620839:The Confederacy's Special Agent,
+5598008:The Confederacy's Special Agent,
+5586183:The Confederacy's Special Agent,
+5610584:The Confederacy's Special Agent,
+5613380:The Confederacy's Special Agent}
+____________________________________________________________
+3:
+{5620878:Microsoft, The Jekyll And Hyde Of Companies,
+5618201:Microsoft, The Jekyll And Hyde Of Companies,
+5585930:Microsoft, The Jekyll And Hyde Of Companies,
+5609797:Microsoft, The Jekyll And Hyde Of Companies,
+5609070:Microsoft, The Jekyll And Hyde Of Companies,
+5524441:Microsoft, The Jekyll And Hyde Of Companies}
+____________________________________________________________
+4:
+{5594161:Contract Free on AT&T,
+4955184:Contract Free on AT&T,
+5608052:Contract Free on AT&T,
+5621623:Contract Free on AT&T,
+5579109:Contract Free on AT&T,
+5620493:Contract Free on AT&T}
+____________________________________________________________
+
+Figure 4.15 (a)  The clustering results from the execution of listing 4.13
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComDBSCAN
+
+153
+
+5:
+{5607863:Lack Of Democracy on Digg and Wikipedia?,
+ 5571841:Lack Of Democracy on Digg and Wikipedia?,
+ 5619782:Lack Of Democracy on Digg and Wikipedia?,
+ 5611165:Lack Of Democracy on Digg and Wikipedia?,
+ 5543643:Lack Of Democracy on Digg and Wikipedia?}
+____________________________________________________________
+6:
+{5481876:How Traffic Jams Occur : Simulation,
+ 5613023:How Traffic Jams Occur : Simulation}
+____________________________________________________________
+7:
+{5617459:Robotic drumstick keeps novices on the beat,
+ 5619693:Robotic drumstick keeps novices on the beat}
+____________________________________________________________
+8:
+{5617998:Obama: ""I Am NOT Running for Vice President"",
+ 5625315:Obama Accuses Clinton of Using ""Republican Tactics""}
+____________________________________________________________
+9:
+{5607788:Recycle or go to Hell, warns Vatican -- part I,
+ 5595841:Recycle or go to Hell, warns Vatican --- part IV,
+ 5618262:Recycle or go to Hell, warns Vatican -- part III,
+ 5592940:Recycle or go to Hell, warns Vatican -- part II}
+____________________________________________________________
+
+Noise Elements:
+ {5610213:Senate panel critiques prewar claims by White House,
+  5619818:A Facebook Application To Find Blood Donors Fast,
+  5612810:Super Mario Bros Inspired Wii with USB base [ Pics ],
+  5522983:Smoking Monkey[flash],
+  5609833:NSA's Domestic Spying Grows As Agency Sweeps Up Data,
+  5625339:Lawmaker's Attempt to Criminalize Anonymous Posting 
+Doomed,
+  5610081:Digg's Algo Change Cut Promotions by 38%,
+  5604438:Archaeologists Unveil Finds in Rome Digs,
+  5614085:House Files Contempt Lawsuit Against Bush Officials,
+  5592473:Maryland police officers refuse to pay speeding 
+tickets,
+  5622802:House Democrats Defy White House on Spying Program}
+
+Figure 4.15 (b)  The clustering results from the execution of listing 4.13 (continued)
+
+noise. But note also that there’s one more cluster that could be extracted from the noise 
+elements, and that the story with ID=5619818 could be assigned to the first cluster. 
+
+4.6.2
+
+The inner workings of DBSCAN
+Now, the details! First, we need to define the arguments that construct the DBSCANAl-
+gorithm class. The signature of the constructor is:
+
+public DBSCANAlgorithm(DataPoint[] points, 
+                       Distance distance, 
+                       double eps, 
+                       int minPoints, 
+                       boolean useTermFrequencies) 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com154
+
+CHAPTER 4  Clustering: grouping things together
+
+You must be familiar with the DataPoint array by now; that’s where we store the data. 
+The Distance interface allows us to pass whatever distance we think is more appropri-
+ate for our data. The fun begins with the eps variable, which probably stands for epsi-
+lon, the Greek letter that usually denotes a small positive number. The epsilon value 
+helps us define an epsilon neighborhood for any given DataPoint p as the set of Data-
+Points (q) whose distance from p is less than or equal to epsilon. So, the definition of 
+an  epsilon  neighborhood  is  quite  straightforward  and  exactly  what  you’d  expect. 
+Things get more complicated for the next few definitions, so let’s resort to figure 4.16, 
+which is similar to the figure in the original paper by Ester et al.
+
+ The large circles in figure 4.16 are the epsilon neighborhoods for the data points p
+and q; one circle has its center at p and the other at q. The radius of the circle is equal 
+to epsilon (eps) and the minPoints vari-
+able designates the minimum number of 
+points that must be inside the circle for a 
+data point to be considered a core  point. 
+The  points  that  belong  in  a  cluster  but 
+aren’t core points are called border points. 
+According to that nomenclature, the data 
+point p is a core point, and the data point 
+q  is  a  border  point.  We  say  that  a  data 
+point  p  is  directly  density-reachable  from  a 
+data point q, with respect to eps and min-
+Points,  if  the  following  two  conditions 
+are met:
+
+Figure 4.16  Core points and border points in 
+DBSCAN
+
+■ p is inside the epsilon neighborhood of q. 
+■ There are more than minPoints data points inside the epsilon neighborhood of q. 
+
+In figure 4.16, q is directly density reachable from p, but p isn’t directly density reach-
+able from q. These are the basic concepts that you need in order to understand the 
+code in the DBSCANAlgorithm, whose core methods are shown in listing 4.14.
+
+Listing 4.14  DBSCANAlgorithm: the two core methods of the our implementation
+
+public List<Cluster> cluster() {
+  int clusterId = getNextClusterId();
+
+  for(DataPoint p : points) {
+     if( isUnclassified(p) ) {
+
+       boolean isClusterCreated = createCluster(p, clusterId);   
+
+B
+
+       if( isClusterCreated ) {
+          clusterId = getNextClusterId();
+       }
+     }
+  }
+
+  List<Cluster> allClusters = new ArrayList<Cluster>();          
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComDBSCAN
+
+155
+
+  for(Map.Entry<Integer, Set<DataPoint>> e : clusters.entrySet()) {
+    String label = String.valueOf(e.getKey());
+    Set<DataPoint> points = e.getValue();
+    if( points != null && !points.isEmpty() ) {
+      Cluster cluster = new Cluster(label, e.getValue());
+      allClusters.add(cluster);
+    }
+  }
+
+  return allClusters;
+}
+
+private boolean createCluster(DataPoint p, Integer clusterId) {
+
+   boolean isClusterCreated = false;
+
+   Set<DataPoint> nPoints = findNeighbors(p, eps);   
+
+C
+
+   if( nPoints.size() < minPoints ) {                
+      assignPointToCluster(p, CLUSTER_ID_NOISE);
+      isClusterCreated = false;
+    } else {
+
+      assignPointToCluster(nPoints, clusterId);   
+
+D
+
+E
+
+      nPoints.remove(p);
+
+      while( nPoints.size() > 0 ) {   
+
+F
+
+        DataPoint nPoint = nPoints.iterator().next();
+
+        Set<DataPoint> nnPoints = findNeighbors(nPoint, eps);   
+
+G
+
+        if( nnPoints.size() >= minPoints ) {
+
+           for(DataPoint nnPoint : nnPoints ) {
+
+               if( isNoise(nnPoint) ) {
+
+                 assignPointToCluster(nnPoint, clusterId);   
+
+H
+
+               } else if( isUnclassified(nnPoint) ){
+
+                 nPoints.add(nnPoint);   
+
+I
+
+                 assignPointToCluster(nnPoint, clusterId);
+               }
+           }
+        }
+
+      nPoints.remove(nPoint);   
+    }
+
+J
+
+    isClusterCreated = true;
+  }
+
+  return isClusterCreated;
+}
+
+B
+
+C
+
+For each point in the dataset that hasn’t been clustered, create a cluster that contains 
+it; everything else in the cluster method is mere mechanics.
+Find the epsilon neighborhood of the data point p, given the parameter eps.
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

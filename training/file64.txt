@@ -1,0 +1,292 @@
+Recommending movies on a site such as Netflix.com
+
+109
+
+iweb2.ch3.collaborative.model.User u155 = ds.getUser(155);
+delphi.recommend(u155);
+
+iweb2.ch3.collaborative.model.User u876 = ds.getUser(876);
+delphi.recommend(u876);
+
+The first user could’ve been any user, so we picked the user whose ID is equal to 1. The 
+other two users were identified by executing the command Delphi.findSimilarUs-
+ers(u1);.  We  did  this  so  that  we  can  quickly  check  whether  our  recommendations 
+make sense. It’s reasonable to expect that if two users are similar and neither has seen 
+a movie, then if a movie is recommended to one of them, there’s a good chance that 
+it’ll be recommended to the other user too. Figure 3.12 shows the results that we get 
+when we run the script and corroborates this sanity check. 
+
+ These datasets aren’t as large as the ones that can be found in the Amazon.com or 
+the Netflix applications, but they’re certainly much larger than everything else that 
+
+bsh % iweb2.ch3.collaborative.model.User u1 = ds.getUser(1);
+bsh % delphi.recommend(u1);
+
+Recommendations for user 1:
+
+Item: Yojimbo (1961)              , predicted rating: 5.000000
+Item: Loves of Carmen, The (1948) , predicted rating: 4.303400
+Item: Voyage to 
+the Beginning of the World (1997) , predicted rating: 4.303400
+Item: Baby, The (1973)            , predicted rating: 4.303400
+Item: Cat from Outer Space, 
+The (1978)                        , predicted rating: 4.123200
+
+bsh % iweb2.ch3.collaborative.model.User u155 = ds.getUser(155);
+bsh % delphi.recommend(u155);
+
+Recommendations for user 155:
+
+Item: Persuasion (1995)              , predicted rating: 5.000000
+Item: Close Shave, A (1995)          , predicted rating: 4.373000
+Item: Notorious (1946)               , predicted rating: 4.181900
+Item: Shadow of a Doubt (1943)       , predicted rating: 4.101800
+Item: Crimes and Misdemeanors (1989) , predicted rating: 4.061700
+
+bsh % iweb2.ch3.collaborative.model.User u876 = ds.getUser(876);
+bsh % delphi.recommend(u876);
+
+Recommendations for user 876:
+
+Item: Third Man, The (1949)      , predicted rating: 5.000000
+Item: Bicycle Thief, 
+The (Ladri di biciclette)(1948)  , predicted rating: 4.841200
+Item: Thin Blue Line, The (1988) , predicted rating: 4.685600
+Item: Loves of Carmen, The (1948), predicted rating: 4.600200
+Item: Heaven's Burning (1997)    , predicted rating: 4.600200
+
+Figure 3.12  Recommendations from the MovieLensDelphi recommender based on the MovieLens dataset
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com110
+
+CHAPTER 3  Creating suggestions and recommendations
+
+we’ve presented so far, and large enough to be realistic. Running the script for the 
+small MovieLens dataset (100K ratings) will take anywhere between 30 seconds to a 
+minute simply to create the recommender. During that time, the recommender does 
+a lot of processing, as we’ll see. The recommendations themselves are relatively fast, 
+typically under one second.
+
+3.4.2 Data normalization and correlation coefficients
+
+As promised, in the example for this section, we enriched our collaborative filtering 
+approach by introducing two new tools. The first is data normalization and the second 
+a new similarity measure for capturing the correlation between items. The new simi-
+larity measure is called the linear correlation coefficient (also known as the product-moment 
+correlation coefficient, or Pearson’s r). Calculating that coefficient for two arrays x and y is 
+fairly straightforward. Listing 3.19 shows the three methods responsible for that calcu-
+lation.
+
+Listing 3.19  The calculation of the linear correlation coefficient (Pearson’s r)
+
+public double calculate() {
+
+    if( n == 0) {
+        return 0.0;
+    }
+    double rho=0.0d;
+    double avgX = getAverage(x);
+    double avgY = getAverage(y);   
+
+Calculate average 
+values for each vector
+
+    double sX = getStdDev(avgX,x);
+    double sY = getStdDev(avgY,y);   
+
+Calculate standard 
+deviations for each vector
+
+    double xy=0;
+
+    for (int i=0; i < n; i++) {
+
+        xy += (x[i]-avgX)*(y[i]-avgY);   
+    }
+
+B
+
+      if( sX == ZERO || sY == ZERO) {   
+
+C
+
+         double indX = ZERO;
+         double indY = ZERO;
+
+      for (int i=1; i < n; i++) {
+
+         indX += (x[0]-x[i]);
+         indY += (y[0]-y[i]); 
+      }
+
+          if (indX == ZERO && indY == ZERO) {
+         // All points refer to the same value
+         // This is a degenerate case of correlation
+         return 1.0;
+      } else {
+         //Either the values of the X vary or the values of Y
+         if (sX == ZERO) {
+             sX = sY;
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComRecommending movies on a site such as Netflix.com
+
+111
+
+             } else {
+             sY = sX;
+             }
+         }
+      }
+
+      rho = xy / ((double)n*(sX*sY));   
+      return rho;
+}
+
+private double getAverage(double[] v) {
+    double avg=0;
+
+    for (double xi : v ) {
+        avg += xi;
+    }
+    return (avg/(double)v.length);
+}
+
+The value of 
+Pearson’s r
+
+private double getStdDev(double m, double[] v) {
+    double sigma=0;
+
+    for (double xi : v ) {
+           sigma += (xi - m)*(xi - m);
+    }
+
+    return Math.sqrt(sigma / (double)v.length);
+}
+B is the cross product calculation of the pointwise deviations from the mean value. C
+is a special (singular) case, where all the points have the exact same values for either X
+or Y, or both. This case must be treated separately because it leads to division by zero.
+ The method getAverage is self-explanatory; it calculates the average of the vector 
+that’s provided as an argument. The getStdDev method calculates the standard devia-
+tion for the data of the vector that’s passed as the second argument; the first argument 
+of the method ought to be the average. There’s a smarter way to do this that avoids a 
+plague of numerical calculations called the roundoff error; read the article on the cor-
+rected two-pass algorithm by Chan, Golub, and LeVeque.
+
+ Calculating similarity based on Pearson’s correlation is a widely used metric that 
+
+has the following properties:
+
+■ Whenever it’s equal to zero, the two items are (statistically) uncorrelated. 
+■ Whenever it’s equal to 1, the ratings of the two items fit exactly onto a straight 
+line with positive slope; for example, (1,2), (3,4), (4,5), (4,5), where the first 
+number  in  parentheses  denotes  the  rating  of  the  first  item  while  the  second 
+number denotes the rating of the second item. This is called complete positive cor-
+relation. In other words, if we know the ratings of one item, we can infer the rat-
+ings of the other with high probability.
+
+■ Whenever it’s equal to -1, the ratings of the two items fit exactly onto a straight 
+line but with negative slope; for example (1,5), (2,4), (3,3), (4,2). This is called 
+complete negative correlation. In this case too, we can infer the ratings of one item 
+based  on  those  of  the  other  item,  but  now  whenever  the  ratings  for  the  first 
+item increase, the ratings for the second item will decrease. 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com112
+
+CHAPTER 3  Creating suggestions and recommendations
+
+If the items are correlated linearly, the linear correlation coefficient is a good measure 
+for the strength of that correlation. In fact, if you fit a straight line to your dataset then 
+the  linear  correlation  coefficient  reflects  the  extent  to  which  your  ratings  lie  away 
+from that line. But not everything fits that rosy picture. Unfortunately, this metric is a 
+rather poor measure of correlation if no correlation exists! Say what? Yes, that’s right. 
+  A  celebrated  counterexample  is  known  as  the  Anscombe’s  quartet.  Figure  3.13 
+depicts Anscombe’s quartet for four different pairs of values; this plot is available on 
+Wikipedia, in SVG format, at http://en.wikipedia.org/wiki/Image:Anscombe.svg.  
+
+ In plain terms, if you plot the ratings between two items against each other, and the 
+plot is similar to the upper-left graph of figure 3.13, the linear correlation coefficient is 
+a meaningful metric. In the other graphs, Pearson’s correlation has the same value but 
+its significance is questionable; the datasets are carefully crafted so that they also have 
+the same mean, the same standard deviation, and the same linear fit (y = 3 + 0.5*x). This 
+inability to determine the significance of the linear (Pearson) correlation coefficient led 
+people to a different kind of similarity metric called nonparametric correlation. There are 
+two popular nonparametric correlation coefficients: the Spearman rank-order correla-
+tion coefficient (rs) and the Kendall’s tau (␶). These metrics trade some loss of infor-
+mation for the assurance that a detected correlation is truly present in the data when 
+the values of the metrics indicate so. We discuss nonparametric correlation in the to-do 
+
+Figure 3.13  Anscombe’s quartet: Four datasets that have the same Pearson’s correlation but 
+different distributions
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComRecommending movies on a site such as Netflix.com
+
+113
+
+section because in many cases the distribution of ratings will look like the graph in the 
+lower-right corner. Nevertheless, from now on, we’ll assume that whenever the item rat-
+ings are correlated, they’re linearly correlated and we can safely use Pearson’s correla-
+tion.  You  can  find  more  information  about  the  nonparametric  correlations  in  the 
+references section.
+
+ Having discussed the new possibilities that the linear coefficient (Pearson’s r) and 
+the nonparametric correlations offer for evaluating similarities, we’ll proceed by show-
+ing you one way of achieving data normalization. Listing 3.20 shows code that does 
+just that; it’s one of the constructors for the class PearsonCorrelation. The first argu-
+ment provides a reference to the original dataset, and the other two are references to 
+the items whose correlation we want to calculate. As you can see, the arrays that are 
+constructed for calculating the Pearson correlation don’t refer to the ratings of each 
+user, as they were recorded, but rather to a new set of data in which we’ve subtracted 
+the average rating of an item from the user’s ratings. Clearly, this isn’t the only way of 
+achieving data normalization. Bell and Koren describe sophisticated data normaliza-
+tion techniques as applied to the Netflix prize dataset.  
+
+Listing 3.20  Data normalization around the average rating of items
+
+public PearsonCorrelation(Dataset ds, Item iA, Item iB) {
+
+  double aAvgR = iA.getAverageRating();
+  double bAvgR = iB.getAverageRating();
+
+  Integer[] uid = Item.getSharedUserIds(iA, iB);
+
+  n = uid.length;
+
+  x = new double[n];
+  y = new double[n];
+
+  User u;
+
+  double urA=0;
+  double urB=0;
+
+  for (int i=0; i<n; i++) {
+
+    u = ds.getUser(uid[i]);
+
+    urA = (double) u.getItemRating(iA.getId()).getRating();
+    urB = (double) u.getItemRating(iB.getId()).getRating();
+
+    x[i] = urA - aAvgR;
+    y[i] = urB - bAvgR;
+  }
+}
+
+Data  normalization  and  the  use  of  Pearson’s  correlation  are  incorporated  in  the 
+PearsonCorrelation class, and their use is encapsulated by the MovieLensItemSimi-
+larity class. For that reason, the MovieLensDelphi class is slightly different from the 
+other Delphi-type classes. The code in listing 3.21 highlights these differences.
+
+ 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

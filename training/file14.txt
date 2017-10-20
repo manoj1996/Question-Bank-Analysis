@@ -1,0 +1,55 @@
+14
+
+CHAPTER 1  What is the intelligent web?
+
+semantics of the content (the meaning of a word or phrase within a context) whereas 
+machines can’t do that easily. RDF was introduced to facilitate the semantic interpreta-
+tion of the web. You can use it to extract useful data and metadata for your own pur-
+poses. The RSS 1.0 specification can be found at http://web.resource.org/rss/1.0/.
+
+  Really  Simple  Syndication  (RSS  2.0  is  based  on  Netscape’s  Rich  Site  Summary
+0.91—there’s significant overloading of the acronym RSS, to say the least—and its pri-
+mary purpose was to alleviate the complexity of the RDF-based formats. It employs a syn-
+dication-specific language that’s expressed in plain XML format, without the need for 
+XML namespaces or direct RDF referencing. Nearly all major sites provide RSS 2.0 feeds 
+today; these are typically free for individuals and nonprofit organizations for noncom-
+mercial use. Yahoo!’s RSS feeds site (http://developer.yahoo.com/rss) has plenty of 
+resources for a smooth introduction in the subject. You can access the RSS 2.0 specifi-
+cation and other related information at http://cyber.law.harvard.edu/rss.
+
+ Finally, you can use Atom-based syndication. A number of issues with RSS 2.0 led to 
+the development of an Internet Engineering Task Force (IETF) standard expressed in 
+RFC 4287 (http://tools.ietf.org/html/rfc4287). Atom is not RDF-based; it’s neither as 
+flexible as RSS 1.0 nor as easy as RSS 2.0. It was in essence a compromise between the fea-
+tures of the existing standards under the constraint of maximum backward compatibility 
+with the other syndication formats. Nevertheless, Atom enjoys widespread adoption like 
+RSS 2.0. Most big web aggregators (such as Yahoo! and Google) offer news feeds in these 
+two formats. Read more about the Atom syndication format at the IBM Developer Works 
+website: http://www.ibm.com/developerworks/xml/standards/x-atomspec.html.
+RESTFUL SERVICES
+Representational State Transfer (REST) was introduced in the doctoral dissertation of Roy 
+T. Fielding.5 It’s a software architecture style for building applications on distributed, 
+hyperlinked, media. REST is a stateless client/server architecture that maps every ser-
+vice  onto  a  URL.  If  your  nonfunctional  requirements  aren’t  complex  and  a  formal 
+contract between you and the service provider isn’t necessary, REST may be a conve-
+nient way for obtaining access to various services across the web. For more informa-
+tion  on  this  important  technology,  you  can  consult  RESTful  Web  Services  by  Leonard 
+Richardson and Sam Ruby.
+
+  Many  websites  offer  RESTful  services  that  you  can  use  in  your  own  application. 
+Digg offers an API (http://apidoc.digg.com/) that accepts REST requests and offers 
+several response types such as XML, JSON, JavaScript, and serialized PHP. Functionally, 
+the API allows you to obtain a list of stories that match various criteria, a list of users, 
+friends, or fans of users, and so on.
+
+ The Facebook API is also a REST-like interface. This makes it possible to communicate 
+with that incredible platform using virtually any language you like. All you have to do 
+is send an HTTP GET or POST request to the Facebook API REST server. The Facebook 
+API is well documented, and we’ll make use of it later in the book. You can read more 
+about it at http://wiki.developers.facebook.com/index.php/API.
+
+5 http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

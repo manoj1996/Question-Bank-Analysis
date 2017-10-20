@@ -1,0 +1,83 @@
+44
+
+CHAPTER 2  Searching
+
+bsh % oracle.search("nvidia",5,pr);
+
+Search results using Lucene index scores:
+Query: nvidia
+
+Document Title: NVIDIA shares plummet into cheap medicine for 
+you!
+Document URL: file:/c:/iWeb2/data/ch02/spam-biz-02.html   -->  
+Relevance Score: 0.519243955612183
+_______________________________________________________
+Document Title: Nvidia shares up on PortalPlayer buy
+Document URL: file:/c:/iWeb2/data/ch02/biz 05.html  
+Relevance Score: 0.254376530647278
+_______________________________________________________
+Document Title: NVidia Now a Supplier for MP3 Players
+Document URL: file:/c:/iWeb2/data/ch02/biz 04.html   -->  
+Relevance Score: 0.190782397985458
+_______________________________________________________
+Document Title: Chips Snap: Nvidia, Altera Shares Jump
+Document URL: file:/c:/iWeb2/data/ch02/biz 06.html   -->  
+Relevance Score: 0.181735381484032
+
+-
+
+-
+
+-
+
+Document Title: Economic stimulus plan helps stock prices
+Document URL: file:/c:/iWeb2/data/ch02/biz 07.html   -->  
+Relevance Score: 0.084792181849480
+_______________________________________________________
+
+-
+
+Search results using combined Lucene scores and page rank scores:
+Query: nvidia 
+
+Document URL: file:/c:/iWeb2/data/ch02/biz 04.html   -->  
+Relevance Score: 0.087211910261991
+Document URL: file:/c:/iWeb2/data/ch02/biz 06.html   -->  
+
+-
+
+-
+
+Document URL: file:/c:/iWeb2/data/ch02/biz 05.html   -->  
+Relevance Score: 0.062737066556678
+Document URL: file:/c:/iWeb2/data/ch02/spam
+
+-biz-
+
+02.html   -->  
+
+ 
+
+-
+
+-
+
+Document URL: file:/c:/iWeb2/data/ch02/biz 07.html   -->  
+Relevance Score: 0.000359708275446
+
+-
+
+__________________________
+
+______________ __________________  
+
+Figure 2.7  Combining the Lucene scores and the PageRank scores allows you to eliminate spam.
+
+The snippet of code in listing 2.10 is from that method and captures the combination 
+of the two scores.
+
+ 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

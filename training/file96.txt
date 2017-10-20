@@ -1,0 +1,41 @@
+Clustering issues in very large datasets
+
+159
+
+base 2 here—so, for our problem to be affected by high dimensionality, the number 
+of dimensions required is O (10). You may wonder, though, why is this such a big deal? 
+The formulae that we’ve seen so far didn’t restrict us to low-dimensional spaces. So, 
+what’s going on? 
+
+ There are two fundamental problems with high dimensions that are particularly 
+important  for  clustering—although  most  of  what  we’ll  discuss  will  be  pertinent  for 
+classification algorithms as well. The first problem is that the large number of dimen-
+sions increases the amount of space that’s available for “spreading” our data points. 
+That is, if you keep the number of your data points fixed and you increase the number 
+of attributes that you want to use to describe them, the density of the points in your 
+space  decreases  exponentially!  So,  you  can  wander  around  for  a  long  time  without 
+being able to identify a formation (cluster) that’s preferable to another one. 
+
+ The second fundamental problem has a frightening name. It’s called the curse of 
+dimensionality.  In  simple  terms,  it  means  that  if  you  have  any  set  of  points  in  high 
+dimensions  and  you  use  any  metric  to  measure  the  distance  between  these  points, 
+they’ll all come out to be roughly the same distance apart! In order to illustrate this 
+important effect of dimensionality, let’s consider the following simple case, which is 
+illustrated in figure 4.17. 
+
+ If you look at figure 4.17 from left to right, the dimensionality increases by 1 for 
+each drawing. We start with eight points in one dimension (x axis) distributed in a 
+uniform fashion, say, between 0 and 1. It follows that the minimum distance that we 
+need to traverse from any given point until we meet another point is min(D) = 0.125, 
+whereas  the  maximum  distance  is  max(D)  =  1.  Thus,  the  ratio  of  min(D)  over 
+max(D) is equal to 0.125. In two dimensions, the eight data points are again distrib-
+uted uniformly, but now we have min(D) = 0.5 and max(D) = 1.414 (along the main 
+diagonal); thus, the ratio of min(D) over max(D) is equal to 0.354. In three dimen-
+sions,  we  have  min(D)  =  1  and  max  (D)  =  1.732;  thus,  the  ratio  of  min(D)  over 
+
+Figure 4.17  The curse of dimensionality: every point tends to have the same distance with any 
+other point.
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

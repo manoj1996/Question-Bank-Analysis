@@ -1,0 +1,108 @@
+200
+
+CHAPTER 5  Classification: placing things where they belong
+
+quickly, if not in real-time, so that the proper mechanisms of protecting your client 
+can be activated. We’ll consider the following typical attributes that can be associated 
+with a transaction:
+
+■ The description of the transaction
+■ The amount of transaction
+■ The location of the transaction
+
+We’ve created a set of legitimate transaction descriptions, which we included in a file 
+called descriptions.txt, and a set of what we’ll consider to be fraudulent transaction 
+descriptions,  which  we  included  in  a  file  called  fraud-descriptions.txt.  You  can  find 
+both files in the directory data\ch05\fraud. We have five different profiles of users, 
+because spending habits vary on the basis of many factors; a transaction of 3,000 USD
+in one account can be suspect of fraud but it could be legitimate for another account. 
+Five profiles are sufficient to make the point, but of course, in the real world there are 
+many more spending profiles. The transaction amount is drawn from a Gaussian dis-
+tribution and it’s determined on the basis of the average value of transaction amounts 
+for that profile and its standard deviation. If you don’t know what Gaussian distribu-
+tion is or the standard deviations are, see appendix A. 
+
+ Now is a good time to let you know about an intriguing property of large aggregates 
+of transactional data. If you aggregate transactional data from various sources and look 
+at how frequently the first significant digit of these numbers will be equal to 1, you’ll 
+realize that it’s much higher than you would’ve anticipated. Every normal person (that 
+means not a mathematician) will tell you that since I have nine digits, the likelihood of 
+seeing the digit 1 is 11.1%, the digit 2 is 11.1%, and so on. Right? Wrong! Benford’s law
+tells us that the probability should be logarithmic rather than uniform. It turns out that 
+the probability for the first significant digit to be equal to 1 is about 30%. There’s an 
+interesting story behind this powerful statistical fact, which in 1995 was successfully 
+employed by the district attorney’s office in Brooklyn to detect fraud in seven New York 
+companies (see Hill).
+
+  Back  to  the  description  of  our  transactional  data:  we  simplify  the  location  of  a 
+transaction by providing Euclidean (x,y) coordinates. A real system would probably 
+use GPS data to precisely describe the locations of the transactions. In our case, plain 
+(x,y) coordinates will serve us equally well without complicating the use case unneces-
+sarily. The (x,y) coordinates of a transaction are drawn from a uniform distribution 
+between a minimum and a maximum value. In other words, for each profile, we set a 
+minimum and a maximum value for both X and Y, and a given transaction is assigned 
+a random location that falls anywhere between these ranges of (x,y) coordinates with 
+equal probability.
+
+  You  can  experiment  with  the  code  and  generate  your  own  data;  you  could  add 
+more  profiles  or  more  users  and  more  transactions  per  user.  The  class  TenUsers-
+Sample  is  the  right  place  to  start  for  that;  you  can  find  it  in  the  package 
+iweb2.ch5.usecase.fraud.util together with other auxiliary classes. The execution 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComFraud detection with neural networks
+
+201
+
+of  the  main  method  in  that  class  generates  two  files;  the  first  is  called  generated-
+training-txns.txt and the other is called generated-test-txns.txt. These files contain the 
+training  and  the  testing  data,  respectively,  as  you  may  have  guessed.  In  the  folder 
+data\ch05\fraud you’ll find the data that we used to write this section; we called the 
+files training-txns.txt and test-txns.txt. There are about 10,000 transactions available 
+for  training  and  about  1,000  transactions  available  for  testing.  Each  transaction  is 
+specified by the following attribute values (in the listed order):
+
+■ The ID of the user
+■ The ID of the transaction
+■ The description of the transaction
+■ The amount of the transaction
+■ The x coordinate of the transaction
+■ The y coordinate of the transaction
+■ A Boolean variable that determines whether the transaction is fraudulent (true) 
+
+or not (false)
+
+Our goal is fairly straightforward. We want to build a classifier that can learn how to 
+identify  a  fraudulent  transaction  based  on  the  transactions  in  the  training  dataset. 
+Once  we’ve  built  (trained)  our  classifier,  we  want  to  test  it  against  the  testing  data, 
+which  was  drawn  from  the  same  statistical  distributions.  In  the  following  sections, 
+we’re going to achieve our goal by utilizing two different classification systems. The 
+first will be based on a neural network algorithm; the second will be based on a deci-
+sion tree. We briefly discussed both of these classification approaches in our introduc-
+tory overview of section 5.2, and it’s time to have a closer look at them.
+
+5.4.2 Neural networks overview
+
+In this section, we’ll present the central ideas behind neural networks in a nutshell. 
+The subject of neural networks is vast. We’ll present what’s known as computational neu-
+ral networks—we avoid the term artificial intentionally since there’ve been implementa-
+tions of neural networks that are hardware-based (such as Maier et al.). Our focus will 
+be on software implementations of neural networks.
+
+ Generally speaking, a neural network consists of neuron nodes, or simply neurons, 
+and links between neurons that are called synapses or links. Some nodes are responsi-
+ble  for  simply  transmitting  the  data  into  and  out  of  the  network,  while  others  are 
+responsible for processing the data. The former nodes provide the I/O capabilities of 
+the network. They’re aptly called the input and output layers depending on whether 
+they  insert  data  into  the  network  or  export  the  processed  data  out  of  the  network, 
+respectively. All other nodes are called hidden nodes and don’t interact with the “out-
+side” world.
+
+ A typical neural network is shown in figure 5.9. For a given input, denoted here with 
+the vector {x1, x2, x3}, a neural network produces output that’s a function of the input 
+and the network parameters. The output of the network in the figure is denoted as y; 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

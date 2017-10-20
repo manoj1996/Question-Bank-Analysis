@@ -1,0 +1,71 @@
+32
+
+CHAPTER 2  Searching
+
+QueryParser class. Sometimes you may have to use different means for creating the 
+Lucene Query. To search for the term “nasdaq index” and allow for the possibility of 
+results  that refer to “nasdaq composite index,” you’d use the class  PhraseQuery.  In 
+this case, the term “index” can be a term apart from the term “nasdaq”. The maxi-
+mum number of terms that can separate “nasdaq” and “index” is set by a parameter 
+called slope. By setting the slope equal to 1, we can achieve the desired result. For this 
+and more powerful features of searching with Lucene, we encourage you to explore 
+the Lucene APIs and documentation. 
+
+2.2 Why search beyond indexing?
+
+Now that we’ve showed you how to quickly index your documents with Lucene and 
+execute queries against those indices, you’re probably convinced that using Lucene is 
+easy and wonderful. You may wonder: “If Lucene is so sophisticated and efficient, why 
+bother with anything else?” In this section we’ll demonstrate why searching beyond 
+indexing is necessary. We mentioned the reasons in passing in chapter 1, but in this 
+section we’ll discuss the issue in more depth. Let’s add a new document to our list of 
+seeding URLs. Listing 2.4 is similar to listing 2.1, but it now includes a URL that con-
+tains spam. 
+
+Listing 2.4  Reading, indexing, and searching web pages that contain spam
+
+FetchAndProcessCrawler crawler = 
+➥  new FetchAndProcessCrawler("C:/iWeb2/data/ch02",5,200);
+
+crawler.setDefaultUrls(); 
+
+crawler.addUrl("file:///c:/iWeb2/data/ch02/spam-01.html");   
+
+crawler.run(); 
+
+LuceneIndexer luceneIndexer = 
+➥  new LuceneIndexer(crawler.getRootDir());   
+
+Build Lucene 
+index
+
+luceneIndexer.run(); 
+
+MySearcher oracle = new MySearcher(luceneIndexer.getLuceneDir());   
+
+oracle.search("armstrong",5); 
+
+Add web page 
+with spam
+
+Build 
+plain 
+search 
+engine
+
+Figure 2.4 shows the results of the search for “Armstrong.” You can see that the care-
+fully crafted spam web page catapulted to first place in our ranking. You can create 
+three or more similar spam pages and add them to your URL list to convince yourself 
+that pretty soon the truly relevant content will be lost in a sea of spam pages!
+
+ Unlike a set of documents in a database or on your hard drive, the content of the 
+Web isn’t regulated. Hence, the deliberate creation of deceptive web pages can render 
+traditional  IR techniques practically useless. If search engines relied solely on tradi-
+tional  IR  techniques  then  web  surfing  for  learning  or  entertainment—our  national 
+online sport—wouldn’t be possible. Enter a new brave world: link analysis! Link analy-
+sis was the first (and a significant) contribution toward fast and accurate searching on 
+a set of documents that are linked to each other explicitly, such as internet web pages. 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

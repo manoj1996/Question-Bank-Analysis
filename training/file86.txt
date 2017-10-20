@@ -1,0 +1,212 @@
+142
+
+CHAPTER 4  Clustering: grouping things together
+
+4.4
+
+4.4.1
+
+ The time complexity of the MST link algorithm is O (N 2) because that’s the order of 
+magnitude of computations that we need to make to get the MST. To convince your-
+self, look at the method findMinimumEdge and note the double loop of size N. This 
+number of operations dominates the rest of the algorithm. This can be improved by 
+using a hash table and storing the smallest edge for each one of the nodes that we’ve 
+already examined. 
+
+ Finally, we should mention that all the single-link algorithms are notorious due to 
+the  so-called  chain  effect,  which  can  result  in  two  clusters  merging  just  because  they 
+happened to have two points close to each other while most of their other points are 
+far  apart.  Single-link  algorithms  have  no  cure  for  this  problem,  but  the  rest  of  the 
+algorithms that we’ll discuss don’t suffer from this shortcoming.
+
+The k-means algorithm 
+The three link-based algorithms of the previous section were all hierarchical agglom-
+erative clustering algorithms. The k-means algorithm is the first partitional algorithm
+that we’ll examine, and we should mention that it’s the most widely used in practice 
+due to its excellent performance characteristics. 
+
+A first look at the k-means algorithm
+Let’s  begin  by  running  the  k-means  algorithm  to  obtain  some  clusters.  Listing  4.8 
+shows  the  steps  needed  to  load  the  data  from  table  4.1  and  execute  the  k-means 
+implementation that we provide. In order to compare the results of the k-means algo-
+rithm  with  those  of  the  single-link  algorithm,  where  we  identified  eight  clusters  at 
+level four, we chose k = 8. 
+
+Listing 4.8  The k-means algorithm in action
+
+SFDataset ds = SFData.createDataset();
+
+DataPoint[] dps = ds.getData();             
+
+Load data
+
+KMeansAlgorithm kMeans = new KMeansAlgorithm(8, dps);   
+
+Initialize k-means 
+algorithm
+
+kMeans.cluster();   
+
+Begin clustering
+
+kMeans.print();
+
+Figure 4.11 illustrates candidate clusters 
+based  on  the  k-means  algorithm;  com-
+pare these clusters with the clusters that 
+were  identified  by  the  other  (hierarchi-
+cal)  algorithms,  and  especially  the  clus-
+ters  in  figure  4.8,  where  the  number  of 
+clusters is again equal to eight. Central to 
+the idea of the k-means algorithm is the 
+idea of the cluster’s centroid, which is also 
+called the center or mean value. Think of 
+
+Figure 4.11  Clustering results based on the k-
+means algorithm, with k = 8
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComThe k-means algorithm 
+
+143
+
+the elements that make up a cluster as bodies with mass: the cluster’s centroid would 
+be the equivalent of the center of mass for that system of bodies. 
+
+ Figure 4.12 illustrates the idea of the centroid for a cluster whose points (shown as 
+black circles) lie on the vertices of a hexagon. The centroid of that cluster (due to 
+symmetry) is located at the center of the hexagon, and is shown as a dashed circle. 
+The centroid itself doesn’t have to be one of the data points that we want to cluster. In 
+fact, as illustrated in figure 4.12, most of 
+the time it won’t be. Its role is to create a 
+representative point of reference for the 
+set of points that form the cluster.
+
+ It’s possible that the candidate clusters 
+that  you’ll  get  when  you  execute  the 
+script  from  listing  4.8  may  differ  from 
+what’s shown in figure 4.11. The reason 
+for  any  differences  lies  in  the  initializa-
+tion of the locations of the centroids; this 
+will become clear in the next section. 
+
+Figure 4.12  The centroids (dashed circles) for a 
+triangular and hexagonal cluster of points (black 
+circles)
+
+4.4.2
+
+The inner workings of k-means
+To  better  understand  the  inner  workings  of  the  k-means  algorithm,  let’s  look  at  its 
+implementation, which is provided in the listing 4.9.
+
+Listing 4.9  KMeansAlgorithm: the core method of the k-means algorithm 
+
+public void cluster() {
+
+   boolean centroidsChanged = true;
+
+   while (centroidsChanged == true) {
+      List<Set<DataPoint>> clusters = 
+➥     new ArrayList<Set<DataPoint>>(k);
+
+      for (int i = 0; i < k; i++) {
+        clusters.add(new HashSet<DataPoint>());   
+      }
+
+Create set of points 
+for each cluster
+
+      for (DataPoint p : allDataPoints) {
+        int i = findClosestCentroid(allCentroids, p);   
+        clusters.get(i).add(p);
+      }
+
+      for (int i = 0; i < k; i++) {
+        allClusters[i] = new Cluster(clusters.get(i));   
+      }
+
+      centroidsChanged = false;
+
+Assign points 
+based on distance
+
+Create 
+clusters
+
+     for (int i = 0; i < allClusters.length; i++) {
+
+       if (clusters.get(i).size() > 0) {              
+
+Calculate new 
+centroids
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com144
+
+CHAPTER 4  Clustering: grouping things together
+
+         double[] newCentroidValues = findCentroid(allClusters[i]);  
+
+         double[] oldCentroidValues = 
+➥    allCentroids[i].getNumericAttrValues();
+
+         if (!Arrays.equals(oldCentroidValues, newCentroidValues)) {
+
+           allCentroids[i] = 
+➥    new DataPoint(allCentroids[i].getLabel(), newCentroidValues);
+
+           centroidsChanged = true;
+         }
+
+       } else {
+         // keep centroid unchanged if cluster has no elements.
+        }
+      }
+   }
+}
+
+public static DataPoint[] pickInitialCentroids(int k, 
+➥  DataPoint[] data) {
+
+  Random randGen = new Random();
+
+  DataPoint[] centroids = new DataPoint[k];
+
+  Set<Integer> previouslyUsedIds = new HashSet<Integer>();
+
+ for (int i = 0; i < k; i++) {
+
+    // pick point index that we haven't used yet
+    int centroidId;
+    do {                                                                      
+      centroidId = randGen.nextInt(data.length); 
+    }
+    while( previouslyUsedIds.add(centroidId) == false );
+
+    String label = "Mean-"+i+"("+data[centroidId].getLabel()+")";
+
+    double[] values = data[centroidId].getNumericAttrValues();
+
+    String[] attrNames = data[centroidId].getAttributeNames();
+
+    centroids[i] = new DataPoint(label, 
+➥  Attributes.createAttributes(attrNames, values));
+  }
+  return centroids;
+}
+
+The  k-means  algorithm  randomly  picks  (see  method  pickInitialMeanValues)  k
+points that represent the initial centroids of the candidate clusters. Subsequently the 
+distances between these centroids and each point of the set are calculated, and each 
+point is assigned to the cluster with the minimum distance between the cluster cen-
+troid and the point. As a result of these assignments, the locations of the centroids for 
+each cluster have now changed, so we reevaluate the new centroids until their loca-
+tions stop changing. This particular algorithm for k-means is attributed to E.W. Forgy
+and to S.P. Lloyd, and has the following advantages:
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

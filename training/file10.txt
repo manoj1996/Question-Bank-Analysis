@@ -1,0 +1,56 @@
+What applications can benefit from intelligence?
+
+9
+
+and a number of projects that are developed around it such as the Apache project Shin-
+dig. The premise of OpenSocial is to build a common API base that will allow the devel-
+opment of applications that interact with a large, and continuously growing, number of 
+websites such as Engage , Friendster, hi5, Hyves, imeem, LinkedIn, MySpace, Ning, Ora-
+cle, orkut, Plaxo, Salesforce , Six Apart, Tianji, Viadeo, and XING.
+
+1.3.4 Wikis
+
+Wikipedia shouldn’t require much introduction; you’ve probably visited that website 
+already, or at least heard of it. It’s a wiki site that has been consistently in the top 10 
+most visited websites. A wiki is a repository of knowledge that’s accessible online. Wikis 
+are  used  by  social  communities  on  the  internet  and  by  corporations  internally  for 
+knowledge-sharing purposes. 
+
+ These sites are clearly content aggregators. In addition, a lot of these sites, due to 
+the page creation workflow, have a built-in structure that annotates the content. In 
+Wikipedia,  you  can  assign  an  article  to  a  category  and  link  articles  that  refer  to  the 
+same  subject.  Wikis  are  a  promising  area  for  applying  the  techniques  of  this  book. 
+For example, you could build or modify your wiki site so that it automatically catego-
+rizes the pages that you write. The wiki pages could have an inlet, or another panel, 
+of  recommended  terms  that  you  can  link  to—pages  on  a  wiki  are  supposed  to  be 
+linked to each other whenever the link provides an explanation or additional infor-
+mation on a term or topic. Finally, the natural linkage of the pages provides fertile 
+ground  for  advanced  search  (chapter  2),  clustering  (chapter  4),  and  other  analyti- 
+cal techniques.
+
+1.3.5 Media-sharing sites
+
+YouTube is the hallmark of the internet media-sharing sites, but other websites such as 
+RapidShare  (http://www.rapidshare.com)  and  MegaUpload  (http://www.megau-
+pload.com/) enjoy a high percentage of visitors. The unique feature of these sites is 
+that most of their content is in binary format—video or audio files. In most cases, the 
+size of the smallest unit of information is larger on these sites than on text-based site 
+aggregators; the sheer volume of data to be processed, at the unit level, poses some of 
+the greatest challenges in the context of gathering intelligence.
+
+ In addition, two of the most difficult problems of intelligent applications (and also 
+most interesting from a business perspective) are intimately related to the processing 
+of binary information. These two problems are voice and pattern recognition. Compa-
+nies  such  as  Clearspring  (http://www.clearspring.com/)  and  ScanScout  (http://
+www.scanscout.com/), working together, enable advertisers to enhance the distribu-
+tion of their brand and message to a broader audience. ScanScout provides advertis-
+ers  with  intelligence  about  the  distribution  of,  and  engagement  with,  their  widgets 
+across more than 25 sites, including MySpace, Facebook, Google, and Yahoo!
+
+ The same pattern we described in the earlier sections can be found in these sites as 
+well. We have aggregated content; we typically want to have the content categorized; 
+and we want to have algorithms that can help us extract value from that content. We’d 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

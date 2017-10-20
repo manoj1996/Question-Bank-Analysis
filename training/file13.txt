@@ -1,0 +1,149 @@
+1.4
+
+How can I build intelligence in my own application?
+
+11
+
+How can I build intelligence in my own application?
+We’ve provided many reasons for embedding intelligence in your application. We’ve also 
+described a number of areas where the intelligent behavior of your software can dras-
+tically improve the experience and value that your users get from your application. At 
+this point, the natural question is “How can I build intelligence in my own application?” 
+ This entire book is an introduction to the design and implementation of intelli-
+gent components, but to make the best use of it, you should also address two prerequi-
+sites of building an intelligent application. 
+
+ The first prerequisite is a review of your functionality. What are your users doing 
+with your application? How does your application add consumer or business value? 
+We provide a few specific questions that are primarily related to the algorithms that 
+we’ll  develop  in  the  rest  of  the  book.  The  importance  of  these  questions  will  vary 
+depending  on  what  your  application  does.  Nevertheless,  these  specific  questions 
+should help you identify the areas where an intelligent component would add most 
+value to your application.
+
+ The second prerequisite is about data. For every application, data is either internal 
+to  an  application  (immediately  available  within  the  application)  or  external.  First 
+examine  your  internal  data.  You  may  have  everything  that  you  need,  in  which  case 
+you’re ready to go. Conversely, you may need to insert a workflow or other means of 
+collecting some additional data from your users. You may want, for example, to add a 
+“five star” rating UI element to your pages, so that you can build a recommendation 
+engine based on user ratings. 
+
+ Alternatively, you might want or need to obtain more data from external sources. A 
+plethora of options is available for that purpose. We can’t review them all here, but we 
+present four large categories that are fairly robust from a technology perspective, and 
+are widely used. You should look into the literature for the specifics of your preferred 
+method for collecting the addition data that you want to obtain. 
+
+1.4.1
+
+Examine your functionality and your data
+You should start by identifying a number of use cases that would benefit from intelli-
+gent behavior. This will obviously differ from application to application, but you can 
+identify these cases by asking some very simple questions, such as:
+
+■ Does my application serve content that’s collected from various sources? 
+■ Does it have wizard-based workflows? 
+■ Does it deal with free text?
+■ Does it involve reporting of any kind?
+■ Does it deal with geographic locations such as maps?
+■ Does our application provide search functionality?
+■ Do our users share content with each other?
+
+■
+
+■
+
+Is fraud detection important for our application?
+Is identity verification important for our application?
+
+■ Does our application make automated decisions based on rules? 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com12
+
+CHAPTER 1  What is the intelligent web?
+
+This list is, of course, incomplete but it’s indicative of the possibilities. If the answer to 
+any of these questions is yes, your application can benefit greatly from the techniques 
+that we’ll describe in the rest of the book. 
+
+ Let’s consider the common use case of searching through the data of an imaginary 
+application. Nearly all applications allow their users to search their site. Let’s say that 
+our imaginary application allows its users to purchase different kinds of items based 
+on a catalog list. Users can search for the items that they want to purchase. Typically, 
+this  functionality  is  implemented  by  a  direct  SQL  query,  which  will  retrieve  all  the 
+product items that match the item description. That’s nice, but our database server 
+doesn’t take into account the fact that the query was executed by a specific user, for 
+whom we probably know a great deal within the context of his search. We can proba-
+bly improve the user experience by implementing the ranking methods described in 
+chapter 2 or the recommendation methods described in chapter 3.
+
+1.4.2 Get more data from the web 
+
+In many cases, your own data will be sufficient for building intelligence that’s relevant 
+and  valuable  to  your  application.  But  in  some  cases,  providing  intelligence  in  your 
+application may require access to external information. Figure 1.6 shows a snapshot 
+from the mashup site HousingMaps (http:www.housingmaps.com), which allows the 
+
+Figure 1.6  A screenshot that shows the list of available houses on craigslist combined with maps 
+from the Google maps service (source: http://www.housingmaps.com).
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComHow can I build intelligence in my own application?
+
+13
+
+user to browse the houses available in a geographic location by obtaining the list of 
+houses from craigslist (http://www.craigslist.com) and maps from the Google maps
+service (http://code.google.com/apis/maps/index.html). 
+
+ Similarly, a news site could associate a news story with the map of the area that the 
+story refers to. The ability to obtain a map for a location is already an improvement 
+for any application. Of course, that doesn’t make your application intelligent unless 
+you do something intelligent with the information that you get from the map. 
+
+ Maps are a good example of obtaining external information, but more information 
+is  available  on  the  web  that’s  unrelated  to  maps.  Let’s  look  at  the  enabling 
+technologies. 
+CRAWLING AND SCREEN SCRAPING  
+Crawlers, also known as spiders, are software programs that can roam the internet and 
+download content that’s publicly available. Typically, a crawler would visit a list of URLs 
+and attempt to follow the links at each destination. This process can repeat for a num-
+ber of times, usually referred to as the depth of crawling. Once the crawler has visited a 
+page, it stores its content locally for further processing. You can collect a lot of data in 
+this manner, but you can quickly run into storage or copyright-related issues. Be care-
+ful and responsible with crawling. In chapter 2, we present our own implementation 
+of a web crawler. We also include an appendix that provides a general overview of web 
+crawling, a summary of our own web crawler, as well as a brief description of a few 
+open source implementations.
+
+ Screen scraping refers to extracting the information that’s contained in HTML pages. 
+This is a straightforward but tedious exercise. Let’s say that you want to build a search 
+engine  exclusively  for  eating  out  (such  as  http://www.foodiebytes.com).  Extracting 
+the menu information from the web page of each restaurant would be one of your 
+first tasks. Screen scraping itself can benefit from the techniques that we describe in 
+this book. In the case of a restaurant search engine, you want to assess how good a res-
+taurant is based on reviews from people who ate there. In some cases, ratings may be 
+available, but most of the time these reviews are plain, natural language, text. Reading 
+the reviews one-by-one and ranking the restaurants accordingly is clearly not a scal-
+able business solution. Intelligent techniques can be employed during screen scraping 
+and help you automatically categorize the reviews and assess the ranking of the restau-
+rants. An example is Boorah (http://www.boorah.com).
+RSS FEEDS
+Website syndication is another way to obtain external data and it eliminates the bur-
+den  of  revisiting  websites  with  your  crawler.  Usually,  syndicated  content  is  more 
+machine-friendly than regular web pages because the information is well structured. 
+There are three common feed formats: RSS 1.0, RSS 2.0, and Atom.
+
+ RDF Site Summary (RSS) 1.0, as the name suggests, was born out of the Resource 
+Description Framework4 (RDF) and is based on the idea that information on the web 
+can be harnessed by humans and machines. However, humans can usually infer the 
+
+4 http://www.w3.org/RDF
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

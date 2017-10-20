@@ -1,0 +1,57 @@
+172
+
+CHAPTER 5  Classification: placing things where they belong
+
+5.2.2
+
+without resorting to mathematics. The main idea behind this family of classification 
+algorithms is the construction of an artificial network of computational nodes that’s 
+analogous to the biological structure of the human brain, which is basically made of neu-
+rons and synapses that connect them. 
+
+ Neural network algorithms have been shown to perform well on a variety of prob-
+lems. There are two major disadvantages of neural networks: we don’t have a design 
+methodology that would be applicable in a large number of problems, and it’s difficult 
+to interpret the results of neural network classification; the classifier may commit few 
+errors but we’re unable to understand why. This is why we consider neural networks to 
+be  a  “black  box”  technique,  as  opposed  to  a  decision  tree  or  a  rule-based  algo-
+rithm—where the result of a classification for a particular data point can be easily inter-
+preted.
+
+Statistical classification algorithms  
+Regression algorithms are based on the idea of finding the best fit of the data to a for-
+mula; the most common formula is a linear function of the input values (see Hastie, 
+Tibshirani,  and  Friedman).  Regression  algorithms  are  usually  employed  when  the 
+data points are inherently numerical variables (such as the dimensions of an object, 
+the weight of a person, or the temperature in the atmosphere) but, unlike Bayesian 
+algorithms,  they’re  not  very  good  for  categorical  data  (such  as  employee  status  or 
+credit score description). In addition, if the model about the data is linear then it’s 
+not easy to justify the adjective “statistical”; in essence, linear regression isn’t different 
+from the good old high school exercise of fitting a line to a bunch of x-y points. 
+
+ Things get more interesting and obtain the flavor of a statistical approach in the 
+case of so-called logistic regression. In this case, the model (the logistic function) takes 
+values between 0 and 1, which can be interpreted as the probability of class member-
+ship and works well in the case of binary classification (see Dunham).  
+
+ Most of the techniques in the statistical algorithms category use a probability theo-
+rem known as the Bayes rule or Bayes theorem (see Papoulis and Pillai).  We encountered 
+the Bayes rule in chapter 2, in the context of learning from user clicks. In this kind of 
+statistical classification algorithms, the least common denominator is the assumption 
+that the attributes of the problem are independent of each other, in a fairly quantita-
+tively explicit form. The fascinating aspect of Bayesian algorithms is that they seem to 
+work well even when that independence assumption is clearly violated! In section 5.3, 
+we’ll study the most celebrated algorithm of this approach—the naïve Bayes classifica-
+tion algorithm. 
+
+  Bayesian  networks  are  a  relatively  modern  approach  to  machine  learning  that 
+attempts to combine the power of the Bayes theorem with the advantages of structural 
+approaches, such as decision trees. Naïve Bayes classifiers and their siblings can repre-
+sent simple probability distributions, but fall short in capturing the probabilistic struc-
+ture of the data, if there is one. By leveraging the powerful representation of directed 
+acyclic graphs (DAG), the probabilistic relations of the attributes can be depicted graph-
+ically. We won’t cover Bayesian networks in this book; if you’re interested in learning 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

@@ -1,0 +1,201 @@
+138
+
+CHAPTER 4  Clustering: grouping things together
+
+  for(int i = 0, n = a.length; i < n; i++) {        
+
+     for(int j = i + 1, k = a.length; j < k; j++) {
+
+Adding distances of all 
+links for all clusters
+
+         double d = a[i][j];
+
+         if( d > 0 ) {
+           DataPoint e1 = elements[i];
+           DataPoint e2 = elements[j];
+
+            Cluster c1 = allClusters.findClusterByElement(e1);
+            Cluster c2 = allClusters.findClusterByElement(e2);
+
+            if( !c1.equals(c2) ) {
+               int ci = idxMapping.getIndex(c1);
+               int cj = idxMapping.getIndex(c2);
+
+               clusterDistances[ci][cj] += d;
+               clusterDistances[cj][ci] += d;                        
+            }
+          }
+       }
+    }
+
+    boolean[] merged = new boolean[clusterDistances.length];
+
+    for(int i = 0, n = clusterDistances.length; i < n; i++) {
+
+       for(int j = i+1, k = clusterDistances.length; j < k; j++) {
+
+          Cluster ci = idxMapping.getObject(i);
+          Cluster cj = idxMapping.getObject(j);
+          int ni = ci.size();
+          int nj = cj.size();
+
+          clusterDistances[i][j] = 
+➥  clusterDistances[i][j] / (ni * nj);   
+
+Average distance 
+between clusters
+
+          clusterDistances[j][i] = clusterDistances[i][j];
+
+          // merge clusters if distance is below the threshold
+          if( merged[i] == false && merged[j] == false ) {
+             if( clusterDistances[i][j] <= distanceThreshold) {
+                allClusters.remove(ci);
+                allClusters.remove(cj);
+                Cluster mergedCluster = new Cluster(ci, cj);
+                allClusters.add(mergedCluster);
+                merged[i] = true;
+                merged[j] = true;
+             }
+          }
+       }
+    }
+ }
+
+As before, the dendrogram is initialized by setting every element of the set in its own 
+cluster,  and  new  clusters  are  formed  until  all  elements  belong  to  a  single  cluster. 
+Unlike  with  the  single-link  algorithm,  we  need  to  find  the  distance  of  all  the  links 
+between  two  clusters.  The  average-link  algorithm requires more computations. The 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComLink-based algorithms
+
+139
+
+first loop of the method mergeClusters in listing 4.6 adds the distance between any 
+two elements of the set to the total distance of the clusters that they happen to belong 
+to. The second loop, from the same method, divides the total sum by the number of 
+links and compares the average distance to the threshold. If the average distance is 
+below the threshold value, the clusters are merged. Upon completion of all mergers 
+and acquisitions for the given level, the algorithm proceeds with the next level of the 
+dendrogram just as the single-link algorithm did.
+
+ Figure 4.9 shows the results that we obtain from the average-link algorithm when we 
+use the sample dataset from table 4.1; the output is set to print the clusters for the value 
+level equal to 4, as we did in figure 4.8. Note that there are fewer clusters now. What do 
+you think happened? Why is there such a clear difference in the results? Even though 
+we kept the level constant, the way that each algorithm proceeds to calculate the dis-
+tance is different. Thus, the proximity thresh-
+old  is  different  at  the  same  level.  In  other 
+words,  after  four  iterations,  the  single-link 
+algorithm has expanded its proximity circles 
+(see  figure  4.5)  far  more  than  the  average-
+link algorithm did. So naturally, the results of 
+clustering  for  the  average-link  algorithm 
+show fewer clusters. The moral of the story is 
+that you should compare algorithms of that 
+kind  by  the  size  of  the  proximity  circles, 
+rather than the level of iteration. 
+
+Figure 4.9  Clustering results based on the 
+average-link algorithm
+
+The minimum-spanning-tree algorithm
+In order to understand our third agglomerative algorithm, we’ll need to talk about 
+the concept of a minimum spanning tree. In general, given a set of elements, we can con-
+struct a tree by connecting any two vertices with exactly one edge (link). A spanning 
+tree would connect all vertices of the given set, and clearly there are many ways to do 
+this. But the MST connects the vertices in such a way as to minimize the sum of the adja-
+cency values for the connected vertices. Given the adjacency matrix, our implementa-
+tion employs the Prim-Jarník algorithm for identifying the minimum spanning tree, 
+and this involves O (N 2) operations. There are other algorithms with nearly linear per-
+formance—O  (N  log(N)).  If  you’d  like  to  read  more  on  graph  theoretic  algorithms
+related to the minimum spanning tree and more advanced topics, consult the “To do” 
+section and the references section.
+
+ The MST single-link algorithm, as the name suggests, is a variant of the single-link 
+algorithm that’s based on the minimum spanning tree. The latter is derived from the 
+adjacency matrix, and it produces a natural ordering between the elements of the set. 
+If the adjacency matrix is a 5x5 array, the MST is also represented by a two-dimensional 
+array that’s 5x5, and it must also be symmetrical. For both matrices, we set the diago-
+nal elements equal to –1 to indicate that we’re not interested in self-links. This is the 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+4.3.5
+
+Download at Boykma.Com140
+
+CHAPTER 4  Clustering: grouping things together
+
+only  part  that  differs  from  the  other  two  agglomerative  clustering  algorithms  that 
+we’ve  seen.  The  algorithm  uses  the  information  in  the  MST  to  merge  the  clusters 
+based on the increasing order of their elements in the tree. 
+
+ Let’s look at the results that we get when we run the script of listing 4.4. The single-
+link algorithm, at level four, produces the clusters that were shown in figure 4.5. Fig-
+ure 4.10 shows the results that we obtain from the MST single-link algorithm when we 
+use the example dataset from table 4.1. The output is set to print the clusters for the 
+value  level  equal  to  4,  like  we  did  before  in  figures  4.8  and  4.9  for  the  single-  and 
+average-link algorithms, respectively.
+
+ The MST single-link algorithm results in fewer clusters than the single-link algorithm 
+because, similar to the case of the average-link algorithm, the proximity circles at level 
+four haven’t expanded as much as they did for 
+the single-link algorithm. If you increase the 
+level progressively you can observe the merg-
+ing of the various singletons and clusters into 
+bigger cluster formations. As before, the algo-
+rithm  terminates  when  all  elements  of  the 
+dataset belong to one cluster. So, let’s look at 
+the code. Listing 4.7 shows the auxiliary class 
+MST,  which  is  used  to  create  the  minimum 
+spanning tree for a given adjacency matrix.
+
+Figure 4.10  Clustering results based on the 
+MST link algorithm
+
+Listing 4.7  Creating the minimum spanning tree based on the adjacency matrix
+
+public class MST {
+
+  public double[][] buildMST(double[][] adjM) {
+
+    boolean[] allV = new boolean[a.length];      
+    allV[0] = true;
+
+Initialize vector to 
+hold MST nodes
+
+    double[][] mst = new double[adjM.length][adjM.length];   
+    for(int i = 0, n = mst.length; i < n; i++) {
+       for(int j = 0; j < n; j++) {
+           mst[i][j] = -1; 
+       }
+    }
+
+    Edge e = null; 
+    while( (e = findMinimumEdge(allV, adjM)) != null ) {   
+        allV[e.getJ()] = true;
+        mst[e.getI()][e.getJ()] = e.getW();
+        mst[e.getJ()][e.getI()] = e.getW();
+    }
+    return mst;
+  }
+
+  private Edge findMinimumEdge(boolean[] mstV, double[][] a) {
+    Edge e = null;
+    double minW = Double.POSITIVE_INFINITY;
+    int minI = -1;
+
+Initialize 
+MST matrix
+
+Iterate until you 
+find minimum
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

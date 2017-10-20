@@ -1,0 +1,424 @@
+Fraud detection with neural networks
+
+207
+
+bsh % TransactionDataset testDS = 
+å  TransactionLoader.loadTestDataset();
+
+bsh % FraudErrorEstimator auditor = 
+å  new FraudErrorEstimator(testDS, nnClone);
+
+bsh % auditor.run();
+
+userid = 25.0 - txnid = 500523 – txnamt = 63.79 – 
+å  location_x = 533.0 - location_y = 503.0 -  
+å  description = SOME DUDE -->  VALID_TXN
+
+userid = 26.0 - txnid = 500574 - txnamt = 127.97 – 
+å  location_x = 734.0 - location_y = 507.0 -  
+å  description = SOME DUDE -->  VALID_TXN
+
+userid = 23.0 -  txnid = 500273 -  txnamt = 47.76 – 
+location_x = 966.0 -  location_y = 991.0 -  
+description = SOME DUDE -->  VALID_TXN
+
+userid = 21.0 -  txnid = 500025 -  txnamt = 50.47 – 
+location_x = 980.0 -  location_y = 996.0 -  
+description = SOME DUDE -->  VALID_TXN
+
+Total test dataset txns: 1100, Number of fraud txns:100
+Classified correctly: 1096, 
+Misclassified valid txns: 4, 
+Misclassified fraud txns: 0
+
+Figure 5.11 
+
+Introducing noise in the data by replacing the description of valid transactions
+
+The moral of the story is that a good understanding of the data is extremely impor-
+tant. In particular, it’s important to know the degree to which your data is representa-
+tive of all possible data for your application. Typically, collecting a lot of data helps us 
+obtain a lot of relevant data.
+
+ In practice, this isn’t as easy as it sounds because the same data can mean different 
+things in different contexts. Moreover, a small number of attributes result in greater 
+ambiguity about the meaning of the data but a large number of attributes can obfus-
+cate the essential classification features with unimportant information. There’s a fine 
+balance between making our classifier accurate on what we already know and concom-
+itantly endowing the classifier with the power of generalization. 
+
+ It’s important to know the sensitivity that your classifier shows when you introduce 
+noise. In the preceding example, we changed the description of 39 transactions in a total 
+set of 1,100 test transactions, and our neural network classifier was inaccurate in 4 out 
+of the 39 “polluted” transactions. What would happen if you change the substitution 
+string to something else? How many of the polluted transactions become misclassified 
+as the number of polluted transactions increases? Use your own name as the substitution 
+string and study the results.
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com208
+
+5.4.4
+
+CHAPTER 5  Classification: placing things where they belong
+
+The anatomy of the fraud detector neural network
+Now, it’s time to take a close look at the NNFraudClassifier class, shown in listing 5.14. 
+At its core lies the class TransactionNN, which is a neural network specifically built to 
+meet the needs of our fraud detection use case. In turn, TransactionNN extends a gen-
+eral neural network class called BaseNN, which you can use as the basis for writing your 
+own neural network; we’ll examine the BaseNN class in listing 5.16. 
+
+Listing 5.14  A classifier for fraud detection based on a special neural network 
+
+public class NNFraudClassifier 
+   implements Classifier, java.io.Serializable {
+
+private String name;
+private TransactionNN nn;     
+private TransactionDataset ds;
+private transient TrainingSet ts;
+private TransactionInstanceBuilder instanceBuilder;
+private List<String> availableAttributeNames;    
+
+public NNFraudClassifier(TransactionDataset ds) {   
+  this.ds = ds;
+  this.ts = ds.createTrainingDataset();
+  this.instanceBuilder = ds.getInstanceBuilder();
+  this.availableAttributeNames = new ArrayList<String>();
+
+B
+
+  nn = createNeuralNetwork();
+}
+
+public Concept classify(String transactionId) {   
+  setVerbose(true);
+  Transaction t = ds.findTransactionById(transactionId);
+  return classify(t);
+}
+
+C
+
+public Concept classify(Transaction t) {
+  return classify(instanceBuilder.createInstance(t));
+}
+
+public Concept classify(Instance instance) {   
+
+D
+
+  double[] x = createNNInputs(instance);
+
+  double[] y = nn.classify(x);
+
+  Concept c = createConceptFromNNOutput(y);
+
+  return c;
+}
+
+public boolean train() {   
+
+E
+
+  if( ts == null ) {
+     throw new RuntimeException("Can't train classifier – 
+➥         training dataset is NULL.");
+  }
+  if( nn == null ) {
+     throw new RuntimeException("No Neural Network found.");
+  }
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComFraud detection with neural networks
+
+209
+
+  if( nn.getInputNodeCount() != availableAttributeNames.size()) {
+     throw new RuntimeException("Number of attributes doesn't match");
+  }
+  if( nn.getOutputNodeCount() != 1) {
+     throw new RuntimeException("Classifier expects network 
+➥        with only one output node.");
+  }
+
+  trainNeuralNetwork(nTrainingIterations);
+
+  return true;
+}
+
+private void trainNeuralNetwork(int nIterations) {   
+
+F
+
+   for(int i = 1; i <= nIterations; i++) {
+
+       for(Instance instance : ts.getInstances().values()) {
+
+            double[] nnInput = createNNInputs(instance);
+
+            double[] nnExpectedOutput = createNNOutputs(instance);
+
+            nn.train(nnInput, nnExpectedOutput);
+       }
+   }
+}
+
+public double[] createNNInputs(Instance instance) {   
+
+G
+
+   int nInputNodes = nn.getInputNodeCount();
+
+   double[] x = new double[nInputNodes];     
+
+   for(int i = 0; i < nInputNodes; i++) {
+
+      String attrName = this.availableAttributeNames.get(i);
+      Attribute a = instance.getAttributeByName(attrName);
+
+      if( a instanceof DoubleAttribute ) {
+
+         x[i] = (Double)a.getValue();
+
+      } else {
+
+         if( a == null ) {
+           throw new RuntimeException("Failed to find attribute with name:
+➥          '"+attrName);         
+         } else {
+           throw new RuntimeException("Invalid attribute type.");
+         }
+      }
+   }
+   return x;
+}
+
+public double[] createNNOutputs(Instance i) {   
+
+H
+
+  int nOutputNodes = nn.getOutputNodeCount();
+
+  double[] y = new double[nOutputNodes];
+
+  if( TransactionConcept.CONCEPT_LABEL_FRAUD.equals(i.getConcept().getName()) ) {
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com210
+
+CHAPTER 5  Classification: placing things where they belong
+
+      y[0] = 1;
+
+  } else {
+      y[0] = 0;
+  }
+  return y;
+}
+
+private Concept createConceptFromNNOutput(double[] y) {   
+
+I
+
+  double threshold = 0.5;         
+
+  Concept c = null;
+
+  if( y[0] >= threshold ) {
+
+     c = new TransactionConcept(TransactionConcept.CONCEPT_LABEL_FRAUD);
+
+  } else {
+
+     c = new TransactionConcept(TransactionConcept.CONCEPT_LABEL_VALID);
+  }
+
+  return c;
+}
+
+public void useDefaultAttributes() {                                     
+     trainOnAttribute(TransactionInstance.ATTR_NAME_N_TXN_AMT);
+     trainOnAttribute(TransactionInstance.ATTR_NAME_N_LOCATION);
+     trainOnAttribute(TransactionInstance.ATTR_NAME_N_DESCRIPTION);
+    }
+}
+
+J
+
+Listing 5.13 shows the essential methods of the NNFraudClassifier class; for brevity 
+we’ve eliminated Javadoc, getters and setters, and so forth. As you can see, the classi-
+fier is a wrapper around more elementary classes that allow us to map the use case of 
+transaction fraud onto the standard “instance to concept” framework. Let’s comment 
+on these methods in order of appearance:
+Our constructor takes a reference to the transaction dataset and constructs the objects 
+that will be needed for classification. Recall that our data is transactions, so we need to 
+create instances from them in order to use the classification algorithms. That’s the role 
+of  the  TransactionInstanceBuilder  class.  The  invocation  of  the  method  create-
+NeuralNetwork() creates an instance of the TransactionNN class, which we describe in 
+listing 5.14.
+The method classify is overloaded for the specific usage of this classifier. According 
+to  our  iweb2.ch5.classification.core.intf.Classifier  interface,  a  classifier  is 
+obligated to provide an implementation that takes an Instance as its single argument 
+and returns a Concept. We facilitate the use of our classifier by providing additional 
+classify methods, which eventually delegate to the main classify method.
+This  is  the  essential  method  of  the  classifier  and  its  implementation  involves  three 
+steps. Our neural networks accept an array of double values as input, and provide an 
+array of double values as output. The first step is to translate the data of a transaction 
+instance into an array of double values. The second step loads the input values into 
+
+B
+
+C
+
+D
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComFraud detection with neural networks
+
+211
+
+E
+
+F
+
+G
+
+H
+
+I
+
+J
+
+the network and obtains the result of the neural network’s classification (a single dou-
+ble value). Since we aren’t interested in the precise double value that the neural net-
+work returns, but want the classifier to tell us whether that instance is fraudulent, we 
+need  to  translate  that  double  value  into  one  of  the  two  Concepts—either 
+CONCEPT_LABEL_FRAUD  or  CONCEPT_LABEL_VALID.  That’s  what  the  method  create-
+ConceptFromNNOutput does. 
+This is the training method that you need to call for the NNFraudClassifier and it 
+results in the training of the neural network. First, this method performs a number of 
+checks before it delegates to the main training method. In particular, it tests for the 
+following conditions: 
+
+■ The existence of a training set
+■ The existence of a TransactionNN instance
+■ The  conformity  of  the  input  to  the  specifications  of  the  TransactionNN
+
+instance
+
+■ The  conformity  of  the  output  to  the  specifications  of  the  TransactionNN
+
+instance
+
+This is the main training method. It requires a single argument that specifies the num-
+ber of times that the instances of the training set should propagate through the neural 
+network. Each instance results in changing the weights of the synapses of the neural 
+network  in  order  to  optimize  the  classification  of  the  neural  network  for  all  the 
+instances that have been seen so far. In other words, you keep telling the neural network 
+what the answer for a given input should be and it tries to adjust itself so that it can 
+“remember” the answer without forgetting all the other answers that it’s seen so far.
+This is the auxiliary method that takes as argument an Instance and creates the input 
+values for the neural network.
+This is the auxiliary method that takes an Instance as argument and creates the out-
+put values of the neural network. This is used only in the training phase.
+This is the auxiliary method that takes the output value of the neural network as argu-
+ment and translates it into one of the two Concepts—either CONCEPT_LABEL_FRAUD or 
+CONCEPT_LABEL_VALID. 
+This is the auxiliary method that defines the attributes of the transaction instance that 
+we want to use in the classification. In our case, we don’t have many attributes, but this 
+wrapper simplifies our scripts. In general, it’s convenient and prudent to define the 
+list of training attributes in a single place in the code. You could also add a getter for 
+the availableAttributeNames variable.  
+At this point, you probably have a good understanding of the high-level definition of 
+our fraud classifier based on a neural network. But, how do we define a neural net-
+work? What steps should you take if you want to write your own fraud detection classi-
+fier  with  a  different  neural  network?  Listing  5.15  shows  the  code  from  the  class 
+TransactionNN. This is the neural network that we use in the fraud classifier, but as 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com212
+
+CHAPTER 5  Classification: placing things where they belong
+
+you can see, there’s nothing special about fraud or transactions in the definition of 
+that class. It only carries the signature of how we decided to cast our fraud detection 
+problem in our neural network framework.
+
+Listing 5.15  A special neural network for the fraud detection use case
+
+public class TransactionNN extends BaseNN {   
+
+B
+
+    public TransactionNN(String name) {   
+        super(name);
+
+c
+
+        createNN351();
+    }
+
+    private void createNN351() { 
+
+        Layer inputLayer = createInputLayer(   
+                0, // layer id 
+                3  // number of nodes 
+                );
+
+D
+
+        Layer hiddenLayer = createHiddenLayer(   
+                1, // layer id 
+                5, // number of nodes
+                new double[] {1, 1.5, 1, 0.5, 1} // node biases
+                );
+
+E
+
+        Layer outputLayer = createOutputLayer(   
+                2, // layer id 
+                1, // number of nodes 
+                new double[] {1.5} // node biases
+                );        
+
+F
+
+        setInputLayer(inputLayer);   
+        setOutputLayer(outputLayer);
+        addHiddenLayer(hiddenLayer);
+
+        setLink("0:0", "1:0", 0.25);   
+        setLink("0:0", "1:1", -0.5);
+        setLink("0:0", "1:2", 0.25);
+        setLink("0:0", "1:3", 0.25);
+        setLink("0:0", "1:4", -0.5);
+
+G
+
+H
+
+        setLink("0:1", "1:0", 0.25);
+        setLink("0:1", "1:1", -0.5);
+        setLink("0:1", "1:2", 0.25);
+        setLink("0:1", "1:3", 0.25);
+        setLink("0:1", "1:4", -0.5);
+
+        setLink("0:2", "1:0", 0.25);
+        setLink("0:2", "1:1", -0.5);
+        setLink("0:2", "1:2", 0.25);
+        setLink("0:2", "1:3", 0.25);
+        setLink("0:2", "1:4", -0.5);
+
+        setLink("1:0", "2:0", -0.5);
+        setLink("1:1", "2:0", 0.5);
+        setLink("1:2", "2:0", -0.5);
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

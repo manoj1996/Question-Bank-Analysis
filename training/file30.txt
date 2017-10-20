@@ -1,0 +1,56 @@
+Searching with Lucene
+
+31
+
+while they ignore everything else. If you ignore something that’s of interest to you dur-
+ing  the  analysis  stage  then  you’ll  never  find  it  during  your  search,  no  matter  how 
+sophisticated your indexing algorithm is.
+
+ Of course, analyzers can’t select the appropriate fields for you. As an example, in 
+listing 2.2, we’ve explicitly defined the four fields that we’re interested in. The Stan-
+dardAnalyzer  will  process  the  content  field,  which  is  the  only  field  indexed.  This 
+default  analyzer  is  the  most  general  purpose  built-in  analyzer  for  Lucene.  It  intelli-
+gently  tokenizes  alphanumerics,  acronyms,  company  names,  email  addresses,  com-
+puter host names, and even CJK (Chinese, Japanese, and Korean) characters, among 
+other things. 
+
+ The latest version of Lucene (2.3 at the time of this writing) uses a lexical ana- 
+lyzer that’s written in Java and called JFlex (http://jflex.de/). The Lucene Standard-
+Tokenizer is a grammar-based tokenizer that’s constructed with JFlex, and it’s used in 
+the  StandardAnalyzer.  To  convince  you  of  the  analyzer’s  importance,  replace  the 
+StandardAnalyzer with the  WhitespaceAnalyzer and observe the difference in the 
+resulting scores. Lucene analyzers provide a wealth of capabilities, such as the ability 
+to add synonyms, modify stop words (words that are explicitly removed from the text 
+before  indexing),  and  deal  with  non-English  languages.  We’ll  use  Lucene  analyzers 
+throughout the book, even in chapters that don’t deal with search. The general idea 
+of identifying the unique characteristics of a text description is crucial when we deal 
+with documents. Thus, analyzers become very relevant in areas such as the develop-
+ment of spam filters, recommendations that are based on text, enterprise, or tax com-
+pliance applications, and so on. 
+
+ The Lucene indexing stage is completely transparent to the end user but it’s also 
+powerful. In a single index, you can have Lucene Documents that correspond to dif-
+ferent entities (such as emails, memos, legal documents) and therefore are charac-
+terized by different fields. You can also remove or update Documents from an index. 
+Another  interesting  feature  of  Lucene’s  indexing  is  boosting.  Boosting  allows  you  to 
+mark  certain  documents  as  more  or  less  important  than  other  documents.  In  the 
+method indexDocument described in the listing 2.2, you could add a statement such 
+as the following:
+
+if ( parsedDoc.getDocumentId().equals("g1-d14")) {
+         doc.setBoost(2);
+}
+
+You can find this statement in the code, commented out and marked as “To Do.” If 
+you remove the comments, compile the code, and run again the script of listing 2.1, 
+you’ll notice that the last document is now first. Boosting has increased—in fact, it has 
+doubled—the score of every Field for this document. You can also boost individual 
+Fields in order to achieve more granular results from your boosting.
+
+ Searching with Lucene can’t be easier. As you’ve seen, using our MySearcher wrap-
+per, it’s a matter of two lines of code. Although we used a simple word in our example 
+of  listing  2.1,  Lucene  provides  sophisticated  query  expression  parsing  through  the 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

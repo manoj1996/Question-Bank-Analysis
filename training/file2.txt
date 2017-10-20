@@ -1,0 +1,56 @@
+2
+
+CHAPTER 1  What is the intelligent web?
+
+every user in the system, over time, as well as any other potentially useful information 
+that may be available. 
+
+ Let’s say that you start using a web application to order food, and every Wednesday 
+you order fish. You’d have a much better experience if, on Wednesdays, the applica-
+tion asked you “Would you like fish today?” instead of “What would you like to order 
+today?” In the first case, the application somehow realized that you like fish on Wednes-
+days. In the second case, the application remains oblivious to this fact. Thus, the data 
+created by your interaction with the site doesn’t affect how the application chooses 
+the  content  of  a  page  or  how  it’s  presented.  Asking  a  question  that’s  based  on  the 
+user’s prior selections introduces a new kind of interactivity between the website and 
+its users. So, we could say that websites with that property have a learning capacity.
+
+ To take this one step further, the interaction of an intelligent web application with 
+a user may adjust due to the input of other users that are somehow related to each 
+other. If your dietary habits match closely those of John, the application may recom-
+mend a few menu selections that are common for John but that you never tried; build-
+ing recommendations is covered in chapter 3. 
+
+  Another  example  would  be  a  social  networking  site,  such  as  Facebook,  which 
+could offer a fact-checking chat room or electronic forum. By fact checking, we mean 
+that  as  you  type  your  message,  there’s  a  background  check  on  what  you  write  to 
+ensure that your statements are factually accurate and even consistent with your pre-
+vious messages. This functionality is similar to spell-checking, which may be already 
+familiar  to  you,  but  rather  than  check  grammar  rules,  it  checks  a  set  of  facts  that 
+could  be  general  truths  (“the  Japanese  invasion  of  Manchuria  occurred  in  1931”), 
+your own beliefs about a particular subject (“less taxes are good for the economy”), 
+or  simple  personal  facts  (“doctor’s  appointment  on  11/11/2008”).  Websites  with 
+such functional behavior are inference capable; we describe the design of such func-
+tionality in chapter 5. 
+
+ We can argue that the era of intelligent web applications began in earnest with the 
+advent  of  web  search  engines  such  as  Google.  You  may  legitimately  wonder:  why 
+Google? People knew how to perform information retrieval (search) tasks long before 
+Google appeared on the world scene. But search engines such as Google take advan-
+tage of the fact that the content on the web is interconnected, and this is extremely 
+important. Google’s thesis was that the hyperlinks within web pages form an underly-
+ing structure that can be mined to determine the importance of the various pages. In 
+chapter 2, we describe in detail the PageRank algorithm that makes this possible.
+
+  By  extending  our  discussion,  we  can  say  that  intelligent  web  applications  are 
+designed  from  the  outset  with  a  collaborative  and  interconnected  world  in  mind. 
+They’re designed to automatically train so that they can understand the user’s input, 
+the user’s behavior, or both, and adjust their response accordingly. The sharing of the 
+user profiles among colleagues, friends, and family on social networking sites such as 
+MySpace or Facebook, as well as the sharing of content and opinions on newsgroups 
+and online forums, create new levels of connectivity that are central to intelligent web 
+applications and go beyond plain hyperlinks.
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

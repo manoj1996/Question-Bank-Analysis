@@ -1,0 +1,210 @@
+106
+
+CHAPTER 3  Creating suggestions and recommendations
+
+    if (scaledRating < scaledThreshold) {                              
+       uicList.remove(pR);
+    } else {
+       pR.setRating(scaledRating);
+    }
+  }
+
+Scaled rating should 
+be above threshold
+
+  // Recommender 2 -- User based collaborative filtering
+  scaling = maxR/maxRatingDelphiUR;                                   
+
+  scaledThreshold = 0.5 * scaling;
+
+  List<PredictedItemRating> urList = 
+➥  new ArrayList<PredictedItemRating>(topN);
+
+urList = delphiUR.recommend(user, topN);          
+
+  for (PredictedItemRating pR : urList) {
+
+    scaledRating = pR.getRating(6) * scaling;
+
+Create scaling 
+factor for each 
+engine
+
+            if (scaledRating < scaledThreshold) { 
+                urList.remove(pR);
+            } else {
+                pR.setRating(scaledRating);
+            }
+    }
+
+Get recom-
+mendations 
+from each 
+engine
+
+    // Recommender 3 -- Item based collaborative filtering
+    scaling = maxR/maxRatingDelphiIR;                    
+
+    scaledThreshold = 0.5 * scaling;
+
+    List<PredictedItemRating> irList = 
+➥  new ArrayList<PredictedItemRating>(topN);
+
+    irList = delphiIR.recommend(user, topN);        
+
+    for (PredictedItemRating pR : irList) {
+
+           scaledRating = pR.getRating(6) * scaling;
+
+           if (scaledRating < scaledThreshold) {                      
+                irList.remove(pR);
+           } else {
+                pR.setRating(scaledRating);
+           }
+    }
+
+    double urRating=0;
+    double irRating=0;
+    double vote=0;
+
+    for (PredictedItemRating uic : uicList) {   
+
+          //Initialize
+          urRating=0; irRating=0; vote=0;
+
+        for (PredictedItemRating ur : urList) {
+          if (uic.getItemId() == ur.getItemId()) {
+             urRating = ur.getRating(6);
+          }
+
+Get average value 
+and scale properly
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComRecommending movies on a site such as Netflix.com
+
+107
+
+        }
+
+        for (PredictedItemRating ir : irList) {
+           if (uic.getItemId() == ir.getItemId()) {
+             irRating = ir.getRating(6);
+           }
+        }
+
+        vote = (uic.getRating(6)+urRating+irRating)/3.0d;
+
+      recommendations.add(
+➥  new PredictedItemRating(user.getId(), uic.getItemId(), vote)); 
+    }
+
+    rescale(recommendations,maxR);
+
+    return PredictedItemRating
+➥  .getTopNRecommendations(recommendations, topN);
+}
+
+You can further improve your recommendations by targeting the preferences of each 
+individual user on MyDiggSpace.com by combining the results obtained in the Digg-
+Delphi class and the NaiveBayes classifier that we encountered in chapter 2. For more 
+details on this approach, see the to-do list at the end of this chapter. Any learning mech-
+anism (a number of them are presented in chapter 5) as well as optimization tech-
+niques  can  be  employed  to  enhance  the  results  of  the  base  recommenders.  This 
+approach of combining techniques with an encapsulating learning layer is gaining pop-
+ularity and support from both industry leaders and academics (see also chapter 6).
+
+ You should, by now, have a good idea about combining recommendation systems 
+and the interplay of their capabilities in identifying friends and interesting articles for 
+the users of your web application. The next section will focus on a different example: 
+the recommendation of movies on a site such as Netflix. The main characteristic of 
+such examples is the large size of their datasets. 
+
+Recommending movies on a site such as Netflix.com
+In  the  introduction,  we  talked  about  Netflix,  Inc.,  the  world’s  largest  online  movie 
+rental  service,  offering  more  than  7  million  subscribers  access  to  90,000  DVD  titles 
+plus a growing library of more than 5,000 full-length movies and television episodes 
+available for instant watching on their PCs. If you recall, part of Netflix’s online suc-
+cess is its ability to provide users with an easy way to choose movies from an expansive 
+selection of titles. At the core of that ability is a recommendation system called Cine-
+match. Its job is to predict whether someone will enjoy a movie based on how much 
+he liked or disliked other movies.
+
+3.4
+
+3.4.1
+
+An introduction of movie datasets and recommenders
+In this section, we’ll describe a recommendation system whose goal is the same as that 
+of Cinematch. We’ll work with publicly available data from the MovieLens project. The 
+MovieLens project is a free service provided by the GroupLens research lab at the Uni-
+versity of Minnesota. The project hosts a website that offers movie recommendations. 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com108
+
+CHAPTER 3  Creating suggestions and recommendations
+
+You can try it out at http://www.movielens.org/quickpick. There are two MovieLens 
+datasets available on the website of the GroupLens lab.
+
+ The first dataset3 consists of 100,000 ratings by 943 users for 1,682 movies. The sec-
+ond dataset4 has one million ratings by 6,040 users for 3,900 movies. The first dataset 
+is  provided  with  the  distribution  of  this  book;  please  make  sure  that  you  read  the 
+license and terms of use. The format of the data is different between the two datasets. 
+We find the format of the second (1M ratings) dataset more appropriate and conve-
+nient; it contains just three files, movies.dat, ratings.dat, and users.dat. However, we 
+want to use the smaller dataset for efficiency. So, we’ve transformed the original for-
+mat of the small dataset (100K ratings) into the format of the larger dataset, for conve-
+nience. The original data and the large dataset can be retrieved from the GroupLens 
+website.  You  should  extract  the  data  inside  the  C:/iWeb2/data/ch03/MovieLens/
+directory;  if  you  don’t  then,  in  listing  3.18,  you  should  alter  the  createDataset
+method so that it takes the path of the data directory as an argument. 
+
+ Large recommendation systems such as those of Netflix and Amazon.com rely heav-
+ily on item-based collaborative filtering (see Linden, Smith, and York). This approach, 
+which we described in sections 3.2.1 and 3.2.2, is improved by three major components. 
+ The first is data normalization. This is a fancy term for something that’s intuitively 
+easy to grasp. If a user tends to rate all movies with a high score (a rating pattern that 
+we adopted for our artificial rating of items in the earlier sections) it makes sense to 
+consider the relative ratings of the user as opposed to their absolute values. 
+
+ The second major component is the neighbor selection. In collaborative filtering, we 
+identify a set of items (or users) whose ratings we’ll use to infer the rating of nonrated 
+items. So naturally, two questions arise from this mandate: how many neighbors do we 
+need? How do we choose the “best” neighbors—the neighbors that will provide the 
+most accurate prediction of a rating?
+
+ The third major component of collaborative filtering is determining the neighbor 
+weights—how important is the rating of each neighbor? Bell and Koren showed that 
+data normalization and neighbor weight selection are the two most important compo-
+nents in improving the accuracy of the collaborative filtering approach.
+
+ Let’s begin by describing our Bean Shell script for this example. Listing 3.18 dem-
+onstrates how to load the data, create an instance of our recommender (called Movie-
+LensDelphi), pick users, and get recommendations for each one of them.
+
+Listing 3.18  MovieLensDelphi: Recommendations for the MovieLens datasets
+
+MovieLensDataset ds = MovieLensData.createDataset();   
+
+Load MovieLens dataset
+
+MovieLensDelphi delphi = new MovieLensDelphi(ds);   
+
+Create recommender
+
+iweb2.ch3.collaborative.model.User u1 = ds.getUser(1);   
+delphi.recommend(u1);
+
+Pick users and create 
+recommendations
+
+3 The URL for the original data is http://www.grouplens.org/system/files/ml-data.tar__0.gz
+4 The URL for the original data is http://www.grouplens.org/system/files/million-ml-data.tar__0.gz
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

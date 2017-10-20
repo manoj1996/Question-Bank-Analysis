@@ -1,0 +1,31 @@
+Clustering: 
+ grouping things together
+
+This chapter covers:
+■ Understanding the need and value of clustering
+■ Discovering user groups in a typical website 
+
+and finding groups of similar news stories, blog 
+reports, or documents.
+
+■ Link-based clustering algorithms and the 
+
+blazing fast k-means
+
+Our ability as humans to accumulate and retain information relies greatly on our 
+ability to structure the abundance of information that we receive through means, 
+such as sensory perception, reason, language, and emotion. The profusion of avail-
+able information would be overwhelming without some reference structures. Men-
+tal  constructs  that  put  order  to  all  the  data  that  we  receive  help  us  retain  the 
+essence of the data and understand the world around us. 
+
+  Typically,  we  organize  our  perceptions  into  groups  or  categories.  Intelligent 
+applications follow the same principles and achieve the same results by means of 
+two  broad  categories  of  algorithms—clustering  and  classification.  This  chapter  is 
+devoted to clustering algorithms; the next chapter is devoted to classification. 
+
+121
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

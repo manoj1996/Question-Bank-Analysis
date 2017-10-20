@@ -1,0 +1,123 @@
+Improving search results based on user clicks
+
+45
+
+Listing 2.10  Combining the Lucene scores and the PageRank scores
+
+double m = 1 - (double) 1/pR.getH().getSize();   
+
+Calculate scaling factor
+
+for (int i = 0; i < numberOfMatches; i++) {
+
+  url = docResults[i].getUrl();
+
+  double hScore = 
+➥  docResults[i].getScore() *Math.pow(pR.getPageRank(url),m);   
+
+Calculate 
+hybrid score
+
+  docResults[i].setScore(hScore); 
+
+  urlScores.put(hScore, url);   
+}
+
+Create map between scores and URLs
+
+Now, a number of reasonable questions may come to your mind. Why did we intro-
+duce the variable m? Why didn’t we take the average of the two scores? Why didn’t we 
+use a more complicated formula for combining the indexing score and the PageRank 
+score? These are good questions to ask, and the answers may surprise you. Apart from 
+the fact that our formula retains the value of the score between 0 and 1, our selections 
+have been arbitrary. We may as well have taken the product of the two scores in order 
+to combine them. 
+
+ The rationale for raising the PageRank value to power m is that the small number 
+of pages that we’ve indexed may cause the relevance score of indexing to be too high 
+for the spam pages, thus artificially diluting the effectiveness of the PageRank. As the 
+number of pages increases, the value of the scaled PageRank (the second term of the 
+hybrid  score)  tends  to  the  original  PageRank  value,  because  m  quickly  becomes 
+approximately equal to 1. We believe that in small networks, such a power-law scaling 
+can help you increase the importance of the link structure over that of the index. This 
+formula should work well for small as well as large sets of documents. There’s a deep 
+mathematical connection between power laws and graphs similar to the internet, but 
+we won’t discuss it here (see Adamic et al.). The corollary is that when you deal with a 
+small number of pages, and if the search term appears in the document a large num-
+ber of times (as it happens with spam pages), the index page score (the number that 
+Lucene returns as the score of a search result) will be close to 1; therefore a rescaling 
+is required to balance that effect. 
+
+Improving search results based on user clicks
+In the previous section, we showed that link analysis allows us to take advantage of the 
+structural aspects of the internet. In this section, we’ll talk about a different way of 
+leveraging the nature of the internet: user clicks. As you know, every time a user exe-
+cutes a query, he’ll either click one of the results or click the link that shows the next 
+page  of  results,  if  applicable.  In  the  first  case,  the  user  has  identified  something  of 
+interest and clicks the link either because that’s what he was looking for or because 
+the result is interesting and he wants to explore the related information, in order to 
+decide  if  it  is  indeed  what  he  was  looking  for.  In  the  second  case,  the  best  results 
+weren’t what the user wanted to see and he wants to look at the next page just in case 
+the search engine is worth a dime! 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+2.4
+
+Download at Boykma.Com46
+
+CHAPTER 2  Searching
+
+2.4.1
+
+ Kidding aside, one reason why evaluating relevance is a difficult task is because rel-
+evance is subjective. If you and I are looking results for the query “elections,” you may 
+be interested in the U.S. elections, while I may be interested in the UK elections, or 
+even in my own town’s elections. It’s impossible for a search engine to know the inten-
+tion (or the context) of your search without further information. So, the most rele-
+vant  results  for  one  person  can  be,  and  quite  often  are,  different  from  the  most 
+relevant results for another person, even though the query terms may be identical! 
+
+ We’re going to introduce user clicks as a way of improving the search results for 
+each user. This improvement is possible due to an algorithm that we’ll study in great 
+detail later in the book—the  NaiveBayes classifier. We’ll demonstrate the combina-
+tion of index scores, PageRank scores, and the scores from the user clicks for improv-
+ing our search results. 
+
+A first look at user clicks
+User  clicks  allow  us  to  take  as  input  the  interaction  of  each  user  with  the  search 
+engine. Aristotle said, “We are what we repeatedly do,” and that’s the premise of user 
+clicks analysis: your interaction with the search engine defines your own areas of inter-
+est and your own subjectivity. This is the first time that we describe an intelligent tech-
+nique responsible for the personalization of a web application. Of course, a necessary 
+condition for this is that the search engine can identify which queries come from a 
+particular user. In other words, the user must be logged in to your application or must 
+have otherwise established a session with the application. It should be clear that our 
+approach for user-click analysis is applicable to every application that can record the 
+user’s clicks, and it’s not specific to search applications. 
+
+ Now, let’s assume that you’ve collected the clicks of the users as indicated in the 
+file user-clicks.csv, which you can find in the data/ch02 directory together with the 
+rest of the files that we’ve been using in this chapter. Our goal is to write code that can 
+help us leverage that information, much like the PageRank algorithm helped us to 
+leverage the information about our network. That is, we want to use this data to person-
+alize the results of the search by appropriately modifying the ranking, depending on 
+who submits the query. The comma separated file contains values in three fields:
+
+■ A string that identifies the user
+■ A string that represents the search query
+■ A  string  that  contains  the  URL  that  the  user  has  selected  in  the  past,  after 
+
+reviewing the results for that query
+
+If  you  don’t  know  the  user  (no  login/no  session  of  any  kind),  you  can  use  some 
+default  value  such  as  “anonymous”—of  course,  you  should  ensure  that  anonymous 
+isn’t actually a valid username in your application! If your data has some other format, 
+it’s okay. You shouldn’t have any problems adopting our code for your specific data. In 
+order to personalize our results, we need to know the user, her question, and her past 
+selections of links for that question. If you have that information available then you 
+should be ready to get in action!
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

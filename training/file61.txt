@@ -1,0 +1,348 @@
+Recommending friends, articles, and news stories
+
+101
+
+THE TRIANGULATION EFFECT
+Figure 3.9 presents the set of similar users for the first user (adamfishercox) on our 
+list, then the similar users for his most similar user (adrian67), then the similar users 
+for a user who’s similar to adrian67 (although not the most similar), whose username 
+is  DetroitThang1.  An  interesting  observation  can  be  made  about  the  data  in  fig- 
+ure  3.9,  which  may  or  may  not  be  obvious.  User  amipress  is  in  the  top  five  similar 
+users  of  adamfishercox  but  isn’t  in  the  top  five  similar  users  of  adrian67.  And  yet, 
+amipress is in the top five similar users of DetroitThang1 with a similarity score 0.7, 
+which  is  almost  equal  to  the  similarity  score  that  we  found  between  amipress  and 
+adamfishercox. Interesting, isn’t it? We call this the triangulation effect and it shows us 
+that there are second-order effects that can be leveraged and improve the accuracy—and 
+thereby effectiveness—of our recommendations. 
+
+ Let’s further clarify this point by using the data from figure 3.9. The user adamfish-
+ercox is related to adrian67 by rank 1 and a similarity score equal to 1; the user ami-
+press  is  related  to  adamfishercox  by  rank  2  and  a  similarity  score  (approximately) 
+
+bsh % delphi.findSimilarUsers(user);
+Top Friends for user adamfishercox:
+
+    name: adrian67       , similarity: 1.000000
+    name: amipress       , similarity: 0.666667
+    name: dvallone       , similarity: 0.500000
+    name: cosmikdebris   , similarity: 0.500000
+    name: cruelsommer    , similarity: 0.500000
+
+bsh % iweb2.ch3.collaborative.model.User u2 = 
+ds.findUserByName("adrian67");
+
+bsh % delphi.findSimilarUsers(u2);
+
+Top Friends for user adrian67:
+
+    name: adamfishercox  , similarity: 1.000000
+    name: dvallone       , similarity: 1.000000
+    name: ambermacbook   , similarity: 1.000000
+    name: DetroitThang1  , similarity: 0.800000
+    name: cruelsommer    , similarity: 0.750000
+
+bsh % iweb2.ch3.collaborative.model.User u3 = 
+ds.findUserByName("DetroitThang1");
+
+bsh % delphi.findSimilarUsers(u3);
+
+Top Friends for user DetroitThang1:
+
+    name: adrian67       , similarity: 0.800000
+    name: cosmikdebris   , similarity: 0.750000
+    name: amipress       , similarity: 0.700000
+
+Figure 3.9  Finding similar users and the triangulation effect on a random Digg dataset
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com102
+
+CHAPTER 3  Creating suggestions and recommendations
+
+equal to 0.67. The rank of user amipress in rela-
+tion to adrian67 is 7 and their similarity is equal 
+to 0.57. We show these relationships graphically 
+in  figure  3.10,  where  adamfishercox  is  User  1, 
+amipress is User 2, and adrian67 is User 3.
+
+User 1
+
+(2) [0.67]
+
+User 2
+
+(1) [1.00]
+
+(7) [0.57]
+
+User 3
+
+  The  number  inside  the  parentheses  is  the 
+relative  ranking,  and  the  number  inside  the 
+brackets  is  our  similarity  score;  the  base  of  the 
+arrow  refers  to  the  user  for  whom  we  seek  to 
+find similar users. The arrow that connects User 3 with User 2 has a dotted line to 
+depict the relationship that we can improve based on the information of the other 
+relationships (arrows drawn with solid lines). 
+
+Figure 3.10  The triangulation effect and 
+the opportunity for improvement of the 
+relative ranking
+
+3.3.3
+
+The inner workings of DiggDelphi
+Now, let’s look at the code that created these recommendations. Listing 3.16 presents 
+the code from the class DiggDelphi.
+
+Listing 3.16  Combining recommendation systems for the MyDiggSpace.com site
+
+public class DiggDelphi {
+
+  private Dataset ds;
+
+  private Delphi delphiUC;
+  private Delphi delphiUIC;
+  private Delphi delphiUR;
+  private Delphi delphiIR;
+
+  private boolean verbose = true;
+
+  public DiggDelphi(Dataset ds) {   
+      this.ds = ds;
+
+Initialize various 
+recommendation engines
+
+      delphiUC  = 
+➥     new Delphi(ds,RecommendationType.USER_CONTENT_BASED);
+
+      delphiUIC = 
+➥    new Delphi(ds,RecommendationType.USER_ITEM_CONTENT_BASED);
+
+      delphiUR  = new Delphi(ds,RecommendationType.USER_BASED);
+
+      delphiIR  = new Delphi(ds,RecommendationType.ITEM_BASED);        
+  }
+
+public SimilarUser[] findSimilarUsers(User user, int topN) {   
+
+B
+
+        List<SimilarUser> similarUsers = 
+➥     new ArrayList<SimilarUser>();
+
+        similarUsers.addAll(
+➥    Arrays.asList(delphiUC.findSimilarUsers(user, topN)));
+
+        similarUsers.addAll(
+➥     Arrays.asList(delphiUR.findSimilarUsers(user, topN)));
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComRecommending friends, articles, and news stories
+
+103
+
+        return SimilarUser.getTopNFriends(similarUsers, topN);
+  }
+
+  public List<PredictedItemRating> recommend(User user, int topN) {   
+
+C
+
+     List<PredictedItemRating> recommendations = 
+➥    new ArrayList<PredictedItemRating>();
+
+     recommendations.addAll(delphiUIC.recommend(user, topN));
+     recommendations.addAll(delphiUR.recommend(user, topN));
+     recommendations.addAll(delphiIR.recommend(user, topN));
+
+     return PredictedItemRating
+➥     .getTopNRecommendations(recommendations, topN);
+  }
+}
+
+We  want  to  find  similar  users  based  on  user-based  and  user-content-based  similari- 
+ties  B  and  recommend  stories  based  on  user-item-content-based,  user-based,  and 
+item-based similarities C.
+
+ As you can see, in the method findSimilarUsers, we take the simplest approach 
+of  combining  the  lists  of  similar  users—we  add  all  the  results  in  a  list  and  sort  the 
+entries  based  on  their  similarity  score  (that  happens  inside  the  getTopNFriends
+method).  We  use  the  content-based  approach,  through  the  delphiUC  instance,  and 
+the  user-to-user  similarity  based  on  rankings  approach  (collaborative  filtering), 
+through the delphiUR instance. Note that the similarities between these two recom-
+mendation engines aren’t in any way normalized. This means that the results will be a 
+bit mixed up, even though we ordered them. 
+
+ To understand this point better, think of a list that’s made up of 20 bank accounts. 
+If 10 of the accounts are in U.S. dollars and the other 10 are in euros, sorting a list that 
+contains both of them based on their total amount won’t make perfect sense unless 
+we express them all in U.S. dollars or in euros. Nevertheless, the accounts that contain 
+little money would still be at the bottom of the list, while the accounts that contain a 
+lot of money would be at the top; the ordering just won’t be exact.
+
+ Our analogy with the currencies, although illuminating, oversimplifies a major dif-
+ference between the two cases. The normalization between currencies is well under-
+stood and straightforward. If I want to convert 100 U.S. dollars into 100 euros then I’d 
+use the exchange rate between these two currencies to get the nominal value of 100 
+U.S. dollars into euros. In reality, if you want to get euros in your hands (or in your 
+bank account), you have to pay the bank a commission fee, but your normalization 
+formula is still extremely easy. Unfortunately, user similarities and recommendation 
+scores  aren’t  as  easily  susceptible  to  normalization.  Combining  recommendation 
+engine scores is as much an art as it is a science. Ingenious heuristics are often used, 
+and machine learning algorithms play an important role in creating an information 
+processing layer on top of the initial recommendations.
+
+ Figure 3.11 shows the results of naïvely combining the recommendations from three 
+different approaches, for the three users that we’ve examined so far. As shown in the 
+method recommend of listing 3.16, we create a list that contains recommendations that 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com104
+
+CHAPTER 3  Creating suggestions and recommendations
+
+bsh % delphi.recommend(user);
+
+Recommendations for user adamfishercox:
+
+Item: Lumeneo Smera: French Concept of Car and MotorCycle, 
+predicted rating: 5.0
+Item: Bill Gates to Congress: Let us hire more foreigners - 
+CNET N, predicted rating: 5.0
+Item: The Best Tools for Visualization, predicted rating: 5.0
+Item: Coolest Cubicle Contest, Part Three, predicted rating: 5.0
+Item: Bush: Telecoms Should Be Thanked For Their Patriotic 
+Service, predicted rating: 5.0
+
+bsh % delphi.recommend(u2);
+
+Recommendations for user adrian67:
+
+Item: Can women parallel park on Mars?, predicted rating: 5.0
+Item: Coast Guard loses a few flares and ..., predicted rating: 
+5.0
+Item: 10.5.2 released, predicted rating: 5.0
+Item: They are all hot!, predicted rating: 5.0
+Item: 11 Greatest Basketball Commercials Ever Made, predicted 
+rating: 5.0
+
+bsh % delphi.recommend(u3);
+
+Recommendations for user DetroitThang1:
+
+Item: The Best Tools for Visualization, predicted rating: 5.0
+Item: Coolest Cubicle Contest, Part Three, predicted rating: 
+5.000000
+Item: Stink Films comes correct with 3 Adidas Original Films, 
+predicted rating: 5.0
+Item: The Power Rangers Meet The Teenage Mutant Ninja Turtles, 
+predicted rating: 5.0
+
+Figure 3.11  A sample of the results from the combination of three different recommendation engines
+
+stem from a user-item content-based recommender, a user-user collaborative filtering 
+recommender, and an item-item collaborative filtering recommender.
+
+ These are good results, in the sense that the recommended ratings are all fives as 
+we’d expect due to our artificial bias on the ratings—the users whose names start with 
+letters A through D always give a rating of 5 or 4. Remember that we said it’s possible 
+that the lack of normalization among the similarities is favoring one recommender 
+over the others. We need a mechanism that will allow us to consider the recommenda-
+tions of the various engines on an equal footing.
+
+ Look at the implementation of the recommend method shown in listing 3.17, which 
+takes  these  concerns  into  consideration.  The  first  step  is  to  normalize  all  the  pre-
+dicted ratings, taking as reference the maximum predicted rating for the user across 
+all recommendation engines. We also introduce an ad hoc threshold that eliminates 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComRecommending friends, articles, and news stories
+
+105
+
+recommendations whose predicted ratings are below a certain value. Let this be your 
+first exposure to the interesting subject of accounting for the cost of bad recommen-
+dations. In other words, our threshold value (however artificial) sets a barrier for the 
+predicted  ratings  that  our  recommendations  must  exceed  before  they’re  seriously 
+taken into consideration.
+
+ The last part of that implementation consists of averaging all the predicted ratings 
+for a particular item in order to get a single predicted rating. This is a valid approach 
+because we’ve normalized the ratings; without normalization, the averaging wouldn’t 
+make  much  sense.  If  a  particular  recommendation  engine  doesn’t  rate  a  particular 
+item  then  the  value  of  the  rating  would  be  zero,  and  therefore  the  particular  item 
+would be pushed further down in the list of recommendations. In other words, our 
+approach combines averaging and voting between the predicted ratings of the recom-
+menders. Once the combined score has been computed, the recommendations are 
+added in a list and the results are sorted on the basis of the new predicted rating.
+
+Listing 3.17 
+
+Improved implementation of recommending by combining recommenders 
+
+public List<PredictedItemRating> recommend(User user, int topN) {
+
+       List<PredictedItemRating> recommendations = 
+➥    new ArrayList<PredictedItemRating>();
+
+  double maxR=-1.0d;
+
+  double maxRatingDelphiUIC = 
+➥  delphiUIC.getMaxPredictedRating(user.getId());   
+
+  double maxRatingDelphiUR  = 
+➥  delphiUR.getMaxPredictedRating(user.getId());      
+
+  double maxRatingDelphiIR  = 
+➥  delphiIR.getMaxPredictedRating(user.getId());      
+
+Max predicted 
+ratings by 
+recommender
+
+  double[] sortedMaxR = 
+➥  {maxRatingDelphiUIC, maxRatingDelphiUR, maxRatingDelphiIR};   
+
+  Arrays.sort(sortedMaxR);   
+
+  maxR = sortedMaxR[2];   
+
+  // auxiliary variable
+  double scaledRating = 1.0d; 
+
+maxR is max 
+predicted rating
+
+  // Recommender 1 -- User-to-Item content based
+  double scaling = maxR/maxRatingDelphiUIC;   
+
+  //Set an ad hoc threshold and scale it
+  double scaledThreshold = 0.5 * scaling;
+
+  List<PredictedItemRating> uicList = 
+➥  new ArrayList<PredictedItemRating>(topN);
+
+  uicList = delphiUIC.recommend(user, topN);   
+
+  for (PredictedItemRating pR : uicList) {
+
+    scaledRating = pR.getRating(6) * scaling;
+
+Max predicted rating 
+across recommenders
+
+Create scaling factor 
+for each engine
+
+Get recommendations 
+from each engine
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

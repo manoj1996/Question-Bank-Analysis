@@ -1,0 +1,615 @@
+An online music store: the basic concepts
+
+79
+
+these songs, which is nice, but why don’t we have more songs in common? Shouldn’t that 
+somehow be reflected in our similarity? This is exactly the aspect of the problem that 
+we’re trying to capture in the second similarity formula. In other words, the extent to 
+which we listen to the same songs should somehow affect the degree of our similarity as 
+music listeners.
+
+3.1.3 Which is the best similarity formula?
+
+It may be clear by now that there are many formulas you can use to establish the simi-
+larity between two users, or between two items for that matter. In addition to the two 
+similarities that we introduced in the MusicUser class, we could’ve used a metric for-
+mula known as the Jaccard similarity between users, which is defined by the ratio of the 
+intersection over the union of their item sets—or, in the case of item similarity, the 
+ratio of the intersection over the union of the user sets. In other words, the Jaccard 
+similarity between two sets, A and B, is defined by the following pseudocode: Jaccard = 
+intersection(A,B) / union(A,B). We’ll use the Jaccard similarity in the next sections and 
+will also present a few more similarity formulas in our “To do” section at the end of 
+this chapter. 
+
+ Of course, you may naturally wonder: “which similarity formula is more appropri-
+ate?” The answer, as always, is it depends. In this case, it depends on your data. In one 
+of  the  few  large-scale  comparisons  of  similarity  metrics  (conducted  by  Spertus, 
+Sahami,  and  Buyukkokten),  the  simple  Euclidean  distance-based  similarity  showed 
+the best empirical results among seven similarity metrics, despite the fact that other 
+formulas were more elaborate and intuitively expected to perform better. Their mea-
+surements  were  based  on  1,279,266  clicks  on  related  community  recommendations 
+from September 22, 2004, through October 21, 2004, on the social networking web-
+site Orkut (http://www.orkut.com); for more details, see the related reference. 
+
+ We don’t advise that you choose randomly your similarity metric, but if you’re in a 
+hurry, use a formula similar to the two that we included in the MusicUser class—the 
+Euclidean or the Jaccard similarity. It should give you decent results. You should try to 
+understand the nature of your data and what it means for two users or two items to be 
+similar.  If  you  don’t  understand  the  reasons  why  a  particular  similarity  metric  (for-
+mula) is good or bad, you’re setting yourself up for trouble. To stress this point, think 
+of the common misconception that “the shortest path between two points is a straight 
+line that joins them.” That statement is true only for what we call “flat” geometries, 
+such  as  the  area  of  a  football  field.  To  convince  yourself,  compare  the  distance  of 
+going over a tall but not wide hill versus going around the hill’s base. The “straight” 
+line will not be the shortest path for a wide range of hill sizes. 
+
+ In summary, one of the cornerstones of recommendations is the ability to measure 
+the similarity between any two users and the similarity between any two items. We’ve 
+provided a number of similarity measures that you can use off-the-shelf, and the music 
+store exemplified the typical structure of the data that you’d deal with in order to cre-
+ate recommendations. We’ll now pass on to examine the types of recommendation 
+engines and how they work.
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com80
+
+3.2
+
+CHAPTER 3  Creating suggestions and recommendations
+
+How do recommendation engines work?
+Armed with a good understanding of what similarity between two users or two items 
+means, we can proceed with our description of recommendation engines. Generally 
+speaking, there are two categories of recommendation engines. The first goes under 
+the label collaborative filtering (CF). The first incarnation of CF appeared in an experi-
+mental mail system (circa 1992) developed at the Xerox Palo Alto Research Center
+(PARC)  by  Goldberg  et  al.  CF  relies  on  the  breadcrumbs  that  a  user  leaves  behind 
+through the interaction with a software system. Typically, these breadcrumbs are the 
+user’s ratings, such as the song ratings that we described in the previous section. Col-
+laborative filtering isn’t limited to one-dimensional or only discrete variables; its main 
+characteristic is that it depends on the user’s past behavior rather than the content of 
+each  item  in  the  collection  of  interest.  CF  requires  neither  domain  knowledge  nor 
+preliminary gathering and analysis work to produce recommendations.
+
+ The second broad category of recommendation engines is based on the analysis of 
+the content—associated with the items or the users, or both. The main characteristic 
+of  this  content-based  approach  is  the  accumulation  and  analysis  of  information 
+related to both users and items. That information may be provided either by the soft-
+ware system or through external sources. The system can collect information about 
+the  users  explicitly  through  their  response  to  solicited  questionnaires  or  implicitly
+through the mining of the user’s profile or news reading habits, emails, blogs, and 
+so on.
+
+ In the category of CF, we’ll describe recommendations based on the similarity of 
+users  and  of  items.  We’ll  also  describe  the  category  of  content-based  recommenda-
+tions, thus covering all known recommendation engine systems.
+
+3.2.1 Recommendations based on similar users
+
+There’s an ancient Greek proverb (with similar variants in nearly every culture of the 
+world) that states: “Show me your friends and I’ll tell you who you are.” Collaborative 
+filtering based on neighborhoods of similar users is more or less an algorithmic incar-
+nation of that proverb. In order to evaluate the rating of a particular user for a given 
+item, we look for the ratings of similar users (neighbors or friends, if you prefer) on 
+the same item. Then, we multiply the rating of each friend by a weight and add them 
+up. Yes, it’s that simple, in principle! 
+
+ Listing 3.3 shows a series of steps that demonstrate the creation and usage of a rec-
+ommendation engine, which we called Delphi. First, we need to build data to work 
+with. We create a sample of data by assigning ratings to songs for all users. For each 
+user, we randomly pick a set of songs that corresponds to 80% of all the songs in our 
+online music store. For each song assigned to a user, we assign a random rating that’s 
+either 4 or 5 if the username starts with the letters A through D (inclusive), and 1, 2, 
+or 3 otherwise.
+
+ Thus, we establish two large groups of users with similar preferences; this allows us 
+
+to quickly assess the results of our engine.
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComHow do recommendation engines work?
+
+81
+
+Listing 3.3  Creating recommendations based on similar users
+
+BaseDataset ds = MusicData.createDataset();   
+
+Create music dataset
+
+ds.save("C:/iWeb2/deploy/data/ch3_2_dataset.ser");   
+
+Save it for later
+
+Delphi delphi = new Delphi(ds,RecommendationType.USER_BASED);   
+delphi.setVerbose(true);
+
+Create 
+recommendation 
+engine
+
+MusicUser mu1 = ds.pickUser("Babis");
+delphi.findSimilarUsers(mu1);             
+
+MusicUser mu2 = ds.pickUser("Lukas");
+delphi.findSimilarUsers(mu2);          
+
+Find similar 
+users
+
+delphi.recommend(mu1);   
+
+Recommend a few songs
+
+The first line creates the dataset of our users and the ratings for the songs, in the way 
+we described earlier. The code is straightforward and you can modify the data in the 
+MusicData class as you see fit. In the second line, we store the dataset that we use in 
+our example so we can refer to it later on. The third line creates an instance of our 
+Delphi recommendation engine, and the fourth line sets it to verbose mode so that 
+we can see the details of the results. Note that the constructors of Delphi use the inter-
+face Dataset rather than our example classes. You can use it with your own implemen-
+tation straight out of the box—or more precisely out of the Java Archive (JAR).  
+
+ Figure 3.4 shows the results of our script for the findSimilarUsers method. In the 
+first case, the username starts with the letter B, and all the friends that are selected 
+have names that start with the letters A through D. In the second case, the username 
+starts with the letter J, and all the friends that are selected have names that start with 
+the letters E through Z. In both cases, we obtain results that are in agreement with 
+what we expected. 
+
+ So, it seems that our recommendation engine is working well! Note also that the 
+similarities between the friends of the first case are higher than the similarities of the 
+group  that  corresponds  to  the  second  case  because  the  ratings  were  distributed 
+between only two values (4 and 5) in the first case, but in the second case were distrib-
+uted among three values (1, 2, and 3). These kinds of sanity checks are useful, and 
+you should always be alert of what an intelligent algorithm returns; it wouldn’t be very 
+intelligent if it didn’t meet common sense criteria, would it?
+
+ In addition, figure 3.4 shows the results of the song recommendations for one of 
+the  users,  as  well  as  the  predicted  ratings  for  each  recommendation.  Note  that 
+although  the  ratings  of  the  users  are  integers,  the  recommendation  engine  uses  a 
+double  for  its  prediction.  That’s  because  the  prediction  expresses  only  a  degree  of 
+belief  about  the  rating  rather  than  an  actual  rating.  You  may  wonder  why  websites 
+don’t allow you to give a rating that’s not an integer, or equally liberating, offer a rat-
+ing between larger ranges of values, such as between 1 and 10 or even 1 and 100. We’ll 
+revisit this point in one of our to-do items at the end of the chapter. 
+
+ Observe that the recommendation engine is correctly assigning values between 4 
+and 5, since the users whose letters start with the letters A through D have all given rat-
+ings that are either 4 or 5.
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com82
+
+CHAPTER 3  Creating suggestions and recommendations
+
+bsh % MusicUser mu1 = ds.pickUser("Bob");
+bsh % delphi.findSimilarUsers(mu1);
+
+Top Friends for user Bob:
+
+name: Babis                               , similarity: 0.692308
+name: Alexandra                           , similarity: 0.666667
+name: Bill                                , similarity: 0.636364
+name: Aurora                              , similarity: 0.583333
+name: Charlie                             , similarity: 0.583333
+
+bsh % MusicUser mu2 = ds.pickUser("John");
+bsh % delphi.findSimilarUsers(mu2);
+
+Top Friends for user John:
+
+name: George                              , similarity: 0.545455
+name: Jack                                , similarity: 0.500000
+name: Elena                               , similarity: 0.461538
+name: Lukas                               , similarity: 0.454545
+name: Frank                               , similarity: 0.416667
+
+bsh % delphi.recommend(mu1);
+
+Recommendations for user Bob:
+ 
+Item: I Love Rock And Roll          , predicted rating: 4.922400
+Item: La Bamba                      , predicted rating: 4.758600
+Item: Wind Beneath My Wings         , predicted rating: 4.540900
+Item: Sunday, Bloody Sunday         , predicted rating: 4.526800
+
+Figure 3.4  Discovering friends and providing recommendations with Delphi based on user similarity
+
+How  did  the  Delphi  class  arrive  at  these  conclusions?  How  can  it  find  the  similar 
+users  (friends)  for  any  given  user?  How  can  it  recommend  songs  from  the  list  of 
+songs  that  a  user  never  listened  to?  Let’s  go  through  the  basic  steps  to  understand 
+what  happens.  Recommendation  engines  that  are  based  on  collaborative  filtering
+proceed in two steps. First, they calculate the similarity between either users or items. 
+Then, they use a weighted average to calculate the rating that a user would give to a 
+yet-unseen item. 
+CALCULATING THE USER SIMILARITIES
+Since we’re dealing with recommendations that are based on user similarity, the first 
+thing that Delphi does for us is to calculate the similarity between the users. This is 
+shown in listing 3.4, where we show the code from the method calculate of the class 
+UserBasedSimilarity, an auxiliary class that’s used in Delphi. Note that the double 
+loop has been optimized to account for the symmetry of the similarity matrix; we dis-
+cuss this and one more optimization after the code listing.
+
+ 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComHow do recommendation engines work?
+
+83
+
+Listing 3.4  UserBasedSimilarity: calculating the user similarity 
+
+protected void calculate(Dataset dataSet) {
+
+  int nUsers = dataSet.getUserCount();   
+
+Defines size of similarity matrix
+
+  int nRatingValues = 5;                                
+
+  similarityValues = new double[nUsers][nUsers];
+
+Defines size of 
+rating count matrix
+
+  if( keepRatingCountMatrix ) {
+      ratingCountMatrix = new RatingCountMatrix[nUsers][nUsers];
+  }
+
+  // if mapping from userId to index then generate index for every userId
+  if( useObjIdToIndexMapping ) {
+
+      for(User u : dataSet.getUsers() ) {
+          idMapping.getIndex(String.valueOf(u.getId()));
+      }
+  }
+
+  for (int u = 0; u < nUsers; u++ ) {
+
+      int userAId = getObjIdFromIndex(u);
+      User userA = dataSet.getUser(userAId);
+
+      for (int v = u + 1; v < nUsers; v++) {   
+
+B
+
+Similarity matrix
+
+          int userBId = getObjIdFromIndex(v); 
+          User userB = dataSet.getUser(userBId); 
+
+          RatingCountMatrix rcm = 
+➥         new RatingCountMatrix(userA, userB, nRatingValues);   
+
+Agreement of 
+ratings between 
+two users
+
+          int totalCount = rcm.getTotalCount();
+          int agreementCount = rcm.getAgreementCount();
+
+          if (agreementCount > 0) {                            
+
+Calculate 
+similarity or 
+set it to zero
+
+             similarityValues[u][v] = 
+➥        (double) agreementCount / (double) totalCount;    
+
+          } else {
+              similarityValues[u][v] = 0.0;
+          }
+                
+          // For large datasets
+          if( keepRatingCountMatrix ) {
+              ratingCountMatrix[u][v] = rcm;
+          }
+      }
+
+      // for u == v assign 1. 
+      // RatingCountMatrix wasn't created for this case
+      similarityValues[u][u] = 1.0;                           
+  }
+}
+
+B
+
+Similarity matrix
+
+B
+
+Here  is  the  optimization  that  we  mentioned  earlier.  You’d  expect  the  first  loop  to 
+select the first user and the second loop to select all other users. But in the listing, the 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com84
+
+CHAPTER 3  Creating suggestions and recommendations
+
+second loop uses the fact that the similarity matrix is symmetrical. This simply means 
+that if user A is similar to user B with a similarity value X then user B will be similar to 
+user A with a similarity value equal to X. The code avoids evaluating the similarity of a 
+user object with itself, because that should always be equal to 1. These two code opti-
+mizations are simply a reflection of the fundamental properties that every similarity 
+measure should obey, as stated in section 3.1.1.
+
+ As you can see, the definition of similarity is given by the Jaccard metric, where the 
+agreement on the ratings represents the intersection between the two sets of ratings, 
+and the total count of ratings represents the union of the two sets of ratings. Similarity 
+values are held in a two-dimensional array of type double. But similarity is a symmetri-
+cal property, which simply means that if I’m similar to you then you’re similar to me, 
+regardless of how similarity was defined. So clearly, we can use the similarity values 
+much more efficiently by either using sparse matrices or by using some other struc-
+ture that’s designed to store only half the number of values; the latter structure is tech-
+nically  known  as  the  upper  triangular  form  of  the  matrix.  From  a  computational 
+perspective, we’re already leveraging that fact in the code of listing 3.4. Once again, 
+note that the second loop doesn’t run over all users, but starts with the user that fol-
+lows the outer loop user in our list.
+
+ The calculation of similarity for each pair of users relies on an auxiliary class that 
+we called RatingCountMatrix. The purpose of the class is to store the rating of one 
+user with respect to another in a nice tabular format and allow us to calculate the final 
+similarity  value  easily  and  transparently.  Listing  3.5  contains  the  code  for  Rating-
+CountMatrix.
+
+Listing 3.5  Storing the agreement distribution of two users in a tabular form  
+
+public class RatingCountMatrix implements Serializable {
+
+   private int matrix[][] = null;
+
+   public RatingCountMatrix(Item itemA, Item itemB, 
+➥    int nRatingValues) {
+
+        init(nRatingValues);                                      
+
+        calculate(itemA, itemB);   
+   }
+
+Calculate item-
+based similarity
+   public RatingCountMatrix(User userA, User userB, 
+➥    int nRatingValues) {
+
+        init(nRatingValues);                                              
+
+Initialize rating 
+count matrix
+
+        calculate(userA, userB);   
+   }
+
+Calculate user-
+based similarity
+
+   private void init(int nSize) {
+        // starting point - all elements are zero
+        matrix = new int[nSize][nSize];                                   
+   }
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComHow do recommendation engines work?
+
+85
+
+   private void calculate(Item itemA, Item itemB) {      
+
+        for (Rating ratingForA : itemA.getAllRatings()) {
+
+Calculate item-
+based similarity
+
+            // check if the same user rated itemB
+            Rating ratingForB = 
+➥    itemB.getUserRating(ratingForA.getUserId());
+
+            if (ratingForB != null) {
+
+                int i = ratingForA.getRating() - 1;
+                int j = ratingForB.getRating() - 1;
+
+                matrix[i][j]++;
+            }
+        }
+    }
+
+    private void calculate(User userA, User userB) {   
+
+        for (Rating ratingByA : userA.getAllRatings()) {
+
+Calculate user-
+based similarity
+
+            Rating ratingByB = 
+➥    userB.getItemRating(ratingByA.getItemId());
+
+            if (ratingByB != null) {
+
+                int i = ratingByA.getRating() - 1;
+                int j = ratingByB.getRating() - 1;
+
+                matrix[i][j]++;
+            }
+        }
+    }
+
+   public int getTotalCount() {                                     
+
+        int ratingCount = 0;
+        int n = matrix.length;
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                ratingCount += matrix[i][j];
+            }
+        }
+
+        return ratingCount;
+   }
+
+   public int getAgreementCount() {                                       
+
+        int ratingCount = 0;
+        for (int i = 0, n = matrix.length; i < n; i++) {
+            ratingCount += matrix[i][i];
+        }
+
+        return ratingCount;
+    }
+
+Auxiliary 
+methods 
+for various 
+counters
+
+    public int getBandCount(int bandId) {                                 
+        int bandCount = 0;
+        for (int i = 0, n = matrix.length; (i + bandId) < n; i++) {
+            bandCount += matrix[i][i + bandId];
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com86
+
+CHAPTER 3  Creating suggestions and recommendations
+
+            bandCount += matrix[i + bandId][i];
+        }
+        return bandCount;
+    }
+}
+
+The heart of that class is the two-dimensional int array (5-by-5, in this case) that stores 
+the agreement rate of two users based on their ratings. Let’s say that user A and user B
+both listened to 10 songs, and agreed on 6 and disagreed on the rest. The matrix is 
+initialized to zero for all its elements; for every agreement, we add the value 1 in the 
+row and column that corresponds to the rating. So, if three of the agreements were 
+for  a  rating  with  value  4,  and  another  three  were  for  the  rating  5,  then  the 
+matrix[3][3] and the matrix[4][4] elements will both be equal to 3. In general, if 
+you add the diagonal elements of the matrix array, you’ll find the number of times 
+that the two users agreed on their ratings. 
+
+ This way of storing the ratings of your users has several advantages. First, you can 
+treat ratings that are from 1 to 10 (or 100 for that matter) in exactly the same way that 
+you treat ratings that are from 1 to 5. Second, as we’ll see later, it gives you the oppor-
+tunity to derive more elaborate similarity measures that account not only for the num-
+ber of times that two users agreed on their ratings but also for the number of times 
+and the extent to which they disagreed. Third, it’s possible to generalize this matrix 
+form into a more general object that may not be a simple two-dimensional array but a 
+more  complicated  structure;  this  may  be  desirable  in  a  situation  where  your  assess-
+ment relies on more than a simple rating.
+THE INNER WORKINGS OF DELPHI
+Now,  the  code  in  listing  3.4  has  been  fully  explained.  The  similarity  value  between 
+user A and user B, in this case, is simply the ratio of the number of times that user A
+agreed with number B divided by the total number of times that both users rated a 
+particular item. Thus, we’re one step away from creating our recommendations. 
+
+Listing 3.6  Delphi: creating recommendations based on user similarity
+
+public List<PredictedItemRating> recommend(User user, int topN) {
+
+  List<PredictedItemRating> recommendations = 
+➥  new ArrayList<PredictedItemRating>();
+
+  for (Item item : dataSet.getItems()) {   
+
+Loop through all items
+
+       // only consider items that the user hasn't rated yet
+       if (user.getItemRating(item.getId()) == null) {
+
+          double predictedRating = predictRating(user, item);   
+                
+   if (!Double.isNaN(predictedRating)) {
+       recommendations.add(new PredictedItemRating(user.getId(),   
+                               item.getId(), predictedRating));
+   }
+       }
+   }
+
+Add prediction as 
+candidate recommendation
+
+Predict ratings 
+for this user
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComHow do recommendation engines work?
+
+87
+
+  Collections.sort(recommendations);    
+
+  Collections.reverse(recommendations);   
+
+Sort candidate 
+recommendations
+
+  List<PredictedItemRating> topRecommendations = 
+➥  new ArrayList<PredictedItemRating>();
+
+  for(PredictedItemRating r : recommendations) {   
+      if( topRecommendations.size() >= topN ) {
+                // had enough recommendations.
+                break;
+      }
+       topRecommendations.add(r);
+    }
+
+    return recommendations;
+ }
+
+Select top N 
+recommendations
+
+Listing  3.6  shows  the  high-level  method  recommend  of  Delphi,  which  is  invoked  for 
+providing recommendations, as we’ve seen in listing 3.3. This method omits from con-
+sideration the items that a user has already rated. This may or may not be desirable; 
+consider your own requirements before using the code as-is. If you had to change it, 
+you  could  change  the  behavior  in  this  method;  for  example,  you  could  provide  an 
+else clause in the first if statement. 
+
+ The recommend method delegates the rating prediction of a user (the first argu-
+ment) to the method predictRating(user, item) for each item, which in turn dele-
+gates  the  calculation  of  the  weighted  average  to  the  method  estimateUser-
+BasedRating. Listing 3.7 presents the method predictRating(user, item). The pur-
+pose of that method is to create a façade that hides all the possible implementations 
+of evaluating similarity, such as user-based similarity, item-based similarity and so on. 
+Some cases are suggested but not implemented, so that you can work on them!
+
+Listing 3.7  Predicting the rating of an item for a user
+
+public double predictRating(User user, Item item) {
+
+    switch (type) {
+
+        case USER_BASED:
+            return estimateUserBasedRating(user, item);   
+
+        case ITEM_BASED:
+            return estimateItemBasedRating(user, item);
+
+        case USER_CONTENT_BASED:
+            throw new IllegalStateException(
+➥  "Not implemented similarity type:" + type);
+
+        case ITEM_CONTENT_BASED:
+            throw new IllegalStateException(
+➥  "Not implemented similarity type:" + type);
+
+        case USER_ITEM_CONTENT_BASED:
+            return MAX_RATING * similarityMatrix
+➥  .getValue(user.getId(), item.getId());
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

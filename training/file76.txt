@@ -1,0 +1,59 @@
+An overview of clustering algorithms 
+
+129
+
+algorithm  looking  for  hierarchical  relations  between  the  points  or  simply  dividing 
+regions of space into different groups? The second categorization of clustering algo-
+rithms  is  based  on  the  type  and  structure  of  the  data.  Some  clustering  algorithms 
+perform best on numerical data and others specialize on categorical data. The third 
+categorization  is  based  on  whether  the  algorithm  was  built  to  deal  with  large  data-
+sets  from  the  outset.  So,  let’s  now  give  an  overview  of  clustering  algorithms  from 
+these perspectives.
+
+4.2.1
+
+Clustering algorithms based on cluster structure
+Figure 4.3 shows the categorization of the 
+various  clustering  algorithms  based  on 
+the resulting structure of the clusters. 
+
+Figure 4.3  Categorizing clustering algorithms 
+based on cluster structure
+
+ Hierarchical algorithms result in the 
+identification  of  clusters  within  clusters. 
+A  hierarchical  algorithm  for  news  arti-
+cles  could  come  up  with  four  large 
+groups that represent broad topics, such 
+as politics, sports, business, and technology, and have within each group subgroups; 
+for example, inside sports news, you could have basketball news, baseball news, and so 
+on.  In  our  example  for  this  section,  a  hierarchical  algorithm  could  divide  users  of 
+open  source  projects  into  two  large  groups:  those  who  get  paid  to  participate  and 
+those who don’t. It could further break down these two major groups on the basis of 
+age or income range. 
+
+ Most hierarchical clustering algorithms admit a threshold parameter that indicates at 
+what depth the algorithm should stop seeking smaller subgroups. Aside from being a 
+reasonable thing to do with respect to the final structure of the data clusters, these 
+parameters  eliminate  a  certain  amount  of  unnecessary  computational  effort.  Of 
+course, the final number of clusters isn’t known a priori but depends on the configu-
+ration  parameters  of  the  algorithm  that  determine  the  termination  criteria  for  the 
+hierarchy of clusters.
+
+  The  category  of  agglomerative  hierarchical  algorithms  follows  a  bottom-up 
+approach—starting with individual elements and forming clusters by associating them 
+with other elements from the bottom up toward the global (super) cluster. The cate-
+gory of divisive hierarchical algorithms follows a top-down approach—it starts with the 
+global (super) cluster and proceeds by dividing the data into smaller clusters.
+
+  Partitional  algorithms  create  a  fixed  number  of  clusters.  The  so-called  k-means 
+clustering  algorithm  belongs  in  this  category;  we’ll  use  this  algorithm  later  in  the 
+chapter. The minimum spanning tree (MST) and the nearest neighbor algorithms also have 
+partitional versions. There are two basic approaches within this category: the concep-
+tual modeling approach and the iterative optimization approach. Typical representatives 
+of the first approach are based on probabilistic models; a typical representative of the 
+second approach is the k-means algorithm.
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

@@ -1,0 +1,37 @@
+8
+
+CHAPTER 1  What is the intelligent web?
+
+1.3.3
+
+more reference structures for interpreting the meaning of the content, as well as a 
+number of algorithms that can identify what elements of the reference structures are 
+contained within the various pieces or how content that has been retrieved from dif-
+ferent sites should be categorized for viewing purposes. 
+
+Portals
+Portals and in particular news portals are another class of web applications where the 
+techniques of this book can have a large impact. By definition, these applications are 
+gateways to content that’s distributed throughout the internet or, in the case of a cor-
+porate network, throughout an intranet. This is another case in which the aggregated 
+content is dispersed but accessible. 
+
+ The best example in this category is Google News (http://news.google.com). This 
+site gathers news stories from thousands of sources and automatically groups similar 
+news  stories  under  a  common  heading.  Moreover,  each  group  of  news  stories  is 
+assigned to one of the news categories that are available by default, such as Business, 
+Health, World, Sci/Tech, and so on (see figure 1.4).
+
+ You can even define your own categories and determine what kind of stories are of 
+interest to you. Once again, we see that the underlying theme is aggregated content 
+coupled with a reference structure and a number of algorithms that can perform the 
+required tasks automatically or, at least, semiautomatically.
+
+ A promising project for building intelligence in your portal—especially for social ap-
+plication kinds of portals—is OpenSocial (http://code.google.com/apis/opensocial/) 
+
+Figure 1.4  The Google News website is an intelligent portal application.
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

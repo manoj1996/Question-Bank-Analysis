@@ -1,0 +1,157 @@
+4.1.1 User groups on a website: a case study
+
+The need for clustering
+
+123
+
+We’ll now introduce a simple case study that we’ll use throughout this section to illus-
+trate clustering. Let’s assume that we work for a large open source community soft-
+ware platform, such as SourceForge.net, and we want to know why people participate 
+in open source projects. We could identify groups of users on the basis of their pro-
+files by performing a cluster analysis. For argument’s sake, let us take the following 
+attributes into consideration: 
+
+■ The age of the users, which we’ll measure in years.
+■ Their  income,  which  we’ll  measure  with  brackets  or  ranges;  for  example,  an 
+income  of  $65,000–$80,000  corresponds  to  income  range  0,  the  range 
+$80,000–$95,000 corresponds to income range 1, and so on. You can find all 
+the details about the ranges and their values in the README file located in the 
+data/ch04 directory.
+
+■ Their education level; high school, college, graduate school, and so on.
+■ The degree to which they consider their participation to be a good way of hon-
+
+ing their professional skills; say, on a scale from 1 to 5.
+
+■ The degree to which they consider their participation to be a good way of build-
+ing social relationships with people who have the same interests as they do; once 
+again, we could measure that on a scale from 1 to 5.
+
+■ An indicator of paid participation, by which we mean whether an individual is 
+getting paid to participate in the project. We could use a Boolean variable or we 
+could create a finer-grained representation of paid participation by capturing 
+the percentage of contribution time that’s paid by a third party. 
+
+You can extend this example to any web application that involves a social networking 
+structure by introducing the attributes that are most appropriate to your case. In order 
+to make our example more concrete, we’ve created the artificial data in table 4.1. In the 
+headers, you can see the six attributes that we just described. In each row, you’ll find the 
+values of these attributes for each of the 20 users that we’ll consider.
+
+Table 4.1  Artificial data for cluster analysis of users that participate in an online community 
+
+Username
+
+Age
+
+Income range
+
+Education
+
+Skills
+
+Social
+
+Paid work
+
+Albert
+
+Alexandra
+
+Athena
+
+Aurora
+
+Babis
+
+Bill
+
+Bob
+
+23
+
+25
+
+24
+
+23
+
+21
+
+31
+
+32
+
+0
+
+1
+
+0
+
+1
+
+0
+
+1
+
+1
+
+0
+
+2
+
+1
+
+2
+
+0
+
+2
+
+1
+
+3
+
+4
+
+3
+
+5
+
+3
+
+4
+
+3
+
+3
+
+2
+
+4
+
+2
+
+4
+
+2
+
+1
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+1
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

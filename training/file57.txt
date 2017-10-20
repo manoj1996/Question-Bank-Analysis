@@ -1,0 +1,504 @@
+How do recommendation engines work?
+
+91
+
+    Item itemA = dataSet.getItem(itemAId);
+
+    // we only need to calculate elements above the main diagonal.
+    for (int v = u + 1; v < nItems; v++) {                                  
+
+B
+
+      int itemBId = getObjIdFromIndex(v);
+      Item itemB = dataSet.getItem(itemBId);
+
+      RatingCountMatrix rcm = 
+➥     new RatingCountMatrix(itemA, itemB, nRatingValues);   
+
+Agreement of 
+ratings between 
+two items
+
+      int totalCount     = rcm.getTotalCount();
+      int agreementCount = rcm.getAgreementCount();
+
+      if (agreementCount > 0) {                          
+
+        similarityValues[u][v] = 
+➥       (double) agreementCount / (double) totalCount;
+
+Calculate similarity 
+or set to zero
+
+      } else {
+
+        similarityValues[u][v] = 0.0;
+      }
+
+      if( keepRatingCountMatrix ) {
+        ratingCountMatrix[u][v] = rcm;
+      }
+    }
+
+    // for u == v assign 1
+    similarityValues[u][u] = 1.0;   
+  }
+}
+
+B
+
+This  is  the  same  code  optimization  B  that  we’ve  seen  for  the  user-based  similarity 
+evaluation in listing 3.4.
+
+ The RatingCountMatrix class is used once again to keep track of the agreement ver-
+sus  disagreement  in  the  ratings,  although  now,  the  agreement/disagreement  is 
+between the ratings of two different items rather than two different users. The code iter-
+ates through all the possible pairs of items and assigns similarity values based on the Jac-
+card  metric.  The  code  in  the  Delphi  class  for  item-based  recommendations  closely 
+follows the corresponding code for user-based recommendations. In listing 3.11, we 
+show the evaluation of the similarity for item-based recommendations; compare it with 
+the code in listing 3.8. The code in listings 3.6 and 3.7 is identical for all types of simi-
+larity evaluation.
+
+Listing 3.11  Delphi: creating recommendations based on item similarity
+
+private double estimateItemBasedRating(User user, Item item) {
+
+  double estimatedRating = Double.NaN;
+
+  int itemId = item.getId();
+  int userId = user.getId();
+
+  double similaritySum = 0.0;
+  double weightedRatingSum = 0.0;
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com92
+
+CHAPTER 3  Creating suggestions and recommendations
+
+  // check if the user has already rated the item
+  Rating existingRatingByUser = user.getItemRating(item.getId());
+
+  if (existingRatingByUser != null) {
+
+    estimatedRating = existingRatingByUser.getRating();
+
+  } else {
+
+    double similarityBetweenItems = 0;
+    double weightedRating = 0;
+
+    for (Item anotherItem : dataSet.getItems()) {   
+
+Get rating for 
+same user
+
+Loop over all 
+other items
+
+      // only consider items that were rated by the user
+      Rating anotherItemRating = anotherItem.getUserRating(userId);   
+
+      if (anotherItemRating != null) {
+
+        similarityBetweenItems = 
+➥  similarityMatrix.getValue(itemId, anotherItem.getId());   
+
+        if (similarityBetweenItems > similarityThreshold) {
+
+          weightedRating = 
+➥  similarityBetweenItems * anotherItemRating.getRating();   
+
+          weightedRatingSum += weightedRating;
+
+          similaritySum += similarityBetweenItems;
+        }
+      }
+    }
+
+    if (similaritySum > 0.0) {
+
+Get similarity 
+between two 
+items
+
+Scale rating 
+according to 
+similarity
+
+      estimatedRating = weightedRatingSum / similaritySum;   
+    }
+  }
+  return estimatedRating;
+}
+
+Estimate rating 
+as ratio of direct 
+and scaled sum
+
+These listings complete our initial coverage of collaborative filtering, or creating rec-
+ommendations based on users and items. Typically, CF based on item similarity is pre-
+ferred because the number of customers is large (millions or even tens of millions), 
+but  sometimes  in  the  pursuit  of  better  recommendations,  the  two  CF  methods  are 
+combined. In the following sections, we’ll present the examples of customizing a site 
+like Amazon.com (http://www.amazon.com), which employs an item-to-item collab-
+orative approach, and providing recommendations on a site like Netflix.com (http://
+www.netflix.com), which will demonstrate the combination of the two methods. 
+
+3.2.3 Recommendations based on content
+
+Creating  recommendations  based  on  content  relies  on  the  similarity  of  content
+between users, between items, or between users and items. Instead of ratings, we now 
+have a measure of how “close” two documents are. The notion of distance between doc-
+uments is a generalization of the relevance score between a query and a document, 
+something that we discussed in chapter 2. You can always think of one document as the 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComHow do recommendation engines work?
+
+93
+
+query and the other document as reference. Of course, you’d have to compare only the 
+significant parts of each document; otherwise the information that each document car-
+ries may be lost by obfuscation.
+CASE STUDY SETUP
+We’ll use the documents from chapter 2 as sources of content and assign a number of 
+these web pages to each user, in a way that resembles the assignment of songs to users 
+in our earlier example. For each user, we’ll randomly pick a set of pages that corre-
+sponds to 80% of all the eligible pages from our collection. Eligible documents for 
+each user are introduced with a strong bias as follows:
+
+■
+
+If the username starts with the letters A through D (inclusive), we assign 80% of 
+the documents that belong to either the Business or the Sports category.
+
+■ Otherwise, we assign 80% of the documents that belong to either the USA or 
+
+the World category 
+
+Thus, we establish two large groups of users with similar (although somewhat artificial) 
+preferences, which will allow us to quickly assess our results. Let’s see the steps of cre-
+ating content-based instances of our Delphi recommender. Listing 3.12 shows the code 
+that prepares the data and then identifies similar users and similar items. We also pro-
+vide the recommendation of items based on a hybrid user-item content-based similarity.
+
+Listing 3.12  Creating recommendations based on content similarities
+
+BaseDataset ds = NewsData.createDataset(); 
+
+Delphi delphiUC = new Delphi(ds,RecommendationType.USER_CONTENT_BASED);    
+delphiUC.setVerbose(true);                                                                 
+Create user-content-
+based engine
+
+NewsUser nu1 = ds.pickUser("Bob"); 
+delphiUC.findSimilarUsers(nu1);
+
+NewsUser nu2 = ds.pickUser("John");
+delphiUC.findSimilarUsers(nu2);
+
+Delphi delphiIC = new Delphi(ds,RecommendationType.ITEM_CONTENT_BASED);   
+delphiIC.setVerbose(true);                                                                   
+
+ContentItem i = ds.pickContentItem("biz-05.html");
+delphiIC.findSimilarItems(i);
+
+Create item-content-
+based engine
+
+Delphi delphiUIC = 
+    new Delphi(ds,RecommendationType.USER_ITEM_CONTENT_BASED);   
+delphiUIC.setVerbose(true);                                                    
+
+delphiUIC.recommend(nu1); 
+
+Create user-item-
+content-based engine
+
+The  first  line  of  the  script  creates  the  dataset  in  the  way  that  we  described  earlier. 
+Once we get the dataset, we create a  Delphi instance that’s based on a user-to-user 
+similarity  matrix  that  we  calculate  in  the  class  UserContentBasedSimilarity.  Since 
+each user has more than one document, we must compare each document of each 
+user with each document of every other user. There are many ways to do this. In our 
+code, as shown in listing 3.13, for each user-pair combination—user A and user B—we 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com94
+
+CHAPTER 3  Creating suggestions and recommendations
+
+loop over each document of A and find the document of B with the highest similarity. 
+Then we average the best similarities for each document of A and assign the average 
+value as the similarity between A and B.
+
+Listing 3.13  Calculating the similarity of users based on their content
+
+protected void calculate(Dataset dataSet) {
+
+  int nUsers = dataSet.getUserCount();
+
+  similarityValues = new double[nUsers][nUsers];
+
+  // if mapping from userId to index then generate index for every userId
+  if( useObjIdToIndexMapping ) {
+    for(User u : dataSet.getUsers() ) {
+        idMapping.getIndex(String.valueOf(u.getId()));
+    }
+  }
+
+Create cosine 
+similarity measure
+
+  CosineSimilarityMeasure cosineMeasure = 
+➥  new CosineSimilarityMeasure();          
+
+  for (int u = 0; u < nUsers; u++ ) { 
+
+    int userAId = getObjIdFromIndex(u);
+    User userA = dataSet.getUser(userAId);
+
+    for (int v = u + 1; v < nUsers; v++) {   
+
+B
+
+      int userBId = getObjIdFromIndex(v);
+      User userB = dataSet.getUser(userBId);
+
+      double similarity = 0.0;
+
+      for(Content userAContent : userA.getUserContent() ) {   
+
+         double bestCosineSimValue = 0.0;
+
+         for(Content userBContent : userB.getUserContent() ) {   
+
+Iterate over 
+all rated items 
+of user A
+
+Iterate over 
+all rated items 
+of user B
+
+            double cosineSimValue = cosineMeasure
+➥  .calculate(userAContent.getTFMap(), userBContent.getTFMap()); 
+
+            bestCosineSimValue = 
+➥  Math.max(bestCosineSimValue, cosineSimValue);
+         }
+
+         similarity += bestCosineSimValue;   
+      }
+
+      similarityValues[u][v] = similarity / 
+➥  userA.getUserContent().size();          
+    }
+
+    // for u == v assign 1. 
+    similarityValues[u][u] = 1.0;   
+  }
+}
+
+B
+
+Aggregate best similarities 
+from all documents
+
+Calculate similarity 
+as simple average
+
+This  is  the  same  code  optimization  B  that  we’ve  seen  for  the  user-based  similarity 
+evaluation in listing 3.4.
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComHow do recommendation engines work?
+
+95
+
+THE KEY IDEAS BEHIND CONTENT-BASED SIMILARITIES
+The key element to all content-based methods is representing the textual information
+as a numerical quantity. An easy way to achieve this is to identify the N most frequent 
+terms in each document and use the set of most frequent terms across all documents 
+as a coordinate space. We can take advantage of Lucene’s StandardAnalyzer class to 
+eliminate  stop  words  and  stem  the  terms  to  their  roots,  thus  amplifying  the  impor-
+tance  of  the  meaningful  terms  while  reducing  the  noise  significantly.  For  that  pur-
+pose, we’ve created a CustomAnalyzer class, which extends the StandardAnalyzer, in 
+order to remove some words that are common and, if present, would add a significant 
+level of noise to our vectors. 
+
+ Let’s digress for awhile here to make  these important ideas more concrete. For 
+argument’s sake, let’s say that N = 4 and that you have three documents and the fol-
+lowing (high frequency) terms:
+
+■ D1 = {Google, shares, advertisement, president}
+■ D2 = {Google, advertisement, stock, expansion}
+■ D3 = {NVidia, stock, semiconductor, graphics}  
+
+Each of these documents can be represented mathematically by a nine-dimensional 
+vector  that  reflects  whether  a  specific  document  contains  one  of  the  nine  unique 
+terms—{Google, shares, advertisement, president, stock, expansion, Nvidia, semicon-
+ductor, graphics}. So, these three documents would be represented by the following 
+three vectors:
+
+■ D1 = {1,1,1,1,0,0,0,0,0}
+■ D2 = {1,0,1,0,1,1,0,0,0}
+■ D3 = {0,0,0,0,1,0,1,1,1}
+
+Voilà! We constructed three purely mathematical quantities that we can use to com-
+pare our documents quantitatively. The similarity that we’re going to use is called the 
+cosine similarity. We’ve seen many similarity formulas so far, and this isn’t much differ-
+ent.  Instead  of  bothering  you  with  a  mathematical  formula,  we’ll  list  the  class  that 
+encapsulates its definition. Listing 3.14 shows the code from the CosineSimilarity-
+Measure class.
+
+Listing 3.14  Calculating the cosine similarity between term vectors
+
+public class CosineSimilarityMeasure {
+
+    public double calculate(double[] v1, double[] v2) {
+
+        double a = getDotProduct(v1, v2);                                 
+
+        double b = getNorm(v1) * getNorm(v2);   
+
+        return a / b;   
+    }
+
+Get cosine similarity
+
+Normalize two 
+vectors and 
+calculate product
+
+Find dot 
+product
+
+    private double getDotProduct(double[] v1, double[] v2) {              
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com96
+
+CHAPTER 3  Creating suggestions and recommendations
+
+        double sum = 0.0;
+
+        for(int i = 0, n = v1.length; i < n; i++) {
+            sum += v1[i] * v2[i];
+        }
+
+        return sum;
+    }
+
+    private double getNorm(double[] v) {   
+
+        double sum = 0.0;
+
+        for( int i = 0, n = v.length; i < n; i++) {
+            sum += v[i] * v[i];
+        }
+
+        return Math.sqrt(sum);
+    }
+}
+
+Calculate Euclidean 
+norm of a vector
+
+As you can see, first we form what’s called the dot (inner) product between the two vec-
+tors—the double variable a. Then we calculate the norm (magnitude) of each vector 
+and store their product in the  double variable b. The cosine similarity is simply the 
+ratio a/b. If we denote the cosine similarity between document X and document Y as 
+CosSim(X,Y), for our simple example, we have the following similarities:
+
+■ CosSim(D1,D2) = 2 / (2*2) = 0.5
+■ CosSim(D1,D3) = 0 / (2*2) = 0
+■ CosSim(D2,D3) = 1 / (2*2) = 0.25
+
+The  technique  of  representing  documents  based  on  their  terms  is  fundamental  in 
+information retrieval. We should point out that identifying the terms is a crucial step, 
+and it’s difficult to get it right for a general corpus of documents. For example, modify 
+our code to use the StandardAnalyzer instead of our own CustomAnalyzer. What do 
+you observe? The results can be altered significantly, even though at first sight, there’s 
+not much in our custom class. This small experiment should convince you that the 
+content-based approach is very sensitive to the lexical analysis stage.
+THREE TYPES OF CONTENT-BASED RECOMMENDATIONS
+Coming back to our example, let’s have a look at the results. Figure 3.6 shows a part of 
+the results from executing the code in listing 3.12, which is responsible for finding 
+similar users. 
+
+ The algorithm is successful because it correctly identifies the two distinct groups 
+as  similar—users  whose  names  start  with  A  through  D  and  users  whose  names  start 
+with  E  through  Z.  Note  that  the  values  of  similarity  don’t  vary  much.  The  content-
+based approach doesn’t seem to produce a good separation between the users when 
+they’re compared with each other. Figure 3.7 shows the execution of the code that’s 
+responsible  for  finding  similar  items.  As  you  can  see,  a  number  of  relevant  items 
+have  been  identified,  but  so  were  a  number  of  items  that  a  human  user  wouldn’t 
+find very similar. 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComHow do recommendation engines work?
+
+97
+
+bsh % BaseDataset ds = NewsData.createDataset();
+bsh % Delphi delphiUC = 
+new Delphi(ds,RecommendationType.USER_CONTENT_BASED);
+
+bsh % delphiUC.setVerbose(true);
+bsh % NewsUser nu1 = ds.pickUser("Bob");
+bsh % delphiUC.findSimilarUsers(nu1);
+
+Top Friends for user Bob:
+
+    name: Albert        , similarity: 0.950000
+    name: Catherine     , similarity: 0.937500
+    name: Carl          , similarity: 0.937500
+    name: Alexandra     , similarity: 0.925000
+    name: Constantine   , similarity: 0.925000
+
+bsh % NewsUser nu2 = ds.pickUser("John");
+bsh % delphiUC.findSimilarUsers(nu2);
+
+Top Friends for user John:
+
+    name: George        , similarity: 0.928571
+    name: Lukas         , similarity: 0.914286
+    name: Eric          , similarity: 0.900000
+    name: Nick          , similarity: 0.900000
+    name: Frank         , similarity: 0.900000
+
+Figure 3.6  Users who are similar to Bob have names that start with the letters A through D. 
+The algorithm identified the two groups of similar users successfully!
+
+Once again, you can see that the similarity values don’t vary much; it would be diffi-
+cult for the algorithm to provide excellent recommendations. The reason for that lack 
+of disambiguation lies in the paucity of our lexical analysis. Natural language processing
+(NLP)) is a rich and difficult field. Nevertheless, much progress has been made in the 
+last  two  decades;  although  we  won’t  go  in-depth  on  that  fascinating  subject  in  this 
+book, we’ll summarize the various components of a NLP system in appendix D.
+
+ In figure 3.8 we present recommendations based on user-item similarity. Although 
+CF usually deals with user-user or item-item similarities, a content-based approach is 
+advantageous for building recommendations on user-item similarities. Nevertheless, 
+the problems of lexical analysis remain, and without tedious and specific work based 
+on NLP, the results won’t be satisfactory. If you enlarge the dataset and run the script 
+several  times  for  different  users,  a  large  number  of  the  recommendations  will  have 
+identical ratings and the predicted ratings won’t vary significantly.
+
+ In summary, recommendation systems are built around user-user, item-item, and 
+content-based  similarities.  Creating  recommendations  based  on  user  similarity  is  a 
+reliable technique but may not be efficient for a large number of users. In the latter 
+case, collaborative filtering based on item similarity is preferred because the number 
+of customers (millions or even tens of millions) is orders of magnitude larger than the 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

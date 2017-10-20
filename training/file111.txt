@@ -1,0 +1,323 @@
+202
+
+CHAPTER 5  Classification: placing things where they belong
+
+Figure 5.9  A typical neural network with three 
+input nodes, two hidden layers of nodes, and one 
+output node
+
+in general, the output could be a vector itself, not just a single value. You can think of 
+the initial values {x1, x2, x3} propagating from left to right. Each node collects its input 
+values and calculates its output values. The final value (y) depends on the initial values 
+{x1, x2, x3} and the way that these values propagate through the network. 
+
+ The synapses connect the nodes, in the sense that information can be exchanged 
+between  any  two  nodes  that  are  shown  as  linked  with  a  synapse.  The  exchange  of 
+information  is  regulated  by  a  parameter  called  the  weight  of  the  synapse,  which, 
+roughly speaking, indicates the importance of the connection between the two nodes. 
+During the training phase of a neural network, the weights of the synapses are contin-
+uously evaluated and modified according the values of the training dataset.
+
+ The graphical representation of a neural network is common. A lot can be said 
+
+about a neural network by looking at such a graphical representation. 
+
+ First, note that we’ve placed an arrow only in the links that place the variables in 
+the input nodes and the one that provides us with the “answer”—the y value. If the 
+nodes and the synapses form a directed acyclic graph (DAG)—a rule of thumb for this 
+condition would be to check whether all the arrows point from left to right—then we 
+say that we have a feedforward neural network. Otherwise, we say that we have a feedback
+neural network. 
+
+ Second, note that we’ve arranged the nodes as vertical stacks, going from left to 
+right. That’s not necessary but is customary. We say that the nodes that belong to a 
+given vertical stack belong to a given layer. Following this customary convention, we 
+denoted the nodes of the first hidden layer as L1 nodes and the nodes of the second 
+hidden  layer  as  L2  nodes.  The  input  layer  nodes  are  denoted  by  I  while  the  single 
+node in the output layer is denoted by O.
+
+ Third, note that the input nodes don’t connect to all the nodes of the first hidden 
+layer. But every node in the first hidden layer connects to every node in the second 
+hidden layer. When all the nodes of one layer connect to every node of the next layer, 
+we say that the layers are fully connected.  
+
+ These observations are a psychological preparation for the following mantra: We 
+can fully define a neural network by identifying three essential elements (see McKay):
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComFraud detection with neural networks
+
+203
+
+■ The  neural  network  architecture,  which  dictates  the  number  of  nodes  in  the 
+network,  the  number  of  input  and  output  nodes,  and  the  synapses  and  their 
+directionality
+
+■ The  activation  rule,  which  dictates  the  laws  of  direct  interaction  between  the 
+
+nodes 
+
+■ The  learning  rule,  which  dictates  the  laws  of  indirect  interaction  between  the 
+
+nodes and the information that propagates through the network
+
+All this flexibility in defining a neural network provides enormous potential, but at 
+the same time renders the identification of the ideal neural network difficult in prac-
+tice. We don’t intend to provide a comprehensive introduction to neural networks in 
+a few pages; it would be presumptuous on our part. In appendix E, you can find more 
+references to the neural networks literature. 
+
+5.4.3
+
+A neural network fraud detector at work
+Let’s now take the first steps toward using a neural network that can help us identify 
+fraudulent transactions. Listing 5.13 shows you how to: 
+
+■ Load a transaction dataset and calculate user statistics from it.
+■ Build the NNFraudClassifier, train it, and store it on the disk.
+■ Load an instance of the NNFraudClassifier from the disk and use it to classify 
+
+transactions.
+
+■ Load a set of new transactions for testing our classifier with an instance of the 
+
+class FraudErrorEstimator.
+
+Listing 5.13  NNFraudClassifier: a neural network classifier for fraud detection 
+
+TransactionDataset ds = TransactionLoader.loadTrainingDataset();   
+
+ds.calculateUserStats();   
+
+C
+
+NNFraudClassifier nnFraudClassifier = new NNFraudClassifier(ds);   
+
+B
+
+D
+
+nnFraudClassifier.setName("MyNeuralClassifier"); 
+
+nnFraudClassifier.useDefaultAttributes();   
+
+E
+
+nnFraudClassifier.setNTrainingIterations(10);   
+
+F
+
+nnFraudClassifier.train();   
+
+nnFraudClassifier.save();   
+
+G
+H
+
+NNFraudClassifier nnClone = NNFraudClassifier
+➥  .load(nnFraudClassifier.getName());         
+
+I
+
+nnClone.classify("1");   
+
+J
+
+nnClone.classify("305"); 
+
+TransactionDataset testDS = TransactionLoader.loadTestDataset();   
+
+1)
+
+FraudErrorEstimator auditor = new FraudErrorEstimator(testDS, nnClone);   
+
+1!
+
+auditor.run(); 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com204
+
+CHAPTER 5  Classification: placing things where they belong
+
+B
+
+C
+
+D
+
+E
+
+As you can see, by using our code, building and using a neural network based classifier 
+is simple. Everything can be written down in a few steps. Let’s examine the steps one 
+by one:
+The  transaction  dataset  from  the  file  training-txns.txt  is  encapsulated  by  the  class 
+TransactionDataset. The code in the packages iweb2.ch5.usecase.fraud.* allows 
+you to build your own dataset. We could have presented the transaction file itself and 
+left the rest of the details out. But this is a practical book and going through the pro-
+cess of building your own dataset (and possibly extending what we give you) is what 
+will help you model the data of your own application. Using the right data and using 
+data properly is extremely important in intelligent applications.
+Once we obtain the raw transactions we collect statistical information about the spend-
+ing habits of each user. Remember that in the real world you’ll be collecting the data 
+from some back-end or data warehouse system. We need to mine the data for informa-
+tion that’ll help us set a baseline for each user. If user A limits her spending within the 
+range of $20 to $200, while user B within the range of $100 to $5,000, a transaction of 
+$2,000 means something completely different for these two users. This process belongs 
+in the general category of data preprocessing that goes by the name data normalization.
+ Look at the class UserStatistics, which encapsulates the baseline of spending for 
+each user. Three things are worth noticing. The first, which we already mentioned, is 
+the bracketing of the spending. We identify the minimum and maximum amount for 
+the legitimate transactions that we get from the training set. Second, pay attention to 
+the  collection  of  terms  found  in  the  descriptions  of  legitimate  transactions.  Third, 
+notice that aside from the minimum and maximum coordinate locations, we also cal-
+culate  the  centroid  of  locations.  The  argument  here  is  that  most  transactions  take 
+place around the area of residence, so if a new transaction comes in and its location is 
+far  away  from  the  baseline—the  location  centroid  that  we  have  for  that  user—we 
+should take that into account, although its contribution shouldn’t be dominant since 
+people do travel occasionally. 
+The NNFraudClassifier is the main class for classifying transactions. This class isn’t 
+itself  a  neural  network;  it  delegates  the  learning  aspects  of  its  function  to  the  class 
+TransactionNN.  We’ll  examine  both  of  these  classes  later  in  this  section.  We  give  a 
+name to our classifier, so that we can refer to it later on. This name will be used for the 
+construction of its file name (during serialization), so you should give a name that’s 
+descriptive of what you are doing.
+If you recall from our earlier examples (specifically the user clicks example in chapter 
+2), we need to identify which attributes of the transactions should be used for the clas-
+sification.  This  is  important  in  the  real  world  because  you  typically  have  dozens  of 
+attributes in your transactions, if not hundreds. A certain amount of careful consider-
+ation is required in selecting the attributes that will be used for training. Irrelevant 
+attributes can overwhelm the classifier and significantly hinder its ability to identify 
+fraudulent transactions. This method automatically selects the three attributes of the 
+transactions that we discussed: the amount, the location, and the description.
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComFraud detection with neural networks
+
+205
+
+F
+
+G
+
+H
+
+I
+
+J
+
+1)
+
+1!
+
+the  disk,  which 
+
+is  determined  by 
+
+This step determines how many times the data will propagate through the network. 
+How large should the value be? It depends on your data and your network. As you’ll 
+see, 10 times works great in our example.
+Once  we  set  up  all  the  parameters  of  our  neural  network,  we’re  ready  to  start  the 
+training process. At the end of this method call, our classifier is ready to be used and it 
+has learned everything that it could learn from the given training dataset. 
+We save our instance of the trained classifier on the disk. This is important because 
+you may want to distribute the classifier to several systems or because the system that 
+builds  the  classifier  is  different  from  the  system  that  uses  it.  In  addition,  it’s  a  safe-
+guard against system failures. Imagine that you spent two hours training your classifier 
+on 10 attributes and over a set of several million transactions, but all of a sudden, for 
+whatever reason, the system goes down! What do you do? Trained classifiers should be 
+treated like every other electronic document whose content can change—when addi-
+tional training occurs over the period of its usage, copies of the classifier should be 
+persisted; for example, they could be stored on the disk.
+This is how you can load a trained classifier. All you need to know is the filename of 
+the classifier. Our implementation saves all serialized classifiers in the same location 
+on 
+the  constant  NNFraudClassifier. 
+SERIALIZATION_PATH. If that isn’t convenient you can change that variable or change 
+the related code and add more flexibility in your classifier storage capabilities.
+Here we go! We’re ready to classify a couple of instances. The first transaction ID (1) 
+corresponds to a legitimate transaction, the second transaction ID (305) corresponds 
+to a fraudulent transaction. This is a sanity check, not a thorough evaluation of our 
+classifier, because we selected transactions that the classifier has already encountered 
+during its training. 
+Let’s create a dataset that contains transactions never before seen by the classifier. We 
+call this the testing dataset and denote it as testDS.
+FraudErrorEstimator is an auxiliary class that can help us assess the accuracy of our 
+classifier. The assessment begins by invoking the method run(). At the end, it summa-
+rizes  the  number  of  transactions  that  were  correctly  classified  and  the  number  of 
+transactions that were misclassified. In particular, it reports separately the number of 
+valid transactions that the classifier thought were fraud, and the number of fraudulent 
+transactions that the classifier thought were legitimate. There’s a difference between 
+these two types of misclassification, which we’ll discuss in the next section.
+Now, let’s look at the results before we look deeper into the neural network code. Fig-
+ure 5.10 shows the outcome from the execution of listing 5.13. Wow! How about that? 
+The classifier seems to be perfect! Is it possible? Let’s say that it’s very unlikely. This is 
+a classic trap for people who use black box libraries and don’t grasp the inner working 
+of classification algorithms. To understand this, open the test-txns.txt file with the text 
+editor of your choice and replace every occurrence of the entry BLACK DIAMOND COF-
+FEE with SOME DUDE. 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com206
+
+CHAPTER 5  Classification: placing things where they belong
+
+bsh % nnClone.classify("1");
+Transaction:
+  >> 1:1:EXPEDIA TRAVEL:63.29:856.0:717.0:false
+
+Assessment:
+  >> This is a VALID_TXN
+bsh % nnClone.classify("305");
+Transaction:
+  >> 1:305:CANADIAN PHARMACY:3978.57:52.0:70.0:true
+
+Assessment:
+  >> This is a FRAUD_TXN
+bsh % TransactionDataset testDS = 
+å  TransactionLoader.loadTestDataset();
+
+bsh % FraudErrorEstimator auditor = 
+å  new FraudErrorEstimator(testDS, nnClone);
+
+bsh % auditor.run();
+Total test dataset txns: 1100, Number of fraud txns:100
+Classified correctly: 1100, 
+Misclassified valid txns: 0, 
+Misclassified fraud txns: 0
+
+Figure 5.10  Results of classification from the neural network classifier NNFraudClassifier  
+(listing 5.12)
+
+If you rerun the last three steps of listing 5.13 you should see the results shown in fig-
+ure 5.11; your results will also include the normalized values of the transactions, which 
+we  ignored  here  to  improve  legibility.  The  only  transactions  associated  with  the 
+replaced description were legitimate—their value for the last attribute was false. The 
+output indicates that there were four legitimate transactions (VALID_TXN) that were 
+misclassified  as  fraud.  Our  impeccable  score  has  been  marred  because  the  replace-
+ment has introduced noise in our data. In other words, we’re now dealing with data 
+that we never before encountered. 
+
+ The first set of test transactions (used in the results of figure 5.10) didn’t include 
+even one transaction from the training set. But in that case, all the test transactions 
+were  created  from  the  same  statistical  distributions.  In  particular,  the  transactional 
+descriptions were introduced from a fixed set of descriptions without any variations. 
+Even  though  each  test  transaction  had  never  before  been  encountered,1  they  all 
+belonged in exactly the same data space. Nearly all classification algorithms can do 
+well in that case, but they all generate errors on data that’s significantly different than 
+the training dataset. The ability of a classifier to gracefully handle data that it hasn’t 
+encountered before is a measure of its generalization capability.
+
+1
+
+In the sense that if we were to compare all the attribute values, one by one, between a test transaction and all 
+training transactions, we wouldn’t have found a single training transaction that was identical to the test trans-
+action.
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

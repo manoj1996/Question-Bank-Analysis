@@ -1,0 +1,33 @@
+10
+
+CHAPTER 1  What is the intelligent web?
+
+Figure 1.5  The YouTube categories for videos. The reference schema for the categorization of content 
+is shown on the left panel.
+
+like to have our binary files categorized in terms of the themes that we define—“Autos 
+& Vehicles,” “Education,” “Entertainment,” “Politics,” and so on (see figure 1.5). 
+
+ Similarly to other cases of intelligent applications, these categories may be struc-
+tured as a hierarchy. For example, the category of “Autos & Vehicles” may be further 
+divided into subcategories such as “Sedan,” “Trucks,” “Luxury,” “SUV,” and so on. 
+
+1.3.6 Online gaming
+
+Massive multiplayer online games have all the ingredients required to create intelli-
+gence in the game. They have ample aggregated content and reference structures that 
+reflect  the  rules,  and  they  can  certainly  use the  algorithms  that  we  describe  in  this 
+book to introduce new levels of sophistication in the game. Characters that are played 
+by the computer can assimilate the input of the human players so that the experience 
+of the game as perceived by the humans becomes more entertaining.
+
+ Online gaming is an exciting area for applying intelligent techniques, and it can 
+become  a  key  differentiator  among  competitors,  as  the  computational  power  that’s 
+available for playing games and the expectations of the human players with respect 
+to  game  complexity  and  innovation  increase.  Techniques  that  we  describe  in  chap-
+ters 4, 5, and 6, as well as a lot of the material in the appendices, are directly applica-
+ble in online games. 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

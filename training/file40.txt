@@ -1,0 +1,276 @@
+50
+
+CHAPTER 2  Searching
+
+     if ( a != null && attributeList.contains(a.getName()) ) {
+
+       Map<Attribute, AttributeValue> aMap = p.get(c);
+       AttributeValue aV = aMap.get(a); 
+       if ( aV == null) {                                      
+             cP *= ((double) 1 / (tSet.getSize()+1));                       
+       } else {
+          cP *= (double)(aV.getCount()/conceptPriors.get(c));           
+       }
+     }
+    }
+    return (cP == 1) ? (double)1/tSet.getNumberOfConcepts() : cP;
+  }
+}
+
+1)
+
+B
+C
+
+D
+
+E
+
+F
+
+G
+
+H
+
+I
+
+First, let’s examine the main points of the listing:
+This is a name for this instance of the NaiveBayes classifier.
+Every classifier needs a training set. The name of the classifier and its training set are 
+intentionally set during the Construction phase. Once you’ve created an instance of 
+the NaiveBayes classifier, you can’t set its TrainingSet, but you can always get the ref-
+erence to it and add instances.
+The conceptPriors map stores the counts for each of the concepts that we have in 
+our training set. We could’ve used it to store the prior probabilities, not just the counts. 
+But  we  want  to  reuse  these  counts,  so  in  the  name  of  computational  efficiency,  we 
+store the counts; the priors can be obtained by a simple division.
+The variable p stores the conditional probabilities—the probability of observing con-
+cept X given that we observed instance Y, or in the case of the user clicks, the probabil-
+ity that a user A wants to see URL X provided that he submitted query Q. 
+This is the list of attributes that should be considered by the classifier for training. The 
+instances of a training set may have many attributes and it’s possible that only a few of 
+these  attributes  are  relevant  (see  chapter  5),  so  we  keep  track  of  what  attributes 
+should be used.
+If we’ve encountered the concept in our training set, use the formula that we men-
+tioned earlier and calculate the posterior probability.
+It’s  possible  that  we  haven’t  encountered  a  particular  instance  before,  so  the  get-
+Probability(i) method call wouldn’t be meaningful. In that case, we assign some-
+thing  reasonable  as  a  posterior  probability.  Setting  that  value  equal  to  one  over  the 
+number of all known concepts is reasonable, in the absence of information for assign-
+ing  higher  probability  to  any  one  concept.  We’ve  also  added  unity  to  that  number. 
+That’s an arbitrary modification, intended to lower the probability assigned to each 
+concept, especially for a small number of observed concepts. Think about why, and 
+under what conditions, this can be useful. 
+This method of the NaiveBayes class isn’t essential for the pure classification problem 
+because  its  value  is  the  same  for  all  concepts.  In  the  context  of  this  example,  we 
+decided to keep it. Feel free to modify the code so that you get back only the numera-
+tor of the Bayes theorem; what do your results look like?
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComImproving search results based on user clicks
+
+51
+
+J
+
+1)
+
+The prior probability for a given concept c is evaluated based on the number of times 
+that we encountered this concept in the training set. Note that we arbitrarily assign 
+probability zero to unseen concepts. This can be good and bad. If you’re pretty confi-
+dent that you have all related concepts in your training set then this ad hoc choice helps 
+you eliminate flukes in your data. In a more general case, where you might not have 
+seen a lot of concepts, you should replace the zero value with something more reason-
+able—one over the total number of known concepts. What other choices do you think 
+are reasonable? Is it important to have a sharp estimate of that quantity? Regardless of 
+your answer, try to rationalize your decision and justify it as best as you can. 
+We arrive at the heart of the NaiveBayes class. The “naïve” part of the Bayes theorem 
+is the fact that we evaluate the likelihood of observing Instance i, as the product of 
+the probabilities of observing each of the attribute values. That assumption implies 
+that the attributes are statistically independent. We used quotes around the word naïve
+because the naïve Bayes algorithm is very robust and widely applicable, even in prob-
+lems where the attribute independence assumption is clearly violated. It can be shown 
+that the naïve Bayes algorithm is optimal in the exact opposite case—cases in which 
+there’s a completely deterministic dependency among the attributes (see Rish).  
+If you recall the script in listing 2.11, we’ve created a training set and an instance of 
+the  classifier  with  that  training  set,  and  before  we  assign  the  classifier  to  the 
+MySearcher instance, we do the following two things:
+
+■ We tell the classifier what attributes should be taken into account for training 
+
+purposes.
+
+■ We tell the classifier to train itself on the set of user clicks that we just loaded 
+
+and for the attributes that we specified.
+
+The  attribute  with  label  UserName  corresponds  to  the  user.  The  attributes 
+QueryTerm_1 and QueryTerm_2 correspond to the first and second term of the query, 
+respectively.  These  terms  are  obtained  by  using  Lucene’s  StandardAnalyzer  class. 
+During training, we’re assigning probabilities based on the frequency of occurrence 
+for  each  instance.  The  important  method,  in  our  context,  is  getProbability(Con-
+cept c, Instance i), which we’ll use to obtain the relevance of a particular URL (Con-
+cept) when a specific user executes a specific query (Instance). 
+
+2.4.3
+
+Combining Lucene indexing, PageRank, and user clicks
+Armed with the probability of a user preferring a particular URL for a given query, we 
+can proceed and combine all three techniques to obtain our enhanced search results. 
+The relevant code is shown in listing 2.13.
+
+Listing 2.13  Lucene indexing, PageRank values, and user click probabilities
+
+public SearchResult[] search(UserQuery uQuery, 
+➥  int numberOfMatches, Rank pR) {
+
+  SearchResult[] docResults = 
+➥  search(uQuery.getQuery(), numberOfMatches);   
+
+Results based on index
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com52
+
+CHAPTER 2  Searching
+
+  String url;
+
+  StringBuilder strB = new StringBuilder();
+
+  int docN = docResults.length;
+
+  if (docN > 0) {
+
+Collect at most 
+numberOfMatches documents
+
+    int loop = (docN<numberOfMatches) ? docN : numberOfMatches;   
+
+     for (int i = 0; i < loop; i++) {
+
+       url = docResults[i].getUrl();
+
+       UserClick uClick = new UserClick(uQuery,url);   
+
+         double indexScore = docResults[i].getScore();
+
+       double pageRankScore  = pR.getPageRank(url);
+
+       BaseConcept bC = new BaseConcept(url);
+
+Collect all user 
+click scores
+
+       double userClickScore = learner.getProbability(bC, uClick); 
+
+       double hScore;
+
+       if (userClickScore == 0) {   
+
+Evaluate final 
+(hybrid) score
+
+         hScore = indexScore * pageRankScore * EPSILON;
+
+       } else {
+
+             hScore = indexScore * pageRankScore * userClickScore;
+          }
+
+          docResults[i].setScore(hScore); 
+
+     strB.append("Document URL   : ")
+➥   .append(docResults[i].getUrl()).append("  -->  ");
+     strB.append("Relevance Score: ")
+➥   .append(docResults[i].getScore()).append("\n");
+    }
+  }
+  strB.append(PRETTY_LINE);
+  System.out.println(strB.toString());
+
+  return docResults;
+}
+
+Figure 2.8 shows the results for user dmitry. As you can see, due to the fact that dmitry 
+clicked several times on the page biz-03.html in the past, the relevance score for that 
+page is the highest. The second best hit is page biz-01.html, which is also in the user 
+clicks file. The spam page appears third, but that’s a side effect of the small number of 
+pages; we intentionally didn’t include our scaling m factor to demonstrate its impact 
+on the results.
+
+ In figure 2.9, we execute the same query—“google ads”—but this time we do it as 
+user babis. We’ve reversed the order of dmitry’s clicks to create the clicks for the user 
+babis. The results show that the first hit is page biz-01.html; page biz-03.html is sec-
+ond. Everything else is the same. The only difference in the result set comes from the 
+fact that the query was executed by different users, and that difference reflects exactly 
+what the application learned from the file user-clicks.csv.  
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComImproving search results based on user clicks
+
+53
+
+bsh % UserQuery dQ = new UserQuery("dmitry", "google ads");
+bsh % oracle.search(dQ,5,pr);
+
+Search results using Lucene index scores:
+Query: google ads
+
+Document Title: Google Ads and the best drugs
+Document URL: file:/c:/iWeb2/data/ch02/spam -biz-01.html  -->  
+Relevance Score: 0.788674294948578
+_______________________________________________________
+Document Title: Google Expands into Newspaper Ads
+Document URL: file:/c:/iWeb2/data/ch02/biz-01.html  -->  
+Relevance Score: 0.382
+_______________________________________________________
+Document Title: Google sells newspaper ads
+Document URL: file:/c:/iWeb2/data/ch02/biz-03.html  -->  
+Relevance Score: 0.317
+_______________________________________________________
+Document Title: Google's sales pitch to newspapers
+Document URL: file:/c:/iWeb2/data/ch02/biz-02.html  -->  
+Relevance Score: 0.291
+_______________________________________________________
+Document Title: Economic stimulus plan helps stock prices
+Document URL: file:/c:/iWeb2/data/ch02/biz-07.html  -->  
+Relevance Score: 0.031
+_______________________________________________________
+
+Search results using combined Lucene scores, page rank scores and
+user clicks:
+Query: user=dmitry, query text=google ads
+
+Document URL: file:/c:/iWeb2/data/ch02/biz-03.html      -->  
+Relevance Score: 0.0057
+
+Document URL: file:/c:/iWeb2/data/ch02/biz-01.html      -->  
+Relevance Score: 0.0044
+
+Document URL: file:/c:/iWeb2/data/ch02/spam-
+Relevance Score: 0.0040
+
+biz-
+
+-
+
+01.html -->  
+
+Document URL: file:/c:/iWeb2/data/ch02/biz-02.html      -->  
+Relevance Score: 0.0012
+
+Document URL: file:/c:/iWeb2/data/ch02/biz-07.html      -->  
+Relevance Score: 0.0002
+
+________________________________________________________
+
+Figure 2.8  Combining Lucene, PageRank, and user clicks to produce high-relevance search results  
+for dmitry.
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

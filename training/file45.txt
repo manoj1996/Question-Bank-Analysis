@@ -1,0 +1,50 @@
+Large-scale implementation issues
+
+63
+
+number of iterations required. A number of techniques, known collectively as approxi-
+mate aggregation techniques, to compute the PageRank vector of a smaller matrix in order 
+to generate an estimate of the true updated distribution of the PageRank vector. That 
+estimate, in turn, will be used as the initial vector for the final computation. The math-
+ematical underpinnings of these methods won’t be covered in this book. For more infor-
+mation on these techniques, see the references at the end of this chapter.
+
+ While we’re discussing acceleration techniques for the computation of the Page-
+Rank vector, we should mention the Aitken extrapolation, a quadratic extrapolation 
+technique by Kamvar et al., as well as more advanced techniques such as the applica-
+tion  of  spectral  methods  (such  as  Chebyshev  polynomial  spectral  methods).  These 
+techniques aim at obtaining a better approximation of the PageRank vector between 
+iterations. They may be applicable in the calculation of your ranking, and it may be 
+desirable to implement them; see the references for more details.
+
+ With regard to the software aspects of an implementation for large-scale computa-
+tions,  we  should  mention  Hadoop  (http://hadoop.apache.org/).  Hadoop  is  a  full-
+blown,  top-level  project  of  the  Apache  Software  Foundation  and  it  offers  an  open 
+source software platform that’s scalable, economical, efficient, and reliable. Hadoop 
+implements MapReduce (see Dean and Ghemawat), by using its own distributed file-
+system (HDFS). MapReduce divides applications into many small blocks of work. HDFS
+creates multiple copies of data blocks for reliability, and places them on computational 
+nodes around a computational cluster (see figure 2.12). MapReduce can then process 
+the  data  where  it’s  located.  Hadoop  has  been  demonstrated  on  clusters  with  2,000 
+nodes. The current design target for the Hadoop platform is 10,000 node clusters. 
+
+ The ability to handle large datasets is certainly of great importance in real-world 
+production systems. We gave you a glimpse of the issues that can arise and pointed you 
+to some appropriate projects and the relevant literature on that subject. When you 
+design a search engine, you need to consider not just your ability to scale and handle 
+a larger volume of data, but the quality of your search results. At the end of the day, 
+your users want your results to be fast and accurate. So, let’s see a few quantitative ways 
+of measuring whether what we have is what we want. 
+
+ 
+
+Figure 2.12 
+The MapReduce 
+implementation  
+of Hadoop using  
+a distributed file  
+system
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

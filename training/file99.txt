@@ -1,0 +1,24 @@
+References
+
+163
+
+ Kruskal, J.B. “On the Shortest Spanning Subtree of a Graph and the Traveling Salesman Prob-
+
+lem.” Proceedings of the American Mathematical Society, Vol 7 (1), pp. 48–50. 1956.
+
+ Ordonez, C. and Cereghini, P. “SQLEM: Fast clustering in SQL using the EM algorithm.” ACM 
+
+SIGMOD Rec. 29 (2), pp.559 – 570. 2000.
+
+ Prim, R.C. “Shortest connection networks and some generalizations.” Bell System Tech. J. 1957.
+ Sheikholeslami, G., S. Chatterjee, and A. Zhang. “WaveCluster: A Multi-Resolution Clustering 
+Approach for Very Large Spatial Databases.” Proceedings of the 24th VLDB Conference. 1998.
+ Tung, A.K.H., J. Hou, and J. Han. “Spatial clustering in the presence of obstacles.” In Proceedings 
+
+of the 17th ICDE, 359-367, Heidelberg, Germany. 2001.
+
+ 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

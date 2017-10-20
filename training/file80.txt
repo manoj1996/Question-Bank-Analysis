@@ -1,0 +1,70 @@
+Link-based algorithms
+
+133
+
+Listing 4.3  Dendrogram: an essential class for encapsulating hierarchical clusters 
+
+public class Dendrogram {
+
+  private Map<Integer, ClusterSet> entryMap;
+  private Map<Integer, String> levelLabels;
+  private Integer nextLevel;
+  private String levelLabelName;
+
+  public Dendrogram(String levelLabelName) {
+    entryMap = new LinkedHashMap<Integer, ClusterSet>();
+    levelLabels = new LinkedHashMap<Integer, String>();
+    nextLevel = 1;
+    this.levelLabelName = levelLabelName; 
+  }
+
+  public int addLevel(String label, Cluster cluster) {
+    List<Cluster> values = new ArrayList<Cluster>();
+    values.add(cluster);
+    return addLevel(label, values);
+  }
+
+  public int addLevel(String label, Collection<Cluster> clusters) {
+
+    ClusterSet clusterSet = new ClusterSet();
+
+    for(Cluster c : clusters) {
+      // copy cluster before adding – over time cluster elements may change
+      // but for dendrogram we want to keep current state.
+      clusterSet.add(c.copy());
+    }
+
+    int level = nextLevel;
+
+     entryMap.put(level, clusterSet);
+     levelLabels.put(level, label);
+
+     nextLevel++;
+     return level;
+   }
+
+public void setLevel(int level, String label, 
+➥  Collection<Cluster> clusters) {
+
+  ClusterSet clusterSet = new ClusterSet();
+
+  for(Cluster c : clusters) {
+     clusterSet.add(c.copy());
+  }
+
+  System.out.println("Setting cluster level: "+level);
+
+  entryMap.put(level, clusterSet);
+  levelLabels.put(level, label);
+
+  if( level >= nextLevel ) {
+    nextLevel = level + 1;
+  }
+}
+
+In summary, the dendrogram data structure can capture all possible cluster configu-
+rations of a dataset, whether or not hierarchical. It’s the data structure of choice for 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

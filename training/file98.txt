@@ -1,0 +1,127 @@
+To Do
+
+161
+
+and although its space and time complexity are O (n2), it can be used in combination 
+with the k-means algorithm to provide a good and fast clustering approach; see the 
+corresponding to-do item in the next section.
+
+ Our coverage is neither exhaustive nor complete. There are many more algorithms 
+in the literature and many variations of the algorithms that we already discussed. It 
+would be impossible to fit them all in a single section of this book. But you’ve now 
+learned all the fundamentals, and you have solid implementations for a number of clus-
+tering algorithms that you can experiment with and extend to fit your purpose. 
+
+4.9
+
+To Do
+
+1 The SQLEM algorithm  This is a SQL-based version of the Expectation-Maximiza-
+tion (EM) algorithm. This is a well-known algorithm in statistics that uses two 
+steps, an E-step and an M-step. The theory behind the algorithm involves advanced 
+mathematical  knowledge,  which  we  don’t  assume  that  you  have.  But  without 
+complicating things, you can think of the k-means clustering (described in sec-
+tion 4.4) as an EM algorithm; the E-step is the assignment, whereas the M-step is 
+the update of the centroid values.
+
+Since  the  vast  majority  of  applications  rely,  one  way  or  another,  on  a  rela-
+tional database, you can implement this algorithm and compare its results with 
+what we presented in this chapter. A detailed description of the algorithm can 
+be found in the original paper by Carlos Ordonez and Paul Cereghini. 
+
+2 Minimum spanning tree (MST) algorithms  We’ve provided an implementation of 
+the Prim-Jarník algorithm. Minimum spanning trees aren’t relevant only for clus-
+tering; they also apply to network organization and touring problems. In 1926, 
+Otakar Boru˚ vka  presented  the  first  known  algorithm for calculating the MST, in 
+the context of evaluating efficient electrical coverage of Moravia! 
+
+In  a  tutorial  that’s  freely  available  on  the  internet  (see  the  references  sec-
+tion),  Jason  Eisner  explains  the  classical  algorithms  and  also  presents  the 
+improved  approach  of  Harold  Gabow,  Zvi  Galil,  and  Thomas  H.  Spencer,  as 
+well as the randomized algorithm of David R. Karger, Philip N. Klein, and Rob-
+ert E. Tarjan. The last one performs only O (m) computations, where (m) is the 
+number  of  the  edges.  Read  the  tutorial  discussion  by  Eisner  and  extend  the 
+MST class to support the more efficient algorithms that he presents. 
+
+3 ROCK: Evaluating the expected number of links  As we mentioned earlier, the ROCK
+algorithm is particularly good at dealing with categorical and Boolean attribute 
+values  by  using  the  notion  of  links  instead  of  direct  distance  comparisons.  It 
+finds  the  “best”  clusters  by  maximizing  the  value  of  the goodness  measure.  The 
+goodness  measure  is  arbitrary;  the  main  idea  is  that  we  use  the  links  for  our 
+comparison of best clusters, but the specific choice of implementation can vary. 
+The heuristic that’s used in our implementation is the one that was originally 
+proposed by Ramanathan V. Guha et al. It calculates the goodness measure as 
+the  ratio  of  the  number  of  cross  links  between  two  clusters  divided  by  the 
+expected number of cross links between those clusters. 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com162
+
+CHAPTER 4  Clustering: grouping things together
+
+What do you think is the rationale behind that choice? What other estimates 
+can we construct for the expected number of links between two clusters? Inves-
+tigate various ideas and compare the results. What happens if we simply con-
+sider  the  goodness  measure  to  be  proportional  to  the  number  of  cross  links 
+between two clusters?
+4 Large dataset clustering 
+
+In the case of large datasets, it’s often desirable to com-
+bine the methods that we discussed in this section in order to balance efficiency 
+with good clustering quality. One possible hybrid scheme would be combining 
+the k-means algorithm with either the  ROCK algorithm (if your data is domi-
+nated by categorical or Boolean attributes), or the DBSCAN algorithm (if your 
+data refer to spatial or other metric coordinates where metric distance is mean-
+ingful and effective).
+
+How would you go about it? Recall that k-means has the best performance in 
+terms of space and time. So, if you have a lot of processing power available, you 
+could take a parallelization approach. That is, you could use the k-means for a 
+few iterations and for a small number of high-level clusters, which would then 
+be processed by the ROCK or the DBSCAN algorithms. Write an implementation 
+for that purpose and use a large dataset (hundreds of thousands of data points) 
+to test your results. You could use the documents on your personal computer or 
+a copy of a large database from work. 
+
+Consider  the  alternative  of  sampling  the  large  dataset  and  clustering  the 
+sample with a powerful algorithm such as ROCK or DBSCAN. Subsequently, use 
+the number of clusters identified as the value of k, and select the centroids of 
+the sample clusters to seed the iterations of the k-means algorithm. Compare 
+the two approaches: which one gives you better clusters (judged empirically by 
+you looking at the data)? Which approach is more efficient? Can you analyti-
+cally justify your findings?
+
+4.10 References
+
+ Aggarwal, C.C. “Towards Meaningful High-Dimensional Nearest Neighbor Search by Human-
+Computer Interaction.” ICDE, 2002. http://citeseer.ist.psu.edu/aggarwal02towards.html.
+
+ Arthur, D. and S. Vassilvitskii. “k-Means++: The advantages of careful seeding.” Symposium on 
+
+Discrete Algorithms (SODA), 2007. http://www.stanford.edu/~darthur/kMeansPlus-
+Plus.pdf.
+
+ Beyer, K., R. Ramakrishnan, U. Shaft, J. Goldstein. “When is nearest neighbor meaningful?” 
+
+ICDT Conference 1999.
+
+ Bradley, P.S., U. Fayyad, and C. Reina. “Scaling clustering algorithms to large databases.” Proc. 
+
+4th International Conference on Knowledge Discovery and Data Mining (KDD-98). AAAI 
+Press, pp. 9 – 15.
+
+ Dhillon, I.S., J. Fan, and Y. Guan. “Efficient clustering of very large document collections.” Data 
+
+Mining for Scientific and Engineering Applications, 2001. Kluwer Academic Publishers.
+
+ Dhillon, I.S., S. Mallela, and R. Kumar. “A Divisive Information-Theoretic Feature Clustering 
+Algorithm for Text Classification.” Journal of Machine Learning Research 3 (March 2003).
+
+ Eisner, J. “State-of-the-art algorithms for minimum spanning trees – A tutorial discussion.” 
+
+1997. http://citeseer.ist.psu.edu/eisner97stateart.html.
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

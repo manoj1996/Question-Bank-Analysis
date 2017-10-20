@@ -1,0 +1,219 @@
+Improving search results based on user clicks
+
+47
+
+ You may notice that, in our data, for the same user and the same query there is 
+more than one entry. That’s normal and you should notice it in your data as well. The 
+number of times that a click appears in that file makes its URL a better or worse candi-
+date for our search results. Typically, the same user will click a number of different 
+links for the same query because his interest at the time may be different or because 
+he may be looking for additional information on a topic. An interesting attribute that 
+you  should  consider  is  a  timestamp.  Time-related  information  can  help  you  identify 
+temporal structure in your data. Some user clicks follow periodic patterns; some are 
+event-driven; others are completely random. A timestamp can help you identify the 
+patterns or the correlations with other events.  
+
+ First let’s see how we can obtain personalized results for our queries. Listing 2.11 
+shows our script, which is similar to listing 2.9, but this time we load the information 
+about  the  user  clicks  and  we  run  the  same  query  “google  ads”  twice,  once  for  user 
+dmitry and once for user babis.
+
+Listing 2.11  Accounting for user clicks in the search results 
+
+FetchAndProcessCrawler crawler = 
+➥  new FetchAndProcessCrawler("C:/iWeb2/data/ch02",5,200);
+
+crawler.setUrls("biz"); 
+crawler.addUrl("file:///c:/iWeb2/data/ch02/spam-biz-01.html");
+crawler.addUrl("file:///c:/iWeb2/data/ch02/spam-biz-02.html");
+crawler.addUrl("file:///c:/iWeb2/data/ch02/spam-biz-03.html");
+crawler.run(); 
+
+LuceneIndexer luceneIndexer = 
+➥  new LuceneIndexer(crawler.getRootDir()); 
+
+luceneIndexer.run(); 
+MySearcher oracle = new MySearcher(luceneIndexer.getLuceneDir());
+
+PageRank pageRank = new PageRank(crawler.getCrawlData()); 
+pageRank.setAlpha(0.9);
+pageRank.setEpsilon(0.00000001);
+pageRank.build();
+
+UserClick aux = new UserClick();
+UserClick[] clicks =aux.load("C:/iWeb2/data/ch02/user-clicks.csv");   
+
+Load user clicks
+
+TrainingSet tSet = new TrainingSet(clicks);   
+
+Create training set
+
+NaiveBayes naiveBayes = new NaiveBayes("Naïve Bayes", tSet);   
+
+naiveBayes.trainOnAttribute("UserName");     
+naiveBayes.trainOnAttribute("QueryTerm_1");
+naiveBayes.trainOnAttribute("QueryTerm_2");
+
+Select 
+attributes
+
+naiveBayes.train();                       
+
+Train classifier
+
+oracle.setUserLearner(naiveBayes);
+
+UserQuery dmitryQuery = new UserQuery("dmitry","google ads");
+oracle.search(dmitryQuery,5, pageRank);
+
+UserQuery babisQuery = new UserQuery("babis","google ads");
+oracle.search(babisQuery,5, pageRank);
+
+Define 
+classifier
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com48
+
+CHAPTER 2  Searching
+
+You’ve seen the first part of this script in listing 2.9. First, we load the pages that we 
+want to search. After that, we index them with Lucene and build the PageRank that 
+corresponds to their structure. The part that involves new code comes with the class 
+UserClick, which represents the click of a specific user on a particular URL. We also 
+defined  the  class  TrainingSet,  which  holds  all  the  user  clicks.  Of  course,  you  may 
+wonder,  what’s  wrong  with  the  array  of  UserClicks?  Why  can’t  we  just  use  these 
+objects?  The  answer  lies  in  the  following:  in  order  to  determine  the  links  that  are 
+more likely to be desirable for a particular user and query, we’re going to load the 
+user clicks onto a classifier—in particular, the NaiveBayes classifier.
+
+2.4.2 Using the NaiveBayes classifier 
+
+We’ll address classification extensively in chapters 5 and 6, but we’ll describe funda-
+mentals  here  for  clarity.  Classification  relies  on  reference  structures  that  divide  the 
+space of all possible data points into a set of classes (also known as categories or con-
+cepts) that are (usually) non-overlapping. We encounter classification on a daily basis. 
+From our everyday experience, we know that we can list food items according to a res-
+taurant’s menu, for example salads, appetizers, specialties, pastas, seafood, and so on. 
+Similarly, the articles in a newspaper, or in a newsgroup on the internet, are classified 
+based on their subject—politics, sports, business, world, entertainment, and so on. In 
+short,  we  can  say  that  classification  algorithms  allow  us  to  automatically  identify 
+objects as part of this or that class. 
+
+ In this section, we’ll use a probabilistic classifier that implements what’s known as the 
+naïve Bayes algorithm; our implementation is provided by the NaiveBayes class. Classifiers 
+are  agnostic  to  UserClicks,  they’re  only  concerned  with  Concepts,  Instances,  and 
+Attributes. Think of Concepts, Instances, and Attributes as the analogues of direc-
+tories, files, and file attributes on your filesystem.
+
+ A classifier’s job is to assign a Concept to an Instance; that’s all a classifier does. In 
+order to know what Concept should be assigned to a particular Instance, a classifier 
+reads a TrainingSet—a set of Instances that already have a Concept assigned to them. 
+Upon loading those Instances, the classifier trains itself, or learns, how to map a Concept
+to an Instance based on the assignments in the TrainingSet. The way that each clas-
+sifier trains depends on the classifier.
+
+ Our intention is to use the NaiveBayes classifier as a means of obtaining a relevance 
+score for a particular URL based on the user and submitted query. The good thing about 
+the NaiveBayes classifier is that it provides something called the conditional probability of 
+X given Y—a probability that tells us how likely is it to observe event X provided that 
+we’ve already observed event Y. In particular, this classifier uses as input the following:
+■ The  probability  of  observing  concept  X,  in  general,  also  known  as  the  prior
+
+probability and denoted by p(X).
+
+■ The probability of observing instance Y if we randomly select an instance from 
+
+concept X, also known as the likelihood and denoted by p(Y|X).
+
+■ The probability of observing instance Y in general, also known as the evidence
+
+and denoted by p(Y). 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComImproving search results based on user clicks
+
+49
+
+The essential part of the classifier is the calculation of the probability that an observed 
+instance  Y  belongs  in  concept  X,  which  is  also  known  as  the  posterior  probability  and 
+denoted  by  p(X|Y).  The  calculation  is  performed  based  on  the  following  formula 
+(known as Bayes theorem): 
+p(X|Y) = p(Y|X) p(X) / p(Y)
+
+The NaiveBayes classifier can provide a measure of how likely it is that user A wants to 
+see URL X provided that she submitted query Q; in our case, Y = A + Q. In other words, 
+we won’t use the NaiveBayes classifier to classify anything. We’ll only use its capacity to 
+produce a measure of relevance, which exactly fits our purposes. Listing 2.12 shows the 
+relevant code from the class NaiveBayes; for a complete description, see section 5.3.
+
+Listing 2.12  Evaluating the relevance of a URL with the NaiveBayes classifier
+
+public class NaiveBayes implements Classifier {
+  private String name;                                  
+  private TrainingSet tSet;                            
+
+B
+
+C
+
+  private HashMap<Concept,Double> conceptPriors;   
+
+D
+
+  protected Map<Concept,Map<Attribute, AttributeValue>> p;   
+
+E
+
+  private ArrayList<String> attributeList;   
+
+F
+
+  public double getProbability(Concept c, Instance i) {
+    double cP=0;
+    if (tSet.getConceptSet().contains(c)) {
+
+     cP = (getProbability(i,c)*getProbability(c))/getProbability(i);   
+    } else {
+
+G
+
+     cP = 1/(tSet.getNumberOfConcepts()+1);   
+    }
+    return cP;
+  }
+
+H
+
+  public double getProbability(Instance i) {
+    double cP=0;
+
+    for (Concept c : getTset().getConceptSet()) {
+
+     cP += getProbability(i,c)*getProbability(c); 
+    }
+    return (cP == 0) ? (double)1/tSet.getSize() : cP;   
+  }
+
+I
+
+  public double getProbability(Concept c) {
+    Double trInstanceCount = conceptPriors.get(c);
+    if( trInstanceCount == null ) {
+        trInstanceCount = 0.0;
+    }
+    return trInstanceCount/tSet.getSize();   
+  }
+
+J
+
+  public double getProbability(Instance i, Concept c) {
+    double cP=1;
+    for (Attribute a : i.getAtrributes()) {
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

@@ -1,0 +1,730 @@
+Automatic categorization of emails and spam filtering
+
+187
+
+G
+
+so  far.  It  would  be  instructive  to  use  the  CosineSimilarity  class  instead  of  the 
+JaccardCoefficient class and compare the results of classification.
+The jaccardThreshold is an instance variable, and it has associated get and set meth-
+ods. Its default value is set to 0.25, but you can change it to whatever value you like on 
+the fly. To set it equal to 0.3 from the BeanShell environment, you can execute the fol-
+lowing  command:  emailFilter.setJaccardCoefficient(0.3);.  This  is  the  mini-
+mum  value  of  similarity  that  we  want  the  two  attribute  values  to  have  before  we 
+consider them equivalent.
+That’s it! We’ve covered the implementation of a probabilistic email classifier. We’ve 
+demonstrated the capabilities of our classifier only for filtering spam email. So, let’s 
+present its use for the general (multiclass) case. Listing 5.6 shows the necessary steps. 
+The only difference is the invocation of the method setBinary(false) of the Email-
+Dataset class. That’s because the different classes (or email categories, if you prefer) 
+are assigned during the construction of our dataset. The classifier doesn’t treat the 
+binary and the multiclass cases differently.
+
+Listing 5.6  Loading the email training set and classifying the emails 
+
+EmailDataset trainEmailDS = EmailData.createTrainingDataset();
+
+trainEmailDS.setBinary(false);   
+
+Use all email categories
+
+EmailClassifier emailFilter = new EmailClassifier(trainEmailDS, 10);
+
+emailFilter.train();
+
+emailFilter.sample();   
+
+Test by classifying 
+a few emails
+
+The  results  are  shown  in  figure  5.5,  where  you  can  see  that  only  one  of  the  emails 
+(usa-01)  has  been  misclassified.  You  can  interpret  the  probabilities  as  a  measure  of 
+confidence that the email belongs in a particular class. In a real application of multi-
+class  classification,  if  the  confidence  level  is  below  a  certain  level  (say,  0.7)  the  sys-
+tem would select the top three or five classes and present them as candidates to the 
+end user. These kinds of human-in-the-loop workflow designs are common in intelli-
+gent  applications,  and  are  actually  required  in  order  to  continuously  improve  the 
+performance of the classifier.
+
+ As we mentioned, a real email filter involves much more than a probabilistic classi-
+fier. The next section will provide a rule engine implementation, which is a good com-
+plementary technique to a probabilistic classifier. Many features of good spam filters 
+rely on rules, such as whitelists, blacklists, collaborative spam identification databases, 
+and so forth.  
+
+ In summary, the NaiveBayes classifier can be used to filter out spam emails from 
+your legitimate emails, and it can also be used to categorize your emails into several 
+categories  of  your  choice.  Of  course,  everything  that  we  said  about  emails  can  be 
+applied  to  any  other  document  from  which  you  can  obtain  its  textual  representa-
+tion—Microsoft Word documents, XML documents, HTML documents from websites, 
+PDF documents, and so on. 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com188
+
+CHAPTER 5  Classification: placing things where they belong
+
+*** Classifying instance: biz-01.html
+P(WORLD|biz-01.html) = 0.085106382978723
+P(BIZ|biz-01.html) = 0.765957446808511
+P(USA|biz-01.html) = 0.063829787234043
+P(SPAM|biz-01.html) = 0.042553191489362
+P(SPORT|biz-01.html) = 0.042553191489362
+Classified biz-01.html as BIZ
+
+*** Classifying instance: sport-01.html
+P(WORLD|sport-01.html) = 0.121212121212121
+P(BIZ|sport-01.html) = 0.181818181818182
+P(USA|sport-01.html) = 0.090909090909091
+P(SPAM|sport-01.html) = 0.060606060606061
+P(SPORT|sport-01.html) = 0.545454545454546
+Classified sport-01.html as SPORT
+
+*** Classifying instance: usa-01.html
+P(WORLD|usa-01.html) = 0.235294117647059
+P(BIZ|usa-01.html) = 0.352941176470588
+P(USA|usa-01.html) = 0.176470588235294
+P(SPAM|usa-01.html) = 0.117647058823529
+P(SPORT|usa-01.html) = 0.117647058823529
+Classified usa-01.html as BIZ
+
+*** Classifying instance: world-01.html
+P(WORLD|world-01.html) = 0.805970149253731
+P(BIZ|world-01.html) = 0.089552238805970
+P(USA|world-01.html) = 0.044776119402985
+P(SPAM|world-01.html) = 0.029850746268657
+P(SPORT|world-01.html) = 0.029850746268657
+Classified world-01.html as WORLD
+
+*** Classifying instance: spam-biz-01.html
+P(WORLD|spam-biz-01.html) = 0.121212121212121
+P(BIZ|spam-biz-01.html) = 0.181818181818182
+P(USA|spam-biz-01.html) = 0.090909090909091
+
+Figure 5.5  Using the EmailClassifier for multiclass classification of emails
+
+5.3.2 Rule-based classification
+
+In this section, we’ll examine a different approach to classification: rule-based classifica-
+tion.  So  what  are  rules?  And  how  are  they  different  from  a  Bayesian  classifier?  To 
+answer  these  two  questions,  let’s  look  at  the  larger  picture  of  programming  para-
+digms.  There  are  many  programming  paradigms  in  use  today.  A  typical  Java/J2EE
+application is characterized by elements of imperative programming, object-oriented 
+programming,  and  perhaps  aspect-oriented  programming.  In  particular,  imperative 
+programming means that we tell the computer what to do and how to do it. This is the 
+predominant  paradigm  that  we  use  to  write  our  software.  But  there’s  another  pro-
+gramming paradigm called declarative programming that puts more emphasis on what 
+to do and delegates the “how” to a runtime engine. 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComAutomatic categorization of emails and spam filtering
+
+189
+
+ Rule-based reasoning is an example of declarative programming. A rule-based sys-
+tem consists of facts, a rule engine, and (of course) rules. The facts are merely data about 
+the world. The rules are conditional statements that tell us what to do when the data 
+satisfies certain conditions; in other words they’re equivalent to if-then programming 
+clauses. The rule engine is responsible for executing the rules according to the facts. 
+A rule engine, when compared to probabilistic classifiers, differs significantly in the 
+way that it captures and represents knowledge. In the case of a probabilistic classifier, 
+such as the naïve Bayes classifier that we examined in the previous section, knowledge 
+is represented in terms of the prior probabilities of the concepts and the conditional 
+probabilities of occurrence that we obtain from the training set. There’s no manual 
+intervention for accumulating that knowledge (the probabilities); given an arbitrary, 
+well-formed  training  set,  the  classifier  will  extract  the  information  content  that  it 
+needs (knowledge) in order to perform its classification tasks. A rule-based classifier 
+captures the knowledge in the form of the rules, so the rules are the knowledge of the 
+system, which begets the question of how do we get these rules? The rules are entered 
+into the system manually or semiannually by providing convenient workflow screens 
+that human experts can use to capture rules.  
+
+ There are two basic modes of operation for a rule-based system. The first is forward 
+chaining  and  is  data-driven,  in  the  sense  that  we’re given the data and want to find 
+what  rules  we  should  apply  to  them.  The  second  is  backward  chaining  and  is  goal-
+driven, in the sense that we start with a goal that the engine tries to satisfy (if possible). 
+We won’t cover backward chaining in this book; we’ll only say that programming lan-
+guages such as Prolog and ECLiPSe support backward chaining (for details see Russell 
+and Norvig).
+THE DROOLS RULE ENGINE
+There are two Java-based rule engine implementations that are production ready. The 
+first is called Jess and was written in the Sandia National Laboratories. At the time of 
+this writing (Spring 2008), it’s in its seventh release (7.1) so it’s fairly stable. It’s free 
+for academic use but not free for commercial use. (For details on the Jess rule engine 
+see Friedman-Hill.) The second rule engine implementation is called Drools (http://
+www.jboss.org/drools/)  but  you  may  also  hear  people  referring  to  it  as  JBoss  Rules. 
+JBoss is a well-known middleware open source project, now under the auspices of Red 
+Hat.  Drools  is  a  robust  rule  engine  with  ample  documentation  and  a  fairly  liberal 
+open source license (Apache 2.0), which means that you can use it in your application 
+for free. We’ve used Drools with great success over the past four years. In our opinion, 
+in the Java world, Drools is the rule engine of choice.
+
+ The Drools rule engine consists of two main modules: a pattern-matching module 
+and an agenda module. The pattern-matching module is responsible for identifying 
+what rules are matched by the facts. Once these rules have been identified, they’re 
+placed in the agenda module. Figure 5.6 shows the basic elements of the Drools engine. 
+In order to perform the pattern matching, Drools implements and extends the Rete 
+algorithm—the  word  rete  means  “network”  in  Latin  and  is  pronounced  “re-tay”  in 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com190
+
+CHAPTER 5  Classification: placing things where they belong
+
+Europe and “ree-tee” in the USA. The 
+Rete algorithm was designed by Charles 
+Forgy in 1974; it was and remains, in its 
+many incarnations, one of the most effi-
+cient  and  successful  pattern-matching 
+algorithms.  The  Drools  implementa-
+tion of Rete is called ReteOO, to indicate 
+that Drools has an improved implemen-
+tation of the Rete algorithm that’s most 
+suitable  for  object-oriented  software. 
+The Rete algorithm exchanges memory consumption for processing speed; its theoret-
+ical performance is independent of the number of rules in the system. But in practice, 
+as the number of rules increases, we’re bound to encounter a well-known problem of 
+AI systems, the so-called utility problem. We’ll discuss more about this in section 5.7. We 
+won’t go into the details of the Rete algorithm itself; if you’re interested in its imple-
+mentation then the Drools source code and documentation, along with the references 
+at the end of this chapter, should suffice for a thorough understanding of its inner work-
+ings. In addition, Jess in Action by Dr. Ernest J. Friedman-Hill and published by Manning 
+Publications provides a detailed explanation of how the Rete algorithm works (in par-
+ticular, see chapter 8). 
+
+Figure 5.6  The basic elements of the Drools rule 
+engine system (source: Drools online) 
+
+ After this brief introduction to rule engines, we’re ready to describe the use of the 
+Drools library in our task of filtering the emails that are spam. In particular, let’s see 
+how  we  can  write  rules.  The  Drools  engine  comes  with  a  scripting  (non-XML)  lan-
+guage that’s easy to learn; it’s so easy to learn that you could expose it directly to the 
+end users of your application! Let’s take a look. 
+
+Listing 5.7  A simple set of rules for email spam filtering
+
+package demo;
+import iweb2.ch5.classification.data.Email;
+import iweb2.ch5.classification.rules.ClassificationResult;
+
+global ClassificationResult classificationResult;
+
+rule "Tests for viagra in subject"                                
+when                                                                              
+    Email( $s : subject )                                              
+    eval( classificationResult.isSimilar($s, "viagra" ) )
+then                                                                          
+    classificationResult.setSpamEmail(true);                 
+end                                                                            
+
+rule "Tests for 'drugs' in subject"                             
+when                                                                          
+  Email( $s : subject )                                              
+    eval( classificationResult.isSimilar($s, "drugs" ) )
+then                                                                       
+    classificationResult.setSpamEmail(true);                
+end                                                                        
+
+Rule for identifying 
+“Viagra” in email 
+subject
+
+Rule for identifying 
+“drugs” in email 
+subject
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComAutomatic categorization of emails and spam filtering
+
+191
+
+Listing 5.7 shows the content of spamRules.drl, which contains two simple rules. The 
+content  is  almost  self-explanatory;  you  can  find  this  file  in  the  subdirectory 
+C:\iWeb2\data\ch05. As we’ll see shortly, rules are provided to Drools in packages, 
+so  the  first  thing  we  do  is  give  the  name  of  the  package  that  these  rules  belong 
+to—demo.  The  import  statements  inform  the  rule  execution  engine  about  the  class 
+definitions of the objects that we’re going to use in our rules—the classes Email and 
+ClassificationResult. The  global statement allows us to access the object identi-
+fied by classificationResult. This is equivalent to declaring the classification-
+Result as a global variable within our rules. So what do the rules mean?
+
+ Our first rule is called Tests for “viagra” in subject. As promised, it checks whether 
+the variable subject of an Email object contains the word viagra. If that condition is 
+met it sets the isSpamEmail variable of the ClassificationResult to true. Similarly 
+our second rule, which is called Tests for ‘drugs’ in subject, checks whether the vari-
+able subject of an Email object contains the word drugs. If that condition is met it sets 
+the isSpamEmail variable of the ClassificationResult to true. 
+
+ We don’t insinuate that these conditions are totally appropriate to characterize an 
+email as spam; we’re merely using them to illustrate the structure of the Drools file. As 
+you can see, the general structure of defining a rule in Drools is straightforward:
+
+rule "Put the name of your rule here" 
+when
+    <Put here your conditions>
+then
+    <Put here the actions that must be taken 
+➥       when the above conditions are satisfied>
+end
+
+You can include more than one condition, and you can include more than one action. 
+We don’t think it can get simpler than that! Notwithstanding the simplicity, and ensu-
+ing beauty, of the Drools rule language, we believe that the real strength of the engine 
+is its support for objects. Note that the real evaluation of the condition in both rules 
+happens  inside  the  method  isSimilar  of  the  class  ClassificationResult.  We  can 
+invoke quite complicated evaluations in an objected-oriented fashion. 
+
+ Now, let’s see these rules in action. The first line of listing 5.8 loads the emails from 
+the testing dataset; we used it before in listing 5.2. So, let’s look at each one of the 
+other steps in this listing.  
+
+Listing 5.8  Employing the email spam rules on a set of data
+
+EmailDataset ds = EmailData.createTestDataset();
+
+EmailRuleClassifier classifier = 
+       new EmailRuleClassifier("c:/iWeb2/data/ch05/spamRules.drl");   
+
+B
+
+classifier.train();   
+
+C
+
+classifier.run(ds,"Expecting one spam email.  :-(");   
+
+D
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com192
+
+CHAPTER 5  Classification: placing things where they belong
+
+B
+
+C
+
+D
+
+We construct an email classifier that uses rules and is aptly encapsulated in the Email-
+RuleClassifier class. Note that the only argument in the constructor of that class is 
+the Drools file that we described in listing 5.7.
+We ask the classifier to “train” itself. Unlike the script in listing 5.1, where we trained 
+our probabilistic classifier, here we didn’t create a training dataset. We never passed 
+the  reference  of  the  dataset  in  the  constructor  of  the  classifier;  we  only  passed  the 
+name of the Drools file. Why? In the probabilistic approach, we’re trying to infer the 
+knowledge that’s contained in the training set. In the case of rule-based systems, the 
+rules are the knowledge. The “training” part for the rule-based system involves merely 
+loading the rules from the file.
+We  “apply”  the  rules  on  the  test  dataset  by  passing  the  dataset  information  and  a 
+descriptive message. Although the prevailing expression among business people and 
+end users of rule-based systems is “applying the rules,” in reality, the execution of the 
+Rete algorithm more resembles the filtering of data (the facts) through a funnel. That 
+funnel is made of a net (hence the term rete) of nodes. As each fact trickles down this 
+funnel, it passes a number of tests (the conditions of the rules), and when it reaches 
+the bottom, we know exactly what rule should be triggered by that fact. For a detailed 
+description of the Rete structure, see Doorenbos. 
+
+ The results of executing listing 5.8 are shown in figure 5.7. The spam email entry 
+that corresponds to the spam-biz-01.html file triggered the classifier because its sub-
+ject contains the word “drugs” as the spam rule in listing 5.7 required. The rule is fired 
+because its conditions have been met.
+
+bsh % classifier.run(ds,"Expecting one spam email.  :-(");
+
+Expecting one spam email.  :-(
+__________________________________________________
+
+Classifying email: world-01.html ...
+Rules classified email: world-01.html as: NOT-SPAM
+
+Classifying email: spam-biz-01.html ...
+Invoked ClassificationResult.setSpamEmail(true)
+Rules classified email: spam-biz-01.html as: SPAM
+
+Classifying email: sport-01.html ...
+Rules classified email: sport-01.html as: NOT-SPAM
+
+Classifying email: usa-01.html ...
+Rules classified email: usa-01.html as: NOT-SPAM
+
+Classifying email: biz-01.html ...
+Rules classified email: biz-01.html as: NOT-SPAM
+__________________________________________________
+
+Figure 5.7 
+
+Identifying spam email spam-biz-01 based on the rules of listing 5.7
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComAutomatic categorization of emails and spam filtering
+
+193
+
+A CLOSER LOOK AT THE IMPLEMENTATION
+Now that you’re familiar with the use of the Drools engine, let’s take a closer look at 
+the  wrapper  classes  we  used  in  listings  5.7  (the  rule  definition  file)  and  5.8.  If  you 
+think about it, we were able to pack an enormous amount of functional capability in 
+just a few lines of code. Let’s see what code allowed us to abstract the use of a rules 
+engine into just three simple steps. We’ll start from the centerpiece of that implemen-
+tation, the class RuleEngine, shown in listing 5.9. 
+
+Listing 5.9  RuleEngine: building a rule engine based on the Drools library
+
+public class RuleEngine {
+
+  private RuleBase rules; 
+
+  public RuleEngine(String rulesFile) throws RuleEngineException {
+    try {
+       Reader source = new InputStreamReader(
+             new BufferedInputStream(new FileInputStream(rulesFile))); 
+
+       Properties properties = new Properties();                         
+       properties.setProperty("drools.dialect.java.compiler", "JANINO" );     
+B
+
+       PackageBuilderConfiguration cfg = 
+➥       new PackageBuilderConfiguration( properties );          
+
+Determine 
+runtime 
+compiler
+
+       PackageBuilder builder = new PackageBuilder(cfg);
+
+       builder.addPackageFromDrl(source); 
+
+       Package pkg = builder.getPackage();   
+
+C
+
+Contains 
+our rules
+
+       rules = RuleBaseFactory.newRuleBase();   
+
+       rules.addPackage(pkg); 
+
+D
+
+Runtime container 
+for rules
+
+    } catch (Exception e) {
+       throw new RuleEngineException(e);
+    }
+  }
+  public void executeRules(ClassificationResult classificationResult, 
+➥   Email email ) {
+
+    WorkingMemory workingMemory = rules.newStatefulSession();   
+
+    workingMemory.setGlobal("classificationResult", 
+➥      classificationResult);
+Insert fact in 
+working memory
+
+    workingMemory.insert(email);   
+
+F
+
+Stateful 
+Working- 
+Memory
+
+E
+
+    workingMemory.fireAllRules();   
+  }
+}
+
+G
+
+Execute 
+all rules
+
+The  creation  of  a  Drools  rule  engine  has  two  parts:  authoring  and  runtime.  The 
+authoring part begins with the parsing of the Drools file—the file with the .drl exten-
+sion.  The  parser  checks  the  grammatical  consistency  of  the  Drools  file  and  creates 
+an intermediate abstract syntax tree (AST). For this, Drools uses the lexical parser pro-
+vided by the open source project  ANTLR—Another Tool for Language Recognition 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com194
+
+CHAPTER 5  Classification: placing things where they belong
+
+B
+
+C
+
+D
+
+E
+
+(http://www.antlr.org/).  Valid  rules  are  loaded  in  serialized  objects  of  the  class 
+Package; a Package instance is a self-contained deployable unit that contains one or 
+more  rules.  The  runtime  part  of  a  Drools  engine  is  based  on  the  class  RuleBase. 
+Package instances can be added to or removed from a RuleBase instance at any time.
+ Let’s examine each step to create and use a Drools rule engine, as shown in listing 5.9:
+After creating a reference to the file that contains the rules, we create a Properties
+instance and give a value to the property drools.dialect.java.compiler. What’s this 
+property?  And  what  does  the  value  JANINO  mean?  You  can  incorporate  Java  code 
+straight into the Drools rule files. This property determines the runtime compiler that 
+we want Drools to use in order to compile Java code. Janino is the name of an embed-
+ded  Java  compiler  that’s  included  in  the  Drools  distribution  under  the  BSD  license 
+(http://www.janino.net/). 
+
+ To complete the authoring part, we need to create an instance of the  Package-
+Builder class, which in turn will create instances of the class Package. We use the aux-
+iliary  PackageBuilderConfiguration  class  for  the  configuration  of  our  package 
+builder. This class has default values, which you can change through the appropriate set
+methods or, as we do here, on first use via property settings. In this case, we pass only a 
+single property, but we could’ve provided much more information. At the heart of the 
+settings is the ChainedProperties class, which searches a number of locations looking 
+for drools.packagebuilder.conf files. In order of precedence, those locations are sys-
+tem properties, a user-defined file in system properties, the user’s home directory, the 
+working directory, and various META-INF locations. The PackageBuilderConfigura-
+tion handles the registry of AccumulateFunctions, registry of Dialects, and the main 
+ClassLoader. For more details, consult the Drools online documentation at http://
+downloads.jboss.com/drools/docs/4.0.7.19894.GA/html_single/index.html - d0e766.
+With  the  PackageBuilder  in  our  disposal,  we  can  build  packages  that  contain  the 
+rules. We pass the reference of the file to the addPackageFromDrl method and imme-
+diately call the getPackage method of our builder. Our rules are ready to use now!
+This is our first step in building the runtime part of the engine. A RuleBase can have 
+one  or  more  Packages.  A  RuleBase  can  instantiate  one  or  more  WorkingMemory
+instances  at  any  time;  a  weak  reference  is  maintained  unless  configured  otherwise. 
+The WorkingMemory class consists of a number of subcomponents; for details, consult 
+the Drools online documentation. 
+The  class  StatefulSession  extends  the  WorkingMemory  class.  It  adds  asynchronous 
+methods for inserting, updating, and firing rules, as well as a dispose() method. The 
+RuleBase  retains  a  reference  to  each  StatefulSession  instance  that  it  creates,  in 
+order to update them when new rules are added. The dispose() method is needed 
+to release the StatefulSession reference from the RuleBase in order to avoid mem-
+ory leaks.
+
+ In the Drools file, shown in listing 5.7, we used the global statement in order to 
+access the object identified by classificationResult. This is equivalent to declaring 
+the classificationResult as a global variable within our rules. But that won’t work 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComAutomatic categorization of emails and spam filtering
+
+195
+
+F
+
+G
+
+unless we also call the setGlobal method on the WorkingMemory instance. The argu-
+ment of this method must match exactly the entry in the Drools rules file.
+We use the insert method to add facts into the WorkingMemory instance. When we 
+insert a fact, the Drools engine will match it against all the rules. This means that all 
+the work is done during insertion, but no rules are executed until you call fireAll-
+Rules(), which we do in the next step. 
+This invokes the rule execution. You shouldn’t call fireAllRules() before you’ve fin-
+ished inserting all your facts. The crucial matching phase happens during the inser-
+tion  of  the  facts,  as  mentioned  previously.  So,  you  don’t  want  to  execute  the  rules 
+without matching all the facts against the rules first.
+That’s pretty much everything that you need to do in order to build a rule engine with 
+Drools. Now let’s see how the EmailRuleClassifier class delegates its actions to the 
+RuleEngine in order to classify the emails. Our implementation of the RuleEngine is 
+specific to emails; we invite you to create a generalization that uses the Instance inter-
+face in one of our to-do items for this chapter. Listing 5.10 shows the code from the 
+EmailRuleClassifier class, except for the main method, which contains more or less 
+the same code as listing 5.8.
+
+Listing 5.10  A Drools-based rule engine that detects spam email
+
+public class EmailRuleClassifier {
+
+    private String ruleFilename;
+    private RuleEngine re;
+    private Concept spam;
+    private Concept notSpam;
+
+    public EmailRuleClassifier(String ruleFilename) {
+        this.ruleFilename = ruleFilename;
+    }
+
+    public void train() {
+        re = new RuleEngine(ruleFilename);   
+
+        spam = new BaseConcept("SPAM");          
+        notSpam = new BaseConcept("NOT-SPAM");
+    }
+
+B
+
+C
+
+    public Concept classify(Email email) {
+        ClassificationResult result = new ClassificationResult();   
+
+D
+
+        re.executeRules(result, email);   
+
+E
+
+        if( result.isSpamEmail() ) {   
+            return spam;
+        } else {
+            return notSpam;
+        }
+    }
+
+F
+
+    public void run(EmailDataset ds, String msg) {
+        System.out.println("\n");        
+        System.out.println(msg);
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com196
+
+CHAPTER 5  Classification: placing things where they belong
+
+      System.out.println("__________________________________________________");
+        for(Email email : ds.getEmails() ) {   
+
+G
+
+            Concept c = classify(email);
+
+            System.out.println("Email: "+
+➥     email.getId()+" classified as: "+c.getName());
+        }
+
+B
+
+c
+
+D
+
+E
+
+F
+
+G
+
+      System.out.println("__________________________________________________");
+    }
+}
+
+First we need to create a RuleEngine instance, so that we can delegate the application 
+of the rules. We pass the name of the file that contains the rules and let the  Rule-
+Engine do the heavy lifting.
+These are two auxiliary variables used by the classify method. Since they’re constant 
+in our case, no matter what the rules or the emails are, we treat them as instance vari-
+ables.  It’s  possible  that  your  implementation  of  the  ClassificationResult  class  is 
+responsible for identifying the right concept from a more elaborate data structure of 
+concepts (for example, an ontology).
+This class encapsulates two important things. It includes the tests of the rule condi-
+tions (through the isSimilar method) as well as the actions of the rules (through the 
+setSpamEmail method). We could have created different objects to encapsulate the 
+conditions and the actions. If your conditions or actions involve algorithmically diffi-
+cult implementations, it’s better to separate the implementations and create a clean 
+separation of these two parts.
+This is where we delegate the application of the rules to the RuleEngine. We reviewed 
+this method in listing 5.9.
+We again use the ClassificationResult instance to obtain the information that was 
+created  as  a  result  of  the  (fired)  rules  actions.  That  information  could  have  been 
+recorded in a persistent medium (such as a database record or a file); in our simple 
+case, we use the ClassificationResult class as the carrier of all related activity.
+This method helps us classify all the emails in our dataset at once. Note that we could 
+have passed the dataset itself to the classify method and overridden the executeRule
+method  in  the  RuleEngine  class,  so  that  we  load  into  the  working  memory  all  the 
+emails at once. But note that, in the context of a rule-based system, the classification 
+of an email as spam doesn’t depend on whether other emails are spam.  
+CONFLICT RESOLUTION
+The last point is related to (but distinct from) another interesting subject. What hap-
+pens if the action of rule A modifies fact X, which activates rule B, which then modi-
+fies fact Y and triggers rule A again? You can fall into infinite loops unless there’s a way 
+to stop recursion. What if you have a rule that classifies an email as spam and another 
+one that classifies the same email as not spam? In other words, what happens when 
+there is conflict between two or more rules? In the end of the executeRule method, 
+we must have an answer, so what’s it going to be?
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComAutomatic categorization of emails and spam filtering
+
+197
+
+ Fortunately for us, Drools provides answers to these problems, as well as many oth-
+ers, through rule attributes. The solution to the first problem is provided by the rule 
+attribute no-loop; the solution to the second problem is provided by the rule attribute 
+salience. Rule attributes allow us to influence the behavior of the rules in a declarative 
+way—in the Drools rule file. Some are quite simple, such as salience, while others are 
+rather elaborate, such as ruleflow-group. Consult the official Drools documentation, as 
+well as the source code, to obtain a thorough understanding of each attribute.  
+
+ Let’s see now how we can employ salience to provide conflict resolution. Listing 5.11 
+shows a Drools rule file that contains three rules. This time there’s going to be a con-
+flict between the rules for certain emails, because the conditions of more than one 
+rule will be satisfied simultaneously. The file looks much the same as the first Drools 
+rule file that we showed in listing 5.7, but now we’ve introduced the attribute salience, 
+with an integer value, for each rule. 
+
+Listing 5.11  A simple set of email spam rules for filtering (with conflicts)
+
+package demo;
+
+import iweb2.ch5.classification.data.Email;
+import iweb2.ch5.classification.rules.ClassificationResult;
+
+global ClassificationResult classificationResult;
+
+rule "Rule 1: Tests for viagra in subject"   
+salience 100 
+when
+    email: Email( $s : subject )
+    eval( classificationResult.isSimilar($s, "viagra" ) )
+then
+    email.setRuleFired(1);
+    classificationResult.setSpamEmail(true);
+end
+
+Rule for identifying 
+“Viagra” in email subject
+
+rule "Rule 2: Tests for 'drugs' in subject"    
+salience 100
+when
+    email: Email( $s : subject )
+    eval( classificationResult.isSimilar($s, "drugs" ) )
+then
+     email.setRuleFired(2);
+     classificationResult.setSpamEmail(true);   
+end
+
+Rule for identifying 
+“drugs” in email subject
+
+Could conflict 
+with A or B
+
+rule "Rule 3: Tests for known sender address"   
+salience 10
+when
+    email: Email( $sender : from )
+    eval( classificationResult.isSimilar($sender, "friend@senderhost" ) )
+then
+    email.setRuleFired(3);
+    classificationResult.setSpamEmail(false);
+end
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

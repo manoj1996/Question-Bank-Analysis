@@ -1,0 +1,90 @@
+5.2
+
+An overview of classifiers
+
+169
+
+continuing through most of chapter 6, we’ll introduce classification mechanisms in 
+some fictitious web applications in order to demonstrate the use of classification algo-
+rithms and the issues that may arise. But first, let’s give an overview of classification sys-
+tems. If you want to jump into action quickly, you can skip the next section.
+
+An overview of classifiers
+One way that we could view the set of all classification systems is with respect to the ref-
+erence structure that they use. At the top level of such a perspective, we can divide all 
+classification systems into two broad categories—binary and multiclass. Binary classifica-
+tion systems, as the name suggests, provide a yes/no answer to the question: Does this 
+data point belong to class X? A medical diagnosis system could answer the question of 
+whether a patient has cancer. Or an immigration classification system could answer
+whether a person is a terrorist. Multiclass classification systems assign a data point to a 
+specific class, out of many, such as the assignment of a news article in a news category. 
+ Within the set of multiclass classification systems, we can further group classifica-
+tion systems on the basis of two criteria: whether the multiple classes are discrete or 
+continuous, and whether the multiple classes are “flat” (just a list of labels) or have a 
+hierarchical  structure.  The  Dewey  classification  scheme  and  the  ICD-10  catalogue 
+from the previous section are examples of a classification system that has multiple dis-
+crete and finite classes. The result of classification may be a continuous variable such 
+as when classification is used for predictions, also known as forecasting. If you provide 
+the value of a stock on Monday, Tuesday, Wednesday, and Thursday as input, and want 
+to find the value of a stock on Friday, you can cast that problem as a multiclass classifi-
+cation that’s discrete or continuous. The discrete version could predict whether the 
+stock price will increase, remain unchanged, or decrease on Friday. The continuous 
+version could provide a prediction for the actual stock price.
+
+ Categorization of classification systems, with respect to the underlying technique, 
+isn’t quite as clear or widely accepted. But we could say that there are two broad cate-
+gories that have gained a significant level of adoption in the industry. The first cate-
+gory  includes  statistical  algorithms  and  the  second  structural  algorithms,  as  shown  in 
+figure 5.2. 
+
+  Statistical  algorithms  come  in  three  flavors.  Regression  algorithms  are  particularly 
+good at forecasting—predicting the value of a continuous variable. Regression algo-
+rithms are based on the assumption that it’s sufficient to fit our data to a particular 
+model; quite often that model is a linear function of the variables at hand. Another 
+kind  of  statistical  classification  algorithms  stems  from  the  Bayes  theorem,  which  we 
+encountered briefly in chapter 2. A fairly successful and modern statistical approach 
+combines  Bayes  theorem  with  a  probabilistic  network  structure  that  depicts  the 
+dependency between the various attributes of the classification problem. 
+
+  Structural  algorithms  have  three  main  branches:  rule-based  algorithms,  which 
+include if-then rules and decision trees; distance-based algorithms, which are generally 
+separated  into  functional  and  nearest  neighbor  schemes;  and  neural  networks  (NN). 
+Neural  networks  form  a  category  on  their  own—although  we  should  mention  that 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com170
+
+CHAPTER 5  Classification: placing things where they belong
+
+5.2.1
+
+Figure 5.2  An overview of the classification algorithms based on their design
+
+equivalency  between  certain  neural  networks  and  some  advanced  statistical  algo-
+rithms (Gaussian processes) has been established and studied extensively. In the fol-
+lowing subsections, we’ll give a brief summary of each of these classifier categories. 
+
+Structural classification algorithms
+As shown in figure 5.2, the branch of rule-based structural algorithms consists of pro-
+duction rules (if-then clauses) and decision tree (DT)–based algorithms. The production 
+rules can be collected manually by human experts or deduced by decision trees. Rule-
+based algorithms are typically implemented as forward-chaining production systems—a 
+frightening term, if you ask me! The best algorithm in this category is called Rete (see 
+Russell and Norvig); rete means “network” in Latin. It’s the basis for well-known librar-
+ies such as CLIPS, Jess, and Soar. 
+
+ In this book, we’ll be using an object-oriented implementation of Rete, which is 
+offered by the JBoss project. It’s the JBoss Rules library, also known as Drools (the origi-
+nal project name for this rule engine). This project is stable, it has ample documenta-
+tion, and the code base is appropriate for study and development alike. Incidentally, 
+we should mention that we enjoy working with the Drools APIs as much as we enjoy 
+working with the Lucene APIs, which we encountered in chapter 2. These two projects 
+are truly production-ready.
+
+ The decision tree-based algorithms are based on a simple but powerful idea. Did 
+you ever read Charles Dickens’s A Christmas Carol? In that book, Dickens describes a 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

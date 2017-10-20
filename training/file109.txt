@@ -1,0 +1,118 @@
+198
+
+CHAPTER 5  Classification: placing things where they belong
+
+The email that we’re going to create from the document spam-biz-01.html contains 
+the word “drugs” in its subject, so it fires rule 2. At the same time, it was sent by user 
+friend@senderhost, so we must fire rule 3. According to rule 2, this is a spam email; 
+according to rule 3, this is a legitimate email. In other words, rule 2 and rule 3 are in 
+conflict for that specific email (our fact) and we need a conflict resolution. The attri-
+bute salience comes to our rescue!
+
+ The term salience in the context of the rule-based systems originated probably from 
+semiotics, which is the study of signs—the Greek word ␴␩␮⑀␫␻␴␩ means a sign, a sym-
+bol, or a note depending on the context. In semiotics, salience refers to the relative 
+importance of a sign with respect to the plethora of signs that a person receives at any 
+given moment. Similarly, in the context of our rules, the salience attribute refers to 
+the prominence of a rule over other rules, when all rules apply on a particular fact or 
+set of facts. The lower the salience of a rule is, the higher the prominence of the rule. 
+In essence, the prominence of a rule is reflected in the order of execution. If rule X 
+has lower salience than rule Y, rule Y will execute first and rule X last. Wherever and 
+whenever there’s a conflict between the actions of Y and X, the actions of X will over-
+ride the actions of Y. 
+
+ Let’s see all this in action. Listing 5.12 shows a script that’s almost identical to the 
+
+one in listing 5.8, except that we now use the rules with the conflicts. 
+
+Listing 5.12  Resolving a conflict of email rules using attribute salience
+
+EmailDataset ds = EmailData.createTestDataset();
+
+EmailRuleClassifier classifier = new EmailRuleClassifier(
+➥  "c:/iWeb2/data/ch05/spamRulesWithConflict.drl");
+
+classifier.train();
+
+classifier.run(ds," Hurray! No spam emails here."); 
+
+Figure 5.8 present the results of the execution. As you can see, both rule 2 and rule 3 
+fired for the email spam-biz-01.html. But rule 2 (salience=100) fired first and rule 3 
+(salience=10) fired second and reset the email’s flag to NOT-SPAM. 
+
+ This is a simple example that allows you to see every step and understand the exact 
+effect of introducing the salience rule attribute. The real value of rule-based systems is 
+that they can do this efficiently with thousands of complicated rules and millions of 
+facts, while allowing you to experiment with various conditions in a declarative man-
+ner rather than having to change your code. The mere idea of having to go through 
+thousands of possibly nested if-then statements makes me shiver! 
+
+ Now, we’ve completed our coverage of email classification. So far, you’ve learned 
+how to classify a general text document using the probabilistic naïve Bayes algorithm 
+and the Drools rule engine, the rule-based system of choice for Java. In the next sec-
+tion, we’ll present additional classification algorithms, and to keep things interesting, 
+we’ll work in the context of a new example: fraud detection. 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComFraud detection with neural networks
+
+199
+
+bsh % EmailDataset ds = EmailData.createTestDataset();
+bsh % EmailRuleClassifier classifier = new EmailRuleClassifier(
+å    "c:/iWeb2/data/ch05/spamRulesWithConflict.drl");
+
+bsh % classifier.train();
+bsh % classifier.run(ds," Hurray! No spam emails here.");
+
+Hurray! No spam emails here.
+__________________________________________________
+
+Classifying email: world-01.html ...
+Rules classified email: world-01.html as: NOT-SPAM
+
+Classifying email: spam-biz-01.html ...
+Invoked Email.setRuleFired(2), current value ruleFired=0, 
+emailId: spam-biz-01.html
+Invoked ClassificationResult.setSpamEmail(true)
+Invoked Email.setRuleFired(3), current value ruleFired=2, 
+emailId: spam-biz-01.html
+Invoked ClassificationResult.setSpamEmail(false)
+Rules classified email: spam-biz-01.html as: NOT-SPAM
+
+Classifying email: sport-01.html ...
+Rules classified email: sport-01.html as: NOT-SPAM
+
+Classifying email: usa-01.html ...
+Rules classified email: usa-01.html as: NOT-SPAM
+
+Classifying email: biz-01.html ...
+Rules classified email: biz-01.html as: NOT-SPAM
+__________________________________________________
+
+Figure 5.8  Resolving rule conflicts by using the salience rule attributes
+
+5.4
+
+5.4.1
+
+Fraud detection with neural networks
+Fraud is prevalent in our electronic world. It ranges from insurance fraud to internet 
+auction fraud and from fraudulent benefit application forms to telecommunications
+fraud.  If  you  do  anything  over  the  internet  that  engages  more  than  one  person  or 
+legal entity, the ability to identify when someone didn’t play by the rules is valuable. In 
+this section, we’ll consider the use case of fraudulent purchasing transactions. We’ll 
+see that we can employ classification algorithms to distinguish the fraudulent transac-
+tions from the legitimate purchases.
+
+A use case of fraud detection in transactional data 
+Our sample data will be artificial—you wouldn’t want to see your transactions printed 
+in a technical book, would you? Nonetheless, we provide facilities to make the data 
+somewhat realistic and we do account for effects that you’d see on real data. The sce-
+nario should be familiar to everyone. You work for a large bank that issues credit cards 
+and you want to ensure that your system will be able to detect fraudulent behavior 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

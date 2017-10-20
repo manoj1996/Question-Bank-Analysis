@@ -1,0 +1,357 @@
+Improving search results based on link analysis
+
+37
+
+pageRank.setAlpha(0.8); 
+
+pageRank.setEpsilon(0.0001); 
+
+pageRank.build();   
+
+Find PageRank values
+
+Figure  2.6  shows  a  screenshot  of  the  results.  The  page  with  the  lowest  relevance  is 
+biz-07.html; the most important page, according to PageRank, is biz-04.html. We’ve 
+calculated a measure of relevance for each page that doesn’t depend on the search 
+term! We’ve calculated the PageRank values for our network.
+
+Iteration: 8,   PageRank convergence error: 
+1.4462733376210263E-4
+Index: 0 -->  PageRank: 0.03944811976367004
+Index: 1 -->  PageRank: 0.09409188129468615
+Index: 2 -->  PageRank: 0.32404719855854225
+Index: 3 -->  PageRank: 0.24328037107628753
+Index: 4 -->  PageRank: 0.18555028886849476
+Index: 5 -->  PageRank: 0.05593157626783124
+Index: 6 -->  PageRank: 0.061816733771795335
+
+ Iteration: 9,   PageRank convergence error: 
+5.2102415715682415E-5
+Index: 0 -->  PageRank: 0.039443819850858625
+Index: 1 -->  PageRank: 0.09407831778282823
+Index: 2 -->  PageRank: 0.3240636997004271
+Index: 3 -->  PageRank: 0.24328782624042117
+Index: 4 -->  PageRank: 0.18555238603685822
+Index: 5 -->  PageRank: 0.0559269660757835
+Index: 6 -->  PageRank: 0.06181315844717868
+
+______________  Calculation Results  _______________
+Page U RL: file:/c:/iWeb2/data/ch02/biz-04.html  -->  Rank: 
+0.324063699700427
+Page URL: file:/c:/iWeb2/data/ch02/biz-06.html  -->  Rank: 
+0.243287826240421
+Page URL: file:/c:/iWeb2/data/ch02/biz-05.html  -->  Rank: 
+0.185552386036858
+Page URL: file:/c:/iWeb2/data/ch02/biz-02.html   -->  Rank: 
+0.094078317782828
+Page URL: file:/c:/iWeb2/data/ch02/biz-03.html   -->  Rank: 
+0.061813158447179
+Page URL: file:/c:/iWeb2/data/ch02/biz- 01.html   -->  Rank: 
+0.055926966075784
+Page URL: file:/c:/iWeb2/data/ch02/biz-07.html   -->  Rank: 
+0.039443819850859
+
+____________________________________________________
+
+ 
+
+Figure 2.6  The calculation of the PageRank vector for the small network of the business news web pages
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com38
+
+2.3.3
+
+CHAPTER 2  Searching
+
+alpha: The effect of teleportation between web pages
+Let’s vary the value of alpha from 0.8 to some other value between 0 and 1, in order 
+to observe the effect of the teleportation between web pages on the PageRank values. 
+As alpha approaches zero, the PageRank values for all pages tends to the value 1/7 
+(approximately  equal  to  the  decimal  value  0.142857),  which  is  exactly  what  you’d 
+expect  because  our  surfer  is  choosing  his  next  destination  at  random,  not  on  the 
+basis of the links. On the other hand, as alpha approaches one, the PageRank values 
+will converge to the PageRank vector that corresponds to a surfer who closely follows 
+the links.
+
+ Another effect you should observe as the value of alpha approaches one is the num-
+ber of iterations, which are required for convergence, increases. In fact, for our small 
+web page network, we have table 2.3 (we keep the error tolerance equal to 10 -10).
+
+Alpha
+
+Number of iterations
+
+0.50
+
+0.60
+
+0.75
+
+0.85
+
+0.95
+
+0.99
+
+13
+
+15
+
+19
+
+23
+
+29
+
+32
+
+Table 2.3  Effect of increasing alpha values on the 
+number of iterations for the biz set of web pages
+
+As you can see, the number of iterations grows rapidly as the value of alpha increases. 
+For  seven  web  pages,  the  effect  is  practically  insignificant,  but  for  8  billion  pages 
+(roughly the number of pages that Google uses), a careful selection of alpha is cru-
+cial. In essence, the selection of alpha is a trade-off between adherence to the struc-
+ture of the Web and computational efficiency. The value that Google is allegedly using 
+for alpha is equal to 0.85. A value between 0.7 and 0.9 should provide you with a good 
+trade-off between effectiveness and efficiency in your application, depending on the 
+nature of your graph and user browsing habits.
+
+ There are techniques that can accelerate the convergence of the power method as 
+well as methods that don’t rely on the power method at all, the so-called direct methods. 
+The latter are more appropriate for smaller networks (such as a typical intranet) and 
+high values of alpha (for example, 0.99). We’ll provide references at the end of this 
+chapter, if you’re interested in learning more about these methods.
+
+2.3.4 Understanding the power method
+
+Let’s examine the code that calculates the PageRank values in more detail. Listing 2.6 
+shows an excerpt of the code responsible for evaluating the matrix H based on the 
+link information; it’s from the class iweb2.ch2.ranking.PageRankMatrixH. 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComImproving search results based on link analysis
+
+39
+
+Listing 2.6  Evaluating the matrix H based on the links between web pages
+
+public void addLink(String pageUrl) {    
+    indexMapping.getIndex(pageUrl);
+}
+
+public void addLink(String fromPageUrl, 
+➥  String toPageUrl, double weight) {                                   
+
+    int i = indexMapping.getIndex(fromPageUrl);
+    int j = indexMapping.getIndex(toPageUrl);
+
+    try {
+
+         matrix[i][j] = weight;
+
+    } catch(ArrayIndexOutOfBoundsException e) {
+      System.out.println("fromPageUrl:" + fromPageUrl 
+➥     + ", toPageUrl: " + toPageUrl);
+    }
+ }
+
+B
+
+Assign initial 
+values
+
+public void addLink(String fromPageUrl, String toPageUrl) {               
+        addLink(fromPageUrl, toPageUrl, 1);
+    }
+
+public void calculate() {                             
+
+    for(int i = 0, n = matrix.length; i < n; i++) {
+
+Calculate substochastic 
+version of matrix
+
+C
+
+       double rowSum = 0;
+
+       for(int j = 0, k = matrix.length; j < k; j++) {
+
+           rowSum += matrix[i][j];
+       }
+
+       if( rowSum > 0 ) {
+
+           for(int j = 0, k = matrix.length; j < k; j++) {
+
+              if( matrix[i][j] > 0 ) {
+
+                  matrix[i][j] = 
+➥    (double)matrix[i][j] / (double) rowSum;
+              }
+           }
+        } else {
+
+           numberOfPagesWithNoLinks++;
+        }
+    }
+}
+
+/** 
+  * A dangling node corresponds to a web page that has no outlinks.
+  * These nodes result in an H row that has all its values equal to 0.
+  */
+public int[] getDangling() {   
+
+Handle dangling node entries
+
+D
+
+   int   n = getSize();
+   int[] d = new int[n];
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com40
+
+CHAPTER 2  Searching
+
+   boolean foundOne = false;
+
+   for (int i=0; i < n; i++) {
+
+     for (int j=0; j < n; j++) {
+
+     if (matrix[i][j] > 0) {
+
+        foundOne = true;
+        break;
+     } 
+      }
+
+      if (foundOne) {
+        d[i] = 0;
+      } else {
+        d[i] = 1;
+      }
+
+      foundOne = false;
+   }
+   return d;
+}
+
+B
+
+C
+
+D
+
+The addLink methods allow us to assign initial values to the matrix variable, based on 
+the links that exist between the pages. 
+The calculate method sums up the total number of weights across a row (outlinks) 
+and replaces the existing values with their weighted counterparts. Once that’s done, if 
+we add up all the entries in a row, the result should be equal to 1 for every nondan-
+gling node. This is the substochastic version of the original matrix.
+The  dangling  nodes  are  treated  separately,  since  they  have  no  outlinks.  The  get-
+Dangling()  method  will  evaluate  what  rows  correspond  to  the  dangling  nodes  and 
+will return the dangling vector. 
+Recall  that  we’ve  separated  the  final  matrix  composition  into  three  parts:  the  basic 
+link  contribution,  the  dangling  node  contribution,  and  the  teleportation  contribu-
+tion. Let’s see how we combine them to get the final matrix values that we’ll use for 
+the  evaluation  of  the  PageRank.  Listing  2.7  shows  the  code  that’s  responsible  for 
+assembling the various contributions and executing the power method. This code can 
+be found in the iweb2.ch2.ranking.Rank class. 
+
+Listing 2.7  Applying the power method for the calculation of PageRank
+
+public void findPageRank(double alpha, double epsilon) {
+
+  // A counter for our iterations
+  int k = 0; 
+
+  // auxiliary variable
+  PageRankMatrixH matrixH = getH();
+
+  // The H matrix has size nxn and the PageRank vector has size n
+  int n = matrixH.getSize();
+
+  //auxiliary variable – inverse of n
+  double inv_n = (double)1/n;
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComImproving search results based on link analysis
+
+41
+
+  // This is the actual nxn matrix of double values
+  double[][] H = matrixH.getMatrix();
+
+  // A dummy variable that holds our error, arbitrarily set to a value of 1
+  double error = 1;
+
+  // This holds the values of the PageRank vector
+  pR = new double[n];
+
+  // PageRank copy from the previous iteration
+  // The only reason that we need this is for evaluating the error
+  double[] tmpPR = new double[n];
+
+  // Set the initial values (ad hoc)
+  for (int i=0; i < n; i++) {
+    pR[i] = inv_n;
+  }
+
+  // Book Section 2.3 -- Altering the H matrix: Dangling nodes
+
+  double[][] dNodes= getDanglingNodeMatrix();
+
+  // Book Section 2.3 -- Altering the H matrix: Teleportation
+
+  double tNodes=(1 - alpha) * inv_n;
+
+  //Replace the H matrix with the G matrix
+  for (int i=0; i < n; i++) {
+    for (int j=0; j < n; j++) {
+
+      H[i][j] = alpha*H[i][j] + dNodes[i][j] + tNodes;
+    }
+  }
+
+  // Iterate until convergence!
+  // If error is smaller than epsilon then we've found the PageRank values
+  while ( error >= epsilon) {
+
+    // Make a copy of the PageRank vector before we update it
+    for (int i=0; i < n; i++) {
+      tmpPR[i] = pR[i];
+    }
+
+    double dummy =0;
+
+    // Now we get the next point in the iteration
+    for (int i=0; i < n; i++) {
+
+      dummy =0;
+
+      for (int j=0; j < n; j++) {
+
+        dummy += pR[j]*H[j][i];
+      }
+
+      pR[i] = dummy;
+    }
+
+    // Get the error, so that we can check convergence
+    error = norm(pR,tmpPR);
+
+    //increase the value of the counter by one
+    k++;
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

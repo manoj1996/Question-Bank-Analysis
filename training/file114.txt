@@ -1,0 +1,256 @@
+218
+
+CHAPTER 5  Classification: placing things where they belong
+
+         break;
+     }
+
+     if( convergence <= CONVERGENCE_THRESHOLD ) {   
+         break;
+     }
+     lastError = err;
+
+E
+
+     outputLayer.setExpectedOutputValues(tY);   
+
+F
+
+     outputLayer.calculateWeightAdjustments();
+
+     for(Layer hLayer : hiddenLayers) { 
+         hLayer.calculateWeightAdjustments();
+     }
+
+     outputLayer.updateWeights();   
+
+G
+
+     for(Layer hLayer : hiddenLayers) { 
+         hLayer.updateWeights();
+     }
+   }
+ }
+
+public double[] classify(double[] x) {   
+
+H
+
+  inputLayer.setInputValues(x);
+
+  inputLayer.calculate();
+  inputLayer.propagate();
+
+  for(Layer hLayer : hiddenLayers) {
+     hLayer.calculate();
+     hLayer.propagate();
+  }
+
+  outputLayer.calculate();
+   double[] y = outputLayer.getValues(); 
+
+   return y;
+}
+
+Every neural network has two main operational characteristics. It should be able to 
+train itself, and it should be able to classify its input—create the expected output val-
+ues. The algorithm that we adopt in our implementation is called the back propagation
+algorithm; it’s an online gradient-descent learning algorithm. In practical terms, this 
+algorithm examines each training instance and  adjusts  the  weights  of  its  links  (syn-
+apses)  so  that  the  difference  of  the  output  value  from  the  expected  value  is  mini-
+mized. Minimization relies on examining the slope of the error. For each instance we 
+enter an infinite loop, which breaks under three conditions.
+Enter an open loop, during which we try to improve the accuracy of the classifier. The 
+termination conditions are described in points 2–4. 
+The first termination condition is that we’re able to calculate the error. If we can’t there’s 
+no point in iterating. This is simply a sanity check. If that condition happens to be true 
+then it usually indicates a bad neural network design or some other error in the way that 
+you’re trying to cast your problem as a classification task for neural networks.
+
+B
+
+C
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComAre your results credible? 
+
+219
+
+D
+
+E
+
+F
+
+G
+
+H
+
+The  second  termination  condition  is  related  to  the  magnitude  of  the  error.  If  the 
+error of classifying this instance is less than a predefined threshold we can stop.
+The  third  termination  condition  checks  whether  the  difference  that  we  get  in  the 
+errors improves significantly over time. We’re trying to reduce the error, so we keep 
+varying the weights and try to get a better value for our output value. It is possible that 
+we may not achieve the error threshold that we’ve set. In other words, we may have set 
+the bar too high for our classifier. Look at the way that we implemented that condi-
+tion. Can you come up with a better convergence criterion?
+At this point, we haven’t yet met any of our termination criteria. So, we set the value of 
+the output node to the expected value and begin our reevaluation of the network’s 
+weights.  This  is  done  by  calling  calculateWeightAdjustments()  for  all  the  nodes 
+starting with the nodes of the output layer. 
+In the previous step we evaluated the adjustments of the weights but we didn’t take 
+any action. In this step, upon completion of the weight adjustment calculations for all 
+the  nodes,  we  update  the  values  of  the  weights  by  calling  the  method  update-
+Weights(). That’s it! Our cycle completed and we’re ready to repeat it until one of 
+our three termination conditions is met.
+This method is the top-level wrapper of the classification process. As we stated earlier, 
+when  the  neural  network  operates,  think  of  the  information  traveling  through  the 
+nodes from the input nodes to the output nodes. This is captured succinctly in this 
+method. We begin with the nodes of the input layer, we move on to the hidden layers, 
+and we close by calculating the output value of the network. Each node makes its own 
+calculations, based on the weights and the biases that it has; this is taken care of by the 
+calculate() method. The node will pass on its output to the nodes that it connects to 
+by using the method propagate(). Once the neural network has been trained, operat-
+ing it is quite straightforward. 
+A lot of this material relies on mathematical prerequisites that aren’t a requirement 
+for the general audience of this book. We’ve focused on the mechanics of neural net-
+work classifiers rather than their fundamentals. If you’re interested in learning more 
+about the inner workings of neural networks, there’s a vast amount of literature that 
+you can consult. In appendix E, we list many good books from the literature of neural 
+networks that can help you expand your knowledge in this field.
+
+ The previous section focused on the definition and description of the classification 
+algorithms  that  are  needed  in  order  to  build  a  classifier.  From  the  perspective  of  a 
+product, there’s a set of important issues such as the credibility of classification, the 
+consistency of the results on large datasets, as well as the computational requirements 
+of classification that must be taken into account. We’ll tackle some of these issues in 
+the following sections. 
+
+5.5
+
+Are your results credible? 
+Let’s say that you’ve built your classifier based on Bayes theorem or neural networks, 
+or something else. How do you know whether you did a good job? How do you know 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com220
+
+CHAPTER 5  Classification: placing things where they belong
+
+that you’re ready to use your intelligent module in production and reap the awe of 
+your colleagues and the accolades of your boss? Evaluating your classifier is as impor-
+tant as building it. On the “street” (also known as “sales meetings”), you’re going to 
+hear things that range from exaggerations to outright nonsense. The goal of this sec-
+tion  is  to  help  you  evaluate  your  own  classifier,  if  you’re  a  developer,  and  help  you 
+understand  the  legitimacy  (or  otherwise)  of  third-party  products,  whether  you’re  a 
+developer or a product manager.
+
+ Let’s start by stating that there’s not a single classifier that will perform classifica-
+tion well on every problem and every dataset. Think of it as the computational version 
+of  “nobody  knows  everything”  and  “everybody  makes  mistakes.”  The  learning  tech-
+niques  that  we  discussed  in  the  context  of  classification  belong  to  the  category  of 
+supervised learning (for an example of an unsupervised learning algorithm, see the 
+related to-do item). The learning is “supervised” because the classifier undergoes a 
+process  of  training,  based  on  known  classifications,  and  through  supervision  it 
+attempts to learn the information contained in the training dataset. As you can imag-
+ine, the relation of the training data to the actual data in your deployment will be cru-
+cial for the success of classification. 
+
+ For the purpose of clarity, let’s introduce a few terms. To make things simple, we’ll 
+consider a standard binary classification problem such as identifying email spam or 
+fraud.  For  example,  let’s  pretend  that  we’re  trying  to  discern  whether  a  particular 
+email message should be characterized as spam. A basic tool in assessing the credibil-
+ity of a classifier, and typically the starting point of such an investigation, is the confu-
+sion matrix. It’s a simple matrix, where the rows refer to the category that the classifier 
+assigns a particular instance, and the columns refer to the category that an instance of 
+a description belongs to. In the case of binary classification, there are only four cells in 
+that  matrix.  The  general  case  (multiclass  classification)  doesn’t  differ  conceptually 
+from the binary case, but it results in more complicated analysis. 
+
+ Table 5.1 presents the confusion matrix for a binary classification such as email spam 
+filtering or fraud detection. The table captures the possible outcomes of binary classi-
+fication. If the classification assigns a particular email message to the spam category 
+then we say that the classification is positive. Otherwise, we say that the classification is 
+negative. Of course, the classification itself could be correct (true) or incorrect (false). 
+Thus, the matrix contains four possible outcomes—the possible combinations between 
+positive/negative and true/false. This also leads to the realization that there are two 
+types of error. The first type of error consists of false positive classifications; an error of 
+this type is called a type I error. The other type of error consists of false negative classifi-
+cations; an error otf this type is called type II error. In plain terms, when you commit a 
+
+Positive
+
+Negative
+
+True
+
+True Positive (TP)
+
+True Negative (TN)
+
+False
+
+False Positive (FP)
+
+False Negative (FN)
+
+Table 5.1  A typical confusion matrix for a 
+simple binary classification problem
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComAre your results credible? 
+
+221
+
+type I error, you convict the innocent, and when you commit a type II error, you free the 
+guilty! This analogy is particularly good in pointing out the importance of classification 
+cost. Voltaire would prefer to release 100 guilty people than convict one innocent per-
+son; that sensitivity remains in the European courts. The moral of this anecdote is that 
+decisions have consequences, and the degree of the consequences isn’t uniform. This 
+is particularly true in the case of multiclass classification. We’ll revisit this point. 
+
+ Based on the values of table 5.1, let’s introduce the following definitions:
+■ FP rate = FP / N, where N = TN + FP
+■ Specificity = 1 – FP rate = TN / N
+■ Recall = TP / P, where P = TP + FN 
+■ Precision = TP / (TP + FP)
+■ Accuracy = (TP + TN) / (P + N)
+■ F-score = Precision * Recall
+
+Suppose that we find out about a classifier whose accuracy, as defined earlier, is 75%. 
+How close to the true accuracy of the classifier is our estimate? In other words, if you 
+repeat the classification task with different data, how likely is it that your accuracy will 
+be 75%? To answer that question, we’ll resort to something that’s known in statistics as 
+a Bernoulli process. This is described as a sequence of independent events whose out-
+come is considered either as success or as failure. That’s an excellent example for our 
+email spam filtering use case or our fraud detection use case, and in general for any 
+binary classification. If we denote the true accuracy as A*, and the measured accuracy 
+as A, then we want to know if A is a good estimate of A*. 
+
+ You may recall from your statistics courses the notion of a confidence interval. That’s 
+a measure for the certainty that we assign to a specific statement. If our accuracy is 75%, 
+in a set of 100 email messages, our confidence may not be very high. But if our accuracy 
+is 75%, in a set of 100,000 email messages, our confidence will probably be much higher. 
+Intuitively, we understand that, as the size of the set increases, the confidence interval 
+must become smaller and we feel more certain about our results. In particular, it can be 
+shown  that,  for  a  Bernoulli  process  with  100  samples,  the  true  accuracy  is  located 
+between 69.1% and 80.1%, with 80% confidence (see Witten & Frank). If we increase 
+the size of the set that we use to measure the accuracy of the classifier 10 times then the 
+new interval ranges from 73.2% to 76.7%, for the same confidence level (80%). Every 
+good statistics textbook has formulas for calculating these intervals. In theory, these 
+results are valid when your sample size is greater than 30 instances. In practice, you 
+should use as many instances as you can.
+
+ Unfortunately, in practice, you may not have as many instances as you would have 
+liked. To face that challenge, machine learning folks have devised a number of tech-
+niques that can help us evaluate the credibility of classification results when data are 
+scarce.  The  standard  method  of  evaluation  is  called  10-fold  cross-validation.  This  is  a 
+simple procedure that’s best illustrated by an example. Let’s say that we have 1,000 
+emails  that  we’ve  already  classified  manually.  In  order  to  evaluate  our  classifier,  we 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

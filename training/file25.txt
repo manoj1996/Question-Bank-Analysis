@@ -1,0 +1,58 @@
+1.6.6
+
+1.6.7
+
+1.6.8
+
+1.7
+
+Summary
+
+19
+
+your favorite solution in new areas of application. In addition, it’s recommended that 
+you  examine  every  problem  with  a  fresh  perspective;  a  different  problem  may  be 
+solved more efficiently or more expediently by a different algorithm. 
+
+Fallacy #6: The computation time is known
+Classic examples in this category can be found in problems that involve optimization. 
+In certain applications, it’s possible to have a large variance in solution times for a rel-
+atively small variation of the parameters involved. Typically, people expect that, when 
+we change the parameters of a problem, the problem can be solved consistently with 
+respect to response time. If you have a method that returns the distance between any 
+two geographic locations on Earth, you expect that the solution time will be indepen-
+dent of any two specific geographic locations. But this isn’t true for all problems. A 
+seemingly  innocuous  change  in  the  data  can lead  to  significantly  different  solution 
+times; sometimes the difference can be hours instead of seconds! 
+
+Fallacy #7: Complicated models are better
+Nothing could be further from the truth. Always start with the simplest model that you 
+can  think  of.  Then  gradually  try  to  improve  your  results  by  combining  additional 
+elements of intelligence in your solution. KISS is your friend and a software engineer-
+ing invariant.
+
+Fallacy #8: There are models without bias
+There are two reasons why you’d ever say that—either ignorance or bias! The choice 
+of the models that you make and the data that you use to train your learning algo-
+rithms introduce a bias. We won’t enter here into a detailed scientific description of 
+bias in learning systems. But we’ll note that bias balances generalization in the sense 
+that our solution will gravitate toward our model description and our data (by con-
+struction). In other words, bias constrains our solution inside the set of things that we 
+do know about the world (the facts) and sometimes how we came to know about it, 
+whereas generalization attempts to capture what we don’t know (factually) but it’s rea-
+sonable to presume true given what we do know. 
+
+Summary
+In this chapter, we gave a broad overview of intelligent web applications with a number 
+of specific examples based on real websites, and we provided a practical definition of 
+intelligent web applications, which can act as a design principle. The definition calls for 
+three different components: (1) data aggregation, (2) reference structures, and (3) 
+algorithms that offer learning capabilities and allow the manipulation of uncertainty. 
+ We provided a reality check by presenting six broad categories of web applications 
+for  which  our  definition  can  be  readily  applied.  Subsequently,  we  presented  the 
+enabling technologies that allow us to aggregate data or get access to data aggregation 
+platforms. We also provided background on the origins of the techniques that we will 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

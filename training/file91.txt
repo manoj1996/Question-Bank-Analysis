@@ -1,0 +1,129 @@
+150
+
+CHAPTER 4  Clustering: grouping things together
+
+Listing 4.12  MergeGoodnessMeasure: a criterion for identifying the best clusters 
+
+public class MergeGoodnessMeasure {
+
+    private double th;
+
+    private double p;
+
+    public MergeGoodnessMeasure(double th) {
+        this.th = th;
+        this.p = 1.0 + 2.0 * f(th);
+    }
+
+    public double g(int nLinks, int nX, int nY) {
+        double a = Math.pow(nX + nY, p);
+        double b = Math.pow(nX, p);
+        double c = Math.pow(nY, p);
+
+        return (double)nLinks / (a - b - c); 
+    }
+
+    private double f(double th) {
+
+        return (1.0 - th) / (1.0 + th);
+    }
+}
+
+The essential method call is g(int  nLinks,  int  nX,  int  nY), where nLinks is the 
+number  of  links  between  the  cluster  X  and  the  cluster  Y.  You  should’ve  expected 
+(based on what we said about common neighbors and links) that the value of the g
+method will depend on the number of links between any two points from two clusters. 
+But what do the other arguments stand for? Why is the formula so complicated? Let’s 
+answer the first question. The parameters nX and nY are the number of data points 
+contained in clusters X and Y, respectively. The answer to the second question is a bit 
+more elaborate but far more interesting.
+
+ You may think that maximizing the number of links for all pairs of points between 
+two clusters should be a sufficiently good criterion for deciding whether to merge the 
+clusters. Remember, though, that our objective in clustering is twofold. We need to 
+group together points that belong in the same cluster and separate those that don’t. 
+Even though the maximization of the number of links would ensure that points with a 
+large number of links are assigned to the same cluster, it doesn’t prohibit the algorithm 
+from assigning all points to a single cluster. In other words, using only the number of 
+links won’t help points with few links between them to separate into different clusters.
+ The ROCK formula estimates the total number of links in cluster X with the variable 
+b, and the total number of links in cluster Y with the variable c. The method f repre-
+sents a simple function with the following important property: each point that belongs 
+in cluster X has approximately Math.pow(nX,f(th)) neighbors in X. Hence, the calcu-
+lation of this goodness measure divides the number of links between each pair of points 
+with the expected number of links, which is represented as (a – b - c). This property of 
+the goodness measure prohibits the data points that have few links between them from 
+being assigned to the same cluster. The variable th is specific to this choice of imple-
+mentation for f, and its value is larger or equal to zero and smaller or equal to one. If 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com4.6
+
+4.6.1
+
+DBSCAN
+
+151
+
+it’s zero then the value of f is equal to one and all data points are neighbors. If it’s equal 
+to one then the value of f is equal to zero and the only neighbor of a point is itself. This 
+implementation of f has been found to work well with market basket data, but may not 
+be appropriate in other cases. The conditions that can lead to such a choice would be 
+attribute values that are more or less uniform across the data points. You should exper-
+iment with the implementation of the f method on our data or your own data. You can 
+find out more details on this in the “To do” section.
+
+DBSCAN
+This section describes an advanced clustering algorithm, Density-Based Spatial Clus-
+tering of Applications with Noise, (DBSCAN) that’s not based on the notion of links or 
+the direct distance of the points from each other, but rather on the newly introduced 
+idea of point density. To illustrate the idea, let’s say that you have a shallow dish of water 
+and you let a few drops of ink fall into the initially clear water dish. You wouldn’t have 
+any problem identifying the region that contains the ink immediately after the impact 
+of the drops. That’s because light reflects differently for ink than it does for water due 
+to their different densities. What does this have to do with clustering? 
+
+A first look at density-based algorithms
+There’s an entire class of clustering algorithms that attempts to take advantage of that 
+simple, everyday experience. In particular, density-based algorithms stem from the intuitive 
+idea that visual pattern recognition is based on the density gradients for identifying the 
+boundaries of objects. Thus, by extending the same principle to arbitrary two-, three-, 
+or even multidimensional spaces, we may be able to identify clusters (objects) based on 
+the notion of density of points within a certain region of space. Most people who look 
+at the left side of figure 4.14 will visually identify the three clusters that are shown on the 
+right side of figure 4.14. We’d typically consider the points that don’t belong in the clus-
+ters (seven white circles) to be noise.
+
+ The DBSCAN algorithm, proposed by 
+Martin Ester and others, is designed to dis-
+cover the clusters and the noise in a data-
+set. Before we dive into the details, let’s 
+run the script in listing 4.13 to obtain clus-
+tering results for the same data that we 
+used in the previous section with ROCK.
+
+Listing 4.13  Using the DBSCAN algorithm 
+
+Figure 4.14  Density-based clustering is inspired 
+by our ability to visually recognize shapes and forms.
+
+MyDiggSpaceDataset ds = MyDiggSpaceData.createDataset(15);   
+
+DataPoint[] dps = ds.getData();
+
+CosineDistance cosD = new CosineDistance();
+
+Load Digg 
+stories and 
+use only top 15
+
+DBSCANAlgorithm dbscan = new DBSCANAlgorithm(dps,cosD,0.8,2,true);   
+
+dbscan.cluster();
+
+Initialize DBSCAN algorithm
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

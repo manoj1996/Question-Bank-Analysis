@@ -1,0 +1,138 @@
+134
+
+CHAPTER 4  Clustering: grouping things together
+
+representing  the  clustering  results.  Let’s  proceed  and  look  at  the  family  of  link- 
+based algorithms.
+
+4.3.2
+
+A first look at link-based algorithms
+In listing 4.4, we show the script for loading the SourceForge-like data and invoking 
+the algorithms successively.
+
+Listing 4.4  Hierarchical agglomerative clustering algorithms 
+
+SFDataset ds = SFData.createDataset();             
+
+DataPoint[] dps = ds.getData();                          
+
+Load data
+
+double[][] adjMatrix = ds.getAdjacencyMatrix();
+
+SingleLinkAlgorithm sla = new SingleLinkAlgorithm(dps,adjMatrix);
+
+Dendrogram dendroSLA = sla.cluster();                                          
+
+Single link 
+clustering
+
+dendroSLA.print(4); 
+
+MSTSingleLinkAlgorithm sla2 = 
+➥  new MSTSingleLinkAlgorithm(dps,adjMatrix);
+
+Dendrogram dendroSLA2 = sla2.cluster();            
+
+Single link 
+clustering with MST
+
+dendroSLA2.print(4); 
+
+AverageLinkAlgorithm ala = new AverageLinkAlgorithm(dps,adjMatrix);
+
+Dendrogram dendroALA = ala.cluster();                                            
+
+Average 
+link 
+clustering
+
+dendroALA.print(4); 
+
+The class  SFDataset represents our dataset from section 4.1. The three classes that 
+contain the respective algorithms, in order of appearance, are SingleLinkAlgorithm, 
+MSTSingleLinkAlgorithm,  and  AverageLinkAlgorithm.  In  order  to  remove  effects 
+related to the representation of the data and the lack of normalization, all the algo-
+rithms use the same information as a starting point—the raw data of table 4.1 (in the 
+form of the array  Datapoint[]  dps) and the adjacency matrix (in the form of the 
+double[][]  adjMatrix) that captures the relative proximity of each user with every 
+other user in the dataset. 
+
+ All our link-based algorithms initialize their dendrogram by assigning the triplet 
+[0, N, {{X1}, {X2}, …, {XN}}]. When the proximity threshold (the first element of the 
+triplet) is set to 0, the only element that can be close to any other element is the ele-
+ment itself, and therefore all elements are loaded as individual clusters. 
+
+ As we mentioned, all algorithms use a two-dimensional array of doubles to repre-
+sent the adjacency matrix. This matrix contains the distance between any two elements 
+of the set; you can think of it as being analogous to the similarity matrix that we saw 
+for users and items in chapter 3. The values of the adjacency matrix allow us to use a 
+threshold of proximity and determine whether two elements should merge and form 
+a new cluster or remain in disjoined individual clusters. These comparisons take place 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComLink-based algorithms
+
+135
+
+iteratively  by  increasing  the  threshold  value 
+of proximity. After a finite number of steps, 
+all  elements  will  belong  in  a  single  cluster 
+and the algorithm stops. 
+
+ Figure 4.7 depicts this process by showing 
+three of these iterations; for illustration pur-
+poses, we restrict ourselves to two dimensions. 
+The  principle  is  identical  in  higher  dimen-
+sions; it’s just harder to visualize high-dimen-
+sional spaces. The black circles are data points 
+that we want to cluster; the circles with dashed 
+lines  are  the  proximity  thresholds  for  each 
+data point and iteration level. 
+
+Figure 4.7  A depiction of the single-link 
+algorithm in action (three iterations)
+
+4.3.3
+
+ In the first iteration, every data point belongs to its own cluster and we have a total 
+of seven clusters. In the second iteration, two clusters formed at the top and we have 
+five clusters. In the third iteration, the three data points in the bottom of the figure 
+merged and we have three clusters in total. As the iterations succeed one another, the 
+circles become larger and larger until the first proximity circle drawn with the first 
+data point at the center has such a large radius that it includes the entire dataset. At 
+that point, the iterations stop. 
+
+ The agglomerative algorithms differ with respect to two things:
+■ The approach that they use for merging clusters at each step of the iteration
+■ The definition of the adjacency matrix 
+
+The single link, average link, and minimum spanning tree algorithms are three well-
+known versions of agglomerative hierarchical clustering that are based on graph theo-
+retic concepts. We’ll examine each one of them in the following three subsections.
+
+The single-link algorithm
+The single-link algorithm (depicted in figure 4.5) tries to find the largest number of 
+connected components in a graph. This algorithm merges two clusters if at least one 
+edge connects the two clusters; hence the name single link. In other words, if the mini-
+mum distance between any two points is less than or equal to the proximity threshold, 
+which means that the data points are inside the circle with the dashed line, then the 
+clusters  are  merged.  Algorithmically,  this  is  shown  in  the  methods  cluster  and 
+buildClusters of listing 4.5. 
+
+Listing 4.5  Merge clusters even with a single link between them 
+
+public Dendrogram cluster() {
+  Dendrogram dnd = new Dendrogram("Distance");
+  double d = 0;
+
+  List<Cluster> initialClusters = new ArrayList<Cluster>();
+  for(DataPoint e : elements) {                                         
+
+B
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

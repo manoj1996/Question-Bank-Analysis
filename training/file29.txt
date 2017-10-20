@@ -1,0 +1,249 @@
+28
+
+CHAPTER 2  Searching
+
+ This practice is common. You typically store a few pointers that allow you to iden-
+tify  what  you’ve  found  in  the  index,  but  you  don’t  include  the  content  inside  the 
+index files unless you have good reasons for doing so (you may need part of the con-
+tent  immediately  and  the  original  source  isn’t  directly  accessible).  In  that  case,  pay 
+attention to the size of the files that you’re creating during the indexing stage.
+
+ We use the MySearcher class to search through our newly created index. Listing 2.3 
+shows all the code in that class. It requires a single argument to construct it—the direc-
+tory where we stored the Lucene index—and then it allows us to search through the 
+search method, which uses two arguments:
+
+■ A string that contains the query that we want to execute against the index
+■ The maximum number of documents that we want to retrieve 
+
+Listing 2.3  MySearcher: retrieving search results based on Lucene indexing
+
+public class MySearcher {
+
+  private static final Logger log = 
+➥  Logger.getLogger(MySearcher.class);
+
+  private String indexDir;
+
+  public MySearcher(String indexDir) {
+    this.indexDir = indexDir;
+  }
+
+  public SearchResult[] search(String query, int numberOfMatches) {
+
+    SearchResult[] docResults = new SearchResult[0];
+    IndexSearcher is = null;
+
+    try {
+
+      is = new IndexSearcher(FSDirectory.getDirectory(indexDir));   
+
+Open 
+Lucene 
+index
+
+Create query 
+parser
+
+    } catch (IOException ioX) {
+      log.error(ioX.getMessage());
+    }
+
+QueryParser qp = new QueryParser("content",       
+                                 new StandardAnalyzer()); 
+    Query q = null;
+    try {
+
+Transform text query 
+into Lucene query
+
+      q = qp.parse(query);         
+
+    } catch (ParseException pX) {
+      log.error(pX.getMessage());
+    }
+
+    Hits hits = null;
+    try {
+
+      hits = is.search(q);   
+
+Search index
+
+      int n = Math.min(hits.length(), numberOfMatches);
+      docResults = new SearchResult[n];
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com29
+
+Collect first 
+N search 
+results
+
+Score for i-th 
+document
+
+Searching with Lucene
+
+      for (int i = 0; i < n; i++) {                                             
+
+        docResults[i] = new SearchResult(hits.doc(i).get("docid"),
+                                     hits.doc(i).get("doctype"),
+                                     hits.doc(i).get("title"),
+                                     hits.doc(i).get("url"),
+                                     hits.score(i));           
+
+     // report the results
+        System.out.println(docResults[i].print());
+      }
+      is.close();
+
+    } catch (IOException ioX) {
+       log.error(ioX.getMessage());
+    }
+    return docResults;
+  }
+}
+
+Let’s review the steps in listing 2.3:
+
+1 We use an instance of the Lucene IndexSearcher class to open our index for 
+
+searching.
+
+2 We create an instance of the Lucene QueryParser class by providing the name 
+of the field that we query against and the analyzer that must be used for token-
+izing the query text.
+
+3 We use the parse method of the QueryParser to transform the human-readable 
+
+query into a Query instance that Lucene can understand.
+
+4 We search the index and obtain the results in the form of a Lucene Hits object.
+5 We  loop  over  the  first  n  results  and  collect  them  in  the  form  of  our  own 
+SearchResult objects. Note that Lucene’s Hits object contains only references 
+to the underlying documents. We use these references to collect the required 
+fields; for example, the call hits.doc(i).get("url") will return the URL that 
+we stored in the index.
+
+6 The relevance score for each retrieved document is recorded. This score is a num-
+
+ber between 0 and 1.
+
+Those elements constitute the mechanics of our specific implementation. Let’s take a 
+step back and view the bigger picture of conducting searches based on indexing. This 
+will help us understand the individual contributions of index-based search engines, 
+and will prepare us for a discussion about more advanced search features. 
+
+2.1.2 Understanding the basic stages of search
+
+If we could travel back in time (let’s say to 1998), what would be the basic stages of 
+work we’d need to perform to build a search engine? These stages are the same today 
+as they were in 1998 but we’ve improved their effectiveness and computational perfor-
+mance. Figure 2.3 depicts the basic stages in conventional searching:
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com30
+
+CHAPTER 2  Searching
+
+■ Crawling
+■ Parsing
+■ Analyzing
+Indexing
+
+■
+
+■ Searching  
+
+Crawler
+
+HTML
+
+PDF
+
+Word
+
+RTF
+
+XML
+
+RTF 
+Parser
+
+XML 
+Parser
+
+HTML 
+Parser
+
+PDF 
+Parser
+
+Word 
+Parser
+
+Lucene 
+Analyzer
+
+Crawling refers to the process of gathering 
+the documents on which we want to enable 
+the search functionality. It may not be nec-
+essary if the documents exist or have been 
+collected already. Parsing is necessary for 
+transforming the documents (XML, HTML, 
+Word, PDF) into a common structure that 
+will  represent  the  fields  of  indexing  in  a 
+purely  textual  form.  For  our  examples, 
+we’re using the code from the NekoHTML
+project.  NekoHTML  contains  a  simple 
+HTML parser that can scan HTML files and 
+“fix” many common mistakes that occur in 
+HTML documents, adding missing parent 
+elements,  automatically  closing  elements 
+with optional end tags, and handling mismatched inline element tags. NekoHTML is 
+fairly robust and sufficiently fast, but if you’re crawling special sites, you may want to 
+write your own parser.
+
+Figure 2.3  An overview of searching for a set 
+of documents with different formats
+
+Lucene 
+Analyzer
+
+Lucene 
+Index
+
+Lucene 
+Queries
+
+User 
+Query
+
+ If you plan to index PDF documents, you can use the code from the PDFBox project 
+(http://www.pdfbox.org/); it’s released under the BSD license and has plenty of docu-
+mentation. PDFBox includes the class LucenePDFDocument, which can be used to obtain 
+a Lucene Document object immediately with a single line of code such as the following:
+
+Document doc = LucenePDFDocument.convertDocument(File file)
+
+Look at the Javadocs for additional information. Similar to PDF documents, there are 
+also  parsers  for  Word  documents.  For  example,  the  Apache  POI  project  (http://
+poi.apache.org/)  provides  APIs  for  manipulating  file  formats  based  on  Microsoft’s 
+OLE  2  Compound  Document  format  using  pure  Java.  In  addition,  the  TextMining
+code, available at http://www.textmining.org/, provides a Java library for extracting 
+text from Microsoft Word 97, 2000, XP, and 2003 documents.
+
+ The stage of analyzing the documents is very important. In listing 2.2 and listing 
+2.3, the Lucene class StandardAnalyzer was used in two crucial places in the code, 
+but we didn’t discuss it before now. As figure 2.3 indicates, our parsers will be used to 
+extract  text  from  their  respective  documents,  but  before  the  textual  content  is 
+indexed,  it’s  processed  by  a  Lucene  analyzer.  The  work  of  an  analyzer  is  crucial 
+because  analyzers are responsible  for tokenizing the text that’s to be indexed. This 
+means that they’ll keep some words from the text that they consider to be important 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

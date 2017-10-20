@@ -1,0 +1,161 @@
+An online music store: the basic concepts
+
+75
+
+Figure 3.2  The similarity between two users can be measured by evaluating the extent of overlap 
+between the two lines in plots like this. Thus, Frank and Constantine (top) are more similar than Frank 
+and Catherine (bottom).
+
+The plots of the ratings in figure 3.2 clearly display the somewhat reciprocal nature of 
+distance and similarity. The greater the distance between the two curves, the smaller the 
+similarity between the two users; the smaller the distance between the two curves, the 
+greater the similarity between the two users. As we’ll see in the next section, the evalu-
+ation  of  similarity  often  involves  the  evaluation  of  some  kind  of  distance;  although 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com76
+
+CHAPTER 3  Creating suggestions and recommendations
+
+that’s not necessary. The concept of distance is more familiar. The concept of distance 
+and the concept of similarity are special cases of the general concept of a metric.
+
+3.1.2
+
+A closer look at the calculation of similarity
+Now, let’s examine the code that helped us find the similarity between the users and 
+look closely at how we can calculate similarity. The code in listing 3.2 shows the details 
+of the getSimilarity method, which accepts two arguments. The first provides a ref-
+erence to another user, the second specifies the kind of similarity that we want to use. 
+
+Listing 3.2  Two similarity measures in getSimilarity of MusicUser 
+
+public double getSimilarity(MusicUser u, int simType) {
+
+  double sim=0.0d;
+  int commonItems=0;
+
+  switch(simType) {
+
+  case 0: 
+     for (Rating r : this.ratingsByItemId.values()) {   
+
+          for (Rating r2 : u.ratingsByItemId.values()) {
+
+Identify all 
+common items
+
+          //Find the same item
+          if ( r.getItemId() == r2.getItemId() ) {
+           commonItems++;
+           sim += Math.pow((r.getRating()-r2.getRating()),2);   
+          }
+       }
+    }
+
+// If there are no common items, we cannot tell whether 
+// the users are similar or not. So, we let it return 0.
+if (commonItems > 0) {
+
+    sim = Math.sqrt(sim/(double)commonItems);
+
+Square 
+differences of 
+ratings and 
+sum them
+
+    // Similarity should be between 0 and 1
+    // For the value 0, the two users are as dissimilar as they come
+    // For the value 1, their preferences are identical.
+    //
+    sim = 1.0d - Math.tanh(sim);
+} 
+
+break;
+
+case 1:
+  for (Rating r : this.ratingsByItemId.values()) {   
+    for (Rating r2 : u.ratingsByItemId.values()) {
+
+Identify all 
+common items
+
+          //Find the same item
+          if ( r.getItemId() == r2.getItemId() ) {
+           commonItems++;
+           sim += Math.pow((r.getRating()-r2.getRating()),2);   
+          }
+       }
+    }
+
+Square 
+differences of 
+ratings and 
+sum them
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComAn online music store: the basic concepts
+
+77
+
+// If there are no common items, we cannot tell whether
+// or not the users are similar. So, we let it return 0.
+if (commonItems > 0) {
+
+    sim = Math.sqrt(sim/(double)commonItems); 
+
+    // Similarity should be between 0 and 1
+    // For the value 0, the two users are as dissimilar as they come
+    // For the value 1, their preferences are identical.
+    //
+    sim = 1.0d - Math.tanh(sim); 
+
+    // Find the max number of items that the two users can have in common
+    int maxCommonItems = 
+➥  Math.min(this.ratingsByItemId.size(), u.ratingsByItemId.size());
+
+    // Adjust similarity to account for the importance of common terms
+    // through the ratio of common items over all possible common items
+
+    sim = sim * ((double)commonItems/(double)maxCommonItems); 
+}
+break;
+
+} //switch block ends
+
+//Let us know what it is
+System.out.print("\n"); //Just for pretty printing in the Shell
+System.out.print(" User Similarity between");
+System.out.print(" "+this.getName());
+System.out.print(" and "+u.getName());
+System.out.println(" is equal to "+sim);
+System.out.print("\n"); //Just for pretty printing in the Shell
+
+return sim;
+}
+
+We included two similarity formulas in the code to show that the notion of similarity is 
+fairly flexible and extensible. Let’s examine the basic steps in the calculation of these 
+similarity formulas. First we take the differences between all the ratings of songs that 
+the users have in common, square them, and add them together. The square root of 
+that value is called the Euclidean distance and, as it stands, it’s not sufficient to provide a 
+measure of similarity. As we mentioned earlier, the concept of distance and similarity 
+are somewhat reciprocal, in the sense that the smaller the value of the Euclidean dis-
+tance, the more similar the two users. We can argue that the ordering incompatibility 
+with the concept of similarity is easy to rectify. For instance, we could say that we’ll add 
+the value 1 to the Euclidean score and invert it.
+
+  At  first  sight,  it  appears  that  inverting  the  distance  (after  adding  the  constant 
+value 1) might work. But this seemingly innocuous modification suffers from short-
+comings. If two users have listened to only one song and one of them rated the song 
+with 1 and the other rated the song with 4, the sum of their differences squared is 9. 
+In that case, the naïve similarity, based on the Euclidean distance, would result in a 
+similarity value of 0.25. The same similarity value can be obtained in other cases. If 
+the two users listened to three songs and among these three songs, their ratings dif-
+fered by 1 (for each song), their similarity would also be 0.25, according to the naïve 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

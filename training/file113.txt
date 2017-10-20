@@ -1,0 +1,330 @@
+Fraud detection with neural networks
+
+213
+
+        setLink("1:3", "2:0", -0.5);
+        setLink("1:4", "2:0", 0.5);
+
+        System.out.println("NN created");
+     }
+ }
+
+B
+
+C
+
+Based on the listing, the steps involved in the definition of our fraud detection neural 
+network are the following:
+The TransactionNN class is an extension of the BaseNN class, which we’ll describe in 
+greater depth later. You can build general neural networks by extending the BaseNN
+class. In the code that comes with this book, you can also find a neural network that 
+replicates an XOR gate, which means that it takes two double values as input and cre-
+ates one double value as output. If both values are approximately equally to one or 
+zero, the output is zero. If one value is approximately equal to one and the other is 
+approximately equal to zero, the output is equal to one. The class is called XORNet-
+work, and it’s even simpler than the TransactionNN class. Read it and run it to rein-
+force your understanding of how you can build a neural network.
+The constructor delegates to the  BaseNN constructor for all basic initialization steps 
+and creates the specific network topology with three input nodes, five hidden layer 
+nodes, and one output layer node. Wait a second! Three input nodes? Our transac-
+tional data that we described earlier had a lot more attribute values. In particular, we 
+included the user ID, the transaction amount, the transaction location in terms of two 
+coordinates, and a transaction description string. The description string isn’t numeric 
+and can be translated into a number in many ways, but it’s reasonable to expect that it 
+would contribute in the input data in at least one node. That adds up to five input 
+data (minimum), so why do we use only three?
+
+ The data values that we pass as input to the neural network are all normalized val-
+ues; to convince yourself, look at the method createInstance(Transaction t) of the 
+class TransactionInstanceBuilder. The transaction amount is normalized, based on 
+the minimum and maximum value of the legitimate transactions, so that it’s always a 
+value within the interval 0 and 1. We use the JaccardCoefficient in order to achieve 
+the same result for the description of a transaction. For the transaction locations, we 
+do something more elaborate. We normalize both the location of the user’s centroid 
+and the location of the transactions (based on the minimum and maximum values of 
+the x and y coordinates), and subsequently calculate the distance between these two 
+normalized locations. That distance is one of our three input values in the neural net-
+work  TransactionNN.  That’s  why  we  have  only  three  input  nodes.  This  is  clearly  a 
+design choice, and as is often the case in neural network design, it’s more or less an 
+arbitrary choice. But it’s not a bad choice and it can be justified; in fact, we ask you to 
+do that in one of to-do items. 
+
+ The overall network topology (3/5/1 nodes, only one hidden layer, full connectiv-
+ity) is also a design decision that isn’t set in stone but can be optimized based on exper-
+imentation. You could try different topologies that would result in different classifiers. 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com214
+
+CHAPTER 5  Classification: placing things where they belong
+
+D
+
+E
+
+F
+
+G
+
+H
+
+5.4.5
+
+In the same to-do item as the data normalization, we urge you to implement your own 
+network topology and compare the results of the resulting classifiers. The best network 
+topology depends on the nature of the input data and the nature of your problem. The 
+fraud detection use case and the TransactionNN base implementation provide a base-
+line that can help you investigate this dependency.  
+We create the input layer by providing an ID and specifying that the input layer should 
+have three nodes.
+We create the hidden layer of the network. Note that now we’ve introduced an array 
+of  new  parameters  (each  value  in  the  array  corresponds  to  one  node  in  the  layer) 
+called  biases.  We  talked  about  the  weights  of  the  synapse  earlier.  For  now,  consider 
+these to be additional constant weights that denote a bias that should be added to the 
+output value from a node.
+
+  Note  also  that  the  method  uses  the  prefix  add  instead  of  set.  That’s  intentional 
+because we want to indicate that you can have more than one hidden layer. We recom-
+mend that you study the effect of the number of hidden layers as one aspect of design-
+ing your neural networks.
+This is the last of our three layers. We define a bias value for the output layer as well, 
+but you can opt not to have a bias in the output node. In the latter case, simply set the 
+bias equal to zero. 
+We assign the references of the three layers to the network. At this point, we have all 
+our nodes ready. The only thing that we have left to do is create the connectivity (the 
+edges) of our network.
+We build all the links (synapses) between the nodes one by one. The first argument 
+determines the origin of the link in the form LayerID:NodeID. The second argument 
+determines the destination of the link in the form LayerID:NodeID. The third argu-
+ment determines the weight of the link upon initialization. As we discussed, the values 
+of the weights change continuously during the training phase. 
+
+A base class for building general neural networks 
+The material that we presented in the previous sections was tied to the specific use case 
+of fraud detection. In order to create the neural network, as well as every time that we 
+needed to access the inner workings of the neural network, we delegated the calls to the 
+general implementation that we provided—the class BaseNN. Due to its importance and 
+general applicability, this section will provide a dissection of that class. 
+
+  For  better  exposition,  we’ll  present  this  class  in  two  listings.  Listing  5.16  will 
+address the structural aspects of the class (setting up the neural network), listing 5.17 
+will present the operational aspects (the training and classification related code). 
+
+Listing 5.16  BaseNN (structural aspects): excerpt from the base class of a general NN
+
+    public Layer createInputLayer(int layerId, int nNodes) {   
+
+B
+
+        BaseLayer baseLayer = new BaseLayer(layerId);
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComFraud detection with neural networks
+
+215
+
+        for(int i = 0; i < nNodes; i++) {
+            Node node = createInputNode(layerId + ":" + i);
+            Link inlink = new BaseLink();
+            inlink.setFromNode(node);
+            inlink.setWeight(1.0);
+            node.addInlink(inlink);
+            baseLayer.addNode(node);
+        }
+        
+        return baseLayer;
+    }
+
+    public Layer createHiddenLayer(int layerId, 
+➥      int nNodes, double[] bias) {                   
+
+C
+
+        if( bias.length != nNodes ) {
+            throw new RuntimeException("Each node should have bias.");
+        }
+        BaseLayer baseLayer = new BaseLayer(layerId);
+        for(int i = 0; i < nNodes; i++) {
+            Node node = createHiddenNode(layerId + ":" + i);
+            node.setBias(bias[i]);
+            baseLayer.addNode(node);
+        }
+        return baseLayer;
+    }
+
+    public Layer createOutputLayer(int layerId, 
+➥      int nNodes, double[] bias) {                   
+
+D
+
+        if( bias.length != nNodes ) {
+            throw new RuntimeException("Each node should have bias.");
+        }
+
+        BaseLayer baseLayer = new BaseLayer(layerId);
+        for(int i = 0; i < nNodes; i++) {
+            Node node = createOutputNode(layerId + ":" + i);
+            node.setBias(bias[i]);
+            baseLayer.addNode(node);
+        }
+        return baseLayer;
+    }
+
+    public void setLink(String fromNodeId, String toNodeId, double w) {   
+        Link link = new BaseLink();
+        Node fromNode = allNodes.get(fromNodeId);
+        if( fromNode == null ) {
+            throw new RuntimeException("Unknown node id: " + fromNodeId);
+        }
+        Node toNode = allNodes.get(toNodeId);
+        if( toNode == null ) {
+            throw new RuntimeException("Unknown node id: " + toNodeId);
+        }
+
+E
+
+        link.setFromNode(fromNode);
+        link.setToNode(toNode);
+        link.setWeight(w);
+
+        fromNode.addOutlink(link);
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com216
+
+CHAPTER 5  Classification: placing things where they belong
+
+        toNode.addInlink(link);
+    }
+
+    protected Node createInputNode(String nodeId) {   
+       Node node = new LinearNode(nodeId);
+       node.setLearningRate(learningRate);  
+       return node;
+    }
+
+F
+
+    protected Node createHiddenNode(String nodeId) {
+       Node node = new SigmoidNode(nodeId);
+       node.setLearningRate(learningRate);
+       return node;
+    }
+
+    protected Node createOutputNode(String nodeId) {
+       Node node = new LinearNode(nodeId);
+       node.setLearningRate(learningRate);  
+       return node;
+    }
+
+    public abstract double fireNeuron();
+
+    public abstract double fireNeuronDerivative();
+}
+
+B
+
+C
+
+D
+
+Let’s start with the structural aspects as shown in listing 5.16. This is not the entire 
+implementation.  We’ve  kept  the  minimum  methods  required  to  describe  the  struc-
+ture of a neural network. 
+This method creates the input layer of the network; it takes as arguments the layer ID
+and the number of nodes that this layer should have. It instantiates a BaseLayer, which 
+is the base neural network layer implementation in our framework. This class consists 
+of a layer ID and a list of nodes. The loop iterates nNodes times in order to create all the 
+nodes of the input layer. Each node of the  input layer is assigned a link (synapse), 
+which we call inlink to indicate that it’s responsible for transferring the data into the 
+network. The weight of that link is set equal to one and doesn’t change during training 
+because we don’t want to distort the original values of the data. For that reason, many 
+authors don’t consider the input layer to be part of the neural network per se.
+This method creates the hidden layer of the network; it takes as arguments the layer 
+ID, the number of nodes that this layer should have, and the bias that each one of 
+these nodes should have. After validating that there are as many bias values as there 
+are nodes, it instantiates a BaseLayer. The loop iterates nNodes times, in order to cre-
+ate all the nodes of the hidden layer. Each node of the input layer is assigned the bias 
+that corresponds to the enumeration of the loop; since this is the creation stage, we 
+assume that this is the intended ordering. Unlike the case of input layer nodes, a link 
+(synapse) isn’t created at this stage and therefore a weight isn’t provided either. This is 
+done separately, via the method setLink, as we’ll see shortly.
+We conclude the creation of the neural network’s layers by constructing the output layer. 
+This is similar to the construction of the hidden layer. But there’s implicitly a difference 
+related to the fact that the nodes of the output layer are instances of the LinearNode
+class, while the hidden layer nodes are instances of the SigmoidNode class.
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComFraud detection with neural networks
+
+217
+
+E
+
+F
+
+The  previous  methods  were  responsible  for  creating  neural  network  nodes.  This 
+method is responsible for creating the neural network links (synapses). The only layer 
+nodes for which we created a link were the input layer nodes. The rest of the nodes 
+are connected using this method. Its arguments are the IDs of the two nodes that the 
+link should connect and the weight that should be attributed to the link. You can also 
+define other methods such as connectFully(Layer x, Layer y), which would create a 
+link  for  all  the  possible  combinations  of  nodes  between  these  two  layers.  You  can 
+experiment and explore the possibilities according to your needs. 
+The  remainder  of  the  methods  in  listing  5.16  are  responsible  for  creating  the 
+instances of the specific implementations of neural network nodes. We’ve written two 
+specific  implementations  of  a  BaseNode;  the  BaseNode  is  an  abstract  class.  The  first 
+implementation is given by the class LinearNode and is used by the input and output 
+layers. The second implementation is given by the class SigmoidNode and is used by 
+the hidden layer nodes. Once the nodes have been created, we set the learning rate. 
+Nearly all the functionality of a node is provided by the base class. The LinearNode and 
+the SigmoidNode offer implementations for only two methods—the fireNeuron() and 
+the fireNeuronDerivative(). If you recall our design mantra in section 5.4.2, we can 
+fully determine a neural network by defining the network architecture, the activation 
+rule, and the learning rule. Creating the layers of the network, their nodes, and their 
+connections establishes the network architecture, but doesn’t tell us how the nodes will 
+respond to a given input (activation rule) or how the network will learn. The fire-
+Neuron() method defines the response of a neuron node to the given input, which is 
+the crux of the activation rule, while the fireNeuronDerivative() (which must provide 
+the numerical derivative of the fireNeuron() method) is directly related to the learning 
+rule. The parameter learningRate doesn’t depend on the specific implementation of 
+the node and is typically a value between 0 and 1.
+
+ The preceding methods adequately define the neural network as a structure. So, 
+
+let’s move on to listing 5.17, which describes the operational aspects of our network.
+
+Listing 5.17  BaseNN (operational aspects): excerpt from the base class of a general NN
+
+public void train(double[] tX, double[] tY) { 
+   double lastError = 0.0;
+   int i = 0;
+
+   while( true ) {   
+     i++;
+     double[] y = classify(tX);   
+
+B
+
+     double err = error(tY, y);
+
+     if( Double.isInfinite(err) || Double.isNaN(err) ) {   
+        throw new RuntimeException("Training failed.");
+     }
+
+C
+
+     double convergence = Math.abs(err - lastError);
+
+     if(err <= ERROR_THRESHOLD ) {   
+         lastError = err;
+
+D
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

@@ -1,0 +1,12 @@
+Discuss the eight fallacies of intelligent application.
+With a diagram, explain the basic stages of search in detail.
+What is page rank? Explain page rank with example.
+With an example, explain the concept of distance and similarity
+Discuss how recommendation engine works.
+Explain linear correlation co-efficient. (Pearson's)
+Explain clustering algorithm based on cluster structure.
+Discuss the clustering algorithm based on cluster site.
+With example explain minimum-spanning tree algorithm.
+Explain density-based spatial clustering of application with noise (DBSCAN) algorithm.
+Discuss the clustering issues in very large data set.
+Explain average link algorithm

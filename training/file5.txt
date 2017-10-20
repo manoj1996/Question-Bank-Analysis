@@ -1,0 +1,71 @@
+Basic elements of intelligent applications
+
+5
+
+requires the ability to discern the meaning of things within a context. It requires the 
+ability to automatically process and group together documents, or parts of documents, 
+that contain free text in natural (human) language on the basis of whether they’re “sim-
+ilar.”  It  requires  some  structured  knowledge  about  the  world  or,  at  least,  about  the 
+domain of discourse that the document refers to. It requires the ability to focus on cer-
+tain documents that satisfies certain rules (user’s criteria) and do so quickly.
+
+ Thus, we arrive at the conclusion that applications such as Wikipedia or other pub-
+lic portals are different from applications such as Google search, Google Ads, Netflix 
+Cinematch, and so on. Applications of the first kind are collaborative platforms that 
+facilitate the aggregation and maintenance of collective knowledge. Applications of 
+the second kind generate abstractions of patterns from a body of collective knowledge 
+and therefore generate a new layer of opportunity and value.
+
+ We conclude this section by summarizing the elements that are required in order 
+
+to build an intelligent web application:
+
+■ Aggregated content—In other words, a large amount of data pertinent to a spe-
+cific application. The aggregated content is dynamic rather than static, and its 
+origins as well as its storage locations could be geographically dispersed. Each 
+piece of information is typically associated with, or linked to, many other pieces 
+of information.
+
+■ Reference structures—These structures provide one or more structural and seman-
+tic interpretations of the content. For example, this is related to what people 
+call  folksonomy—the  use  of  tags  for  annotating  content  in  a  dynamic  way  and 
+continuously  updating  the  representation  of  the  collective  knowledge  to  the 
+users. Reference structures about the world or a specific domain of knowledge 
+come  in  three  big  flavors:  dictionaries,  knowledge  bases,  and  ontologies  (see 
+the related references at the end). 
+
+■ Algorithms—This refers to a layer of modules that allows the application to har-
+ness the information, which is hidden in the data, and use it for the purpose of 
+abstraction (generalization), prediction, and (eventually) improved interaction 
+with its users. The algorithms are applied on the aggregated content, and some-
+times require the presence of reference structures. 
+
+These ingredients, summarized in figure 1.1, 
+are essential for characterizing an application 
+as  an  intelligent  web  application,  and  we’ll 
+refer to them throughout the book as the tri-
+angle of intelligence.
+
+  It’s  prudent  to  keep  these  three  compo-
+nents  separate  and  build  a  model  of  their 
+interaction that best fits your needs. We’ll dis-
+cuss  more  about  architecture  design  in  the 
+rest of the chapters, especially in chapter 7.
+
+Algorithms
+(Thinking)
+
+Content
+
+(Raw Data)
+
+Reference
+(Knowledge)
+
+Figure 1.1  The triangle of intelligence:  
+the three essential ingredients of intelligent 
+applications.
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

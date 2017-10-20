@@ -1,0 +1,57 @@
+16
+
+CHAPTER 1  What is the intelligent web?
+
+ Artificial intelligence, widely known by its acronym AI, began as a computational field 
+around 1950. Initially, the goals of AI were quite ambitious and aimed at developing 
+machines  that  can  think  like  humans  (Russell  and  Norvig,  2002;  Buchanan,  2005). 
+Over  time,  the  goals  became  more  practical  and  concrete.  Megalomania  yielded  to 
+pragmatism  and  that,  in  turn,  gave  birth  to  many  of  the  other  fields  that  we  men-
+tioned, such as machine learning, data mining, soft computing, and so on.
+
+ Today, the most advanced system of computational intelligence can’t comprehend 
+simple stories that a four-year-old can easily understand. So, if we can’t make comput-
+ers “think,” can we make them “learn”? Can we teach a computer to distinguish an 
+animal based on its characteristics? How about a bad subprime mortgage application? 
+How about something more complicated, such as recognizing your voice and replying 
+in your native language—can a computer do that? The answer to these questions is a 
+resounding yes. Nevertheless, you may wonder, “What’s all the fuss about?” After all, 
+you can always build a huge lookup table and get answers to your questions based on 
+the data that you have in your database.
+
+ You can certainly follow the lookup table approach, but there are a few problems 
+with  it.  First,  for  any  problem  of  consequence  in  a  real  production  system,  your 
+lookup table would be enormous; so, based on efficiency considerations, this isn’t an 
+optimal solution. Second, if the question that you form is based on data that doesn’t 
+exist in your database, you’d get no answer at all. If a person behaved in that manner, 
+you’d be quick to adorn him with adjectives that censorship wouldn’t allow us to print 
+on these pages. Last, someone would have to build and maintain your lookup table, 
+and the number of these people would grow with the size of your table: a feature that 
+may not sit well with the financial department of your organization. So we need some-
+thing better than a lookup table.
+
+ Machine learning refers to the capability of a software system to generalize based 
+on past experience, and use these generalizations to provide answers to questions that 
+relate to data that it has encountered in the past as well as new data that the system has 
+never encountered before. Some learning algorithms are transparent to humans—a 
+human can follow the reasoning behind the generalization. Examples of transparent 
+learning algorithms are decision trees and, more generally, any rule-based learning 
+method. Other algorithms, though, aren’t transparent to humans—neural networks 
+and support vector machines (SVM) fall in this category.
+
+ Always remember that machine intelligence, like human intelligence, isn’t infalli-
+ble.  In  the  world  of  intelligent  applications,  you’ll  learn  to  deal  with  uncertainty 
+and fuzziness; just like in the real world, any answer given to you is valid with a certain 
+degree of confidence but not with certainty. In our everyday life, we simply assume 
+that certain things will happen for sure. For that reason, we’ll address the issues of 
+credibility, validity, and the cost of being wrong when we use intelligent applications.
+
+1.6
+
+Eight fallacies of intelligent applications
+We’ve covered all the introductory material. By now, you should have a fairly good, 
+although  only  high-level,  idea  of  what  intelligent  applications  are  and  how  you’re 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

@@ -1,0 +1,347 @@
+70
+
+CHAPTER 3  Creating suggestions and recommendations
+
+  In  the  business  of  influencing  your  choice,  no  one  is  interested  in  good  results 
+more than advertising companies. The raison d’être of these entities is to convince you 
+that you really need product X or service Y. If you have no interest in products like X or 
+services like Y, they’ll be wasting their time and you’ll be annoyed! The “broadcasting” 
+approach of traditional advertising methods (such as billboards, TV ads, radio ads) 
+suffers from that problem. The goal of broadcasting is to alter your preferences by 
+incessantly  repeating  the  same  message.  An  alternative,  more  pleasant,  and  more 
+effective  approach  would  be  targeting  to  your  preferences.  It  would  entice  you  to 
+select  a  product  based  on  its  relevance  to  your  personal  wants  and  desires.  That’s 
+where the online world and the intelligent advertisement business on the internet dis-
+tinguish themselves. It may be the searching functionality that made Google famous, 
+but advertisements are what make Google rich!
+
+ In this chapter, we’ll tell you everything you need to know about building a recom-
+mendation engine. You’ll learn about collaborative filtering and content-based recom-
+mendation engines. You’ll also learn how to optimize the classical algorithms and how 
+to extend them in more realistic applications. We’ll start by describing the problem of 
+recommending songs in an online music store, and we’ll generalize it so that our pro-
+posed solutions are applicable to a variety of circumstances. The online music store is 
+a simple example, but it’s concrete and detailed, making it easy to understand all the 
+basic concepts involved in the process of writing a recommendation engine. 
+
+ Once we cover all the basic concepts in our online music store, we’ll make things a 
+lot more interesting by presenting more complicated cases. We’ll adhere to the impor-
+tant  principle  of  commercial  proselytism  and  we’ll  cover  recommendation  engines 
+that are crucial in online movie rentals (see our coverage of Netflix in the introduc-
+tion), online bookstores, and general online stores. 
+
+An online music store: the basic concepts
+Let’s say that you have an online store that sells music downloads. Registered users log 
+in to your application and can play samples of the available songs. If a user likes a par-
+ticular song, she can add it to her shopping cart and purchase it later when she’s ready 
+to check out from your store. Naturally, when users complete their purchase, or when 
+they land on the pages of our hypothetical application, we want to suggest more songs 
+to  them.  There  are  millions  of  songs  available,  myriad  artists,  and  dozens  of  music 
+styles  of  broad  interest  to  choose  from—classical,  ecclesiastical,  pop,  heavy  metal, 
+country, and many others more or less refined! In addition, many people are quite 
+sensitive to the kind of music that they don’t like. You’d be better off throwing me in 
+the middle of the Arctic Ocean than showing me anything related to rap! Someone 
+else could be allergic to classical music, and so on. 
+
+ The moral of the story is that, when you display content for a user, you want to tar-
+get the areas of music that the user likes and avoid the areas of music that the user 
+doesn’t like. If that sounds difficult, fear not! Recommendation engines are here to 
+help you deliver the right content to your users!
+
+3.1
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com3.1.1
+
+An online music store: the basic concepts
+
+71
+
+  A  recommendation  engine  examines  the  selections  that  a  user  has  made  in 
+the past, and can identify the degree to which he would like a certain item that he 
+hasn’t seen yet. It can be used to determine  what  types  of  music  your  user  prefers, 
+and  the  extent  to  which  he  does  so,  by  comparing  the  similarity  of  his  preferences 
+with  the  characteristics  of  music  types.  In  a  more  creative  twist,  we  could  help 
+people establish  a  social  network  on  that  site  based  on  the  similarity  of  their  musi- 
+cal taste. So, it quickly becomes apparent that the crucial functional element of rec-
+ommendation  engines  is  the  ability  to  define  how  similar  to  each  other  two  (or 
+more)  users  or  two  (or  more)  items  are.  That  similarity  can  later  be  leveraged  to 
+provide recommendations.  
+
+The concepts of distance and similarity
+Let’s take some data and start exploring these concepts in detail. The basic concepts 
+that we’ll work with are Items, Users, and Ratings. In the context of recommendation 
+engines, similarity is a measure that allows us to compare the proximity of two items in 
+much the same way that the proximity between two cities tells us how close they are to 
+each other geographically. For two cities, we’d use their longitude and latitude coordi-
+nates to calculate their geographical proximity. Think of the Ratings as the “coordi-
+nates”  in  the  space  of  Items  or  Users.  Let’s  demonstrate  these  concepts  in  action. 
+We’ll  select  three  users  from  a  list  of  MusicUsers  and  will  associate  a  list  of  songs 
+(items) and their hypothetical rankings with each user. 
+
+ As it is typically the case on the internet, ratings will range between 1 and 5 (inclu-
+sive). The assignments for the first two users (Frank and Constantine) involve ratings 
+that are either 4 or 5—these people really like all the songs that we selected! But the 
+third user’s ratings (Catherine) are between 1 and 3. So clearly, we expect the first two 
+users to be similar to each other and be dissimilar to the third user. When we load our 
+example data in the script (the second line in the script of listing 3.1), we have avail-
+able the users, songs, and ratings shown in table 3.1.
+
+Table 3.1  The ratings for the users show that Frank and Constantine agreemore 
+ than Frank and Catherine (see also figure 3.2). 
+
+User
+
+Song
+
+Rating
+
+Frank
+
+Tears In Heaven
+
+La Bamba
+
+Mrs. Robinson
+
+Yesterday
+
+Wizard of Oz
+
+Mozart: Symphony #41 (Jupiter)
+
+Beethoven: Symphony No. 9 in D
+
+5
+
+4
+
+5
+
+4
+
+5
+
+4
+
+5
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com72
+
+CHAPTER 3  Creating suggestions and recommendations
+
+Table 3.1  The ratings for the users show that Frank and Constantine agreemore 
+ than Frank and Catherine (see also figure 3.2). (continued)
+
+User
+
+Song
+
+Rating
+
+Tears in Heaven
+
+Fiddler on the Roof
+
+Mrs. Robinson
+
+Constantine
+
+What a Wonderful World
+
+Wizard of Oz
+
+Let It Be
+
+Mozart: Symphony #41 (Jupiter)
+
+Tears in Heaven
+
+Mrs. Robinson
+
+Yesterday
+
+Catherine
+
+Beethoven: Symphony No. 9 in D
+
+Sunday, Bloody Sunday
+
+Yesterday
+
+Let It Be
+
+5
+
+5
+
+5
+
+4
+
+4
+
+5
+
+5
+
+1
+
+2
+
+2
+
+3
+
+1
+
+1
+
+2
+
+We can execute all these steps in the shell using the script shown in listing 3.1.
+
+Listing 3.1  A small list of MusicUsers and their Ratings on MusicItems
+
+MusicUser[] mu = MusicData.loadExample(); 
+
+mu[0].getSimilarity(mu[1],0); 
+
+mu[0].getSimilarity(mu[1],1); 
+
+mu[0].getSimilarity(mu[2],0); 
+
+mu[1].getSimilarity(mu[2],0);   
+mu[2].getSimilarity(mu[1],0);
+
+mu[0].getSimilarity(mu[0],0);   
+mu[0].getSimilarity(mu[0],1);
+
+Similarity is symmetrical
+
+Similarity of a user with itself
+
+We’ve provided two definitions of similarity, which are invoked by providing a differ-
+ent  value  in  the  second  argument  of  the  getSimilarity  method  of  the  MusicUser
+class. We’ll describe the detailed implementation of that code shortly, but first look 
+at  figure  3.1,  which  shows  the  results  that  we  get  for  the  comparisons  between  the 
+three users.
+
+ According to our calculations, shown in figure 3.1, Frank’s preferences in songs 
+are more similar to Constantine’s than they are to Catherine’s. The similarity between
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComAn online music store: the basic concepts
+
+73
+
+bsh % MusicUser[] mu = MusicData.loadExample();
+
+bsh % mu[0].getSimilarity(mu[1],0);
+
+ User Similarity between Frank and Constantine is equal to 
+0.3911406349860862
+
+bsh % mu[0].getSimilarity(mu[1],1);
+
+ User Similarity between Frank and Constantine is equal to 
+0.22350893427776353
+
+bsh % mu[0].getSimilarity(mu[2],0);
+
+ User Similarity between Frank and Catherine is equal to 0.
+004197074413470947
+
+bsh % mu[1].getSimilarity(mu[2],0);
+
+ User Similarity between Constantine and Catherine is equal to 
+0.0023790682635077554
+
+bsh % mu[2].getSimilarity(mu[1],0);
+
+ User Similarity between Catherine and Constantine is equal to 
+0.0023790682635077554
+
+bsh % mu[0].getSimilarity(mu[0],0);
+
+ User Similarity between Frank and Frank is equal to 1.0
+
+bsh % mu[0].getSimilarity(mu[0],1);
+
+ User Similarity between Frank and Frank is equal to 1.0
+
+Figure 3.1  Calculating the similarity of users for the data that are shown in table 3.1. It’s clear that 
+Frank and Constantine agree more than Frank and Catherine (see also table 3.1).
+
+two users doesn’t depend on the order in which we pass the arguments in the get-
+Similarity  method.  The  similarity  of  Frank  with  himself  is  equal  to  1.0,  which  we 
+take to be the maximum value of similarity between any two entities. These properties 
+stem from the fact that many similarity measures are based on distances, like the geo-
+metric distance between two points on a plane that we learned in high school. 
+
+ In general, mathematical distances have the following four important properties:
+■ All distances are greater than or equal to zero. In most cases, as with the Music-
+User, we constrain the similarities to be nonnegative like distances. In fact, we 
+constrain the similarities within the interval [0,1].
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com74
+
+CHAPTER 3  Creating suggestions and recommendations
+
+■ The distance between any two points, say A and B, is zero if and only if A is the 
+same point as B. In our example, and based on our implementation of similar-
+ity,  this  property  is  reflected  in  the  fact  that  when  two  users  have  exactly  the 
+same ratings, the similarity between them will be equal to 1.0. That’s true in fig-
+ure 3.1, where we used the same user twice to show that the similarity is 1.0. Of 
+course, you can create a fourth user and prove that the similarity will be equal 
+to 1, provided that the users have listened to the same songs.
+
+■ The third property of distances is  symmetry—the  distance  between  A  and  B  is 
+exactly the same as the distance between B and A. This means that if Catherine’s 
+musical taste is similar to the musical taste of Constantine, the reverse will also be 
+true by exactly the same amount. So, quite often we want the measure of similarity 
+to preserve the symmetric property of distances, with respect to its arguments.
+
+■ The fourth property of mathematical distances is the triangle inequality because 
+it relates the distances between three points. In mathematical terms, if d(A,B)
+denotes the distance between points A and B, then the triangle inequality states 
+that d(A,B) <= d(A,C) + d(C,B), for any third point C. In figure 3.1, Frank is simi-
+lar to Constantine by 0.391 and Constantine is similar to Catherine by 0.002, 
+while Frank is similar to Catherine by 0.004, which is less than the sum of the 
+first  two  similarities.  Nevertheless,  that  property  doesn’t  hold,  in  general,  for 
+our similarities. 
+
+Relaxing the fourth fundamental property of distances when we pass on to similarities 
+is fine; there’s no imperative to carry over the properties of distances to similarities. 
+We should always be cautious to ensure that the mathematics involved is in agreement 
+with what we consider to be reasonable. There’s a century-old counterexample to the 
+triangle inequality, when it comes to similarities, that’s attributed to William James:1
+“A flame is similar to the moon because they are both luminous, and the moon is sim-
+ilar to a ball because they are both round, but in contradiction to the triangle inequal-
+ity, a flame is not similar to a ball.” For an interesting account of similarities in relation 
+to cognition, we recommend Classification and Cognition by W.K. Estes. 
+
+ At the top of figure 3.2, we show a visual representation of the similarity between 
+Frank  and  Constantine  by  plotting  their  ratings  for  the  songs  they  both  rated.  The 
+closer the lines of the ratings, the more similar the users are; the further apart the 
+lines, the less the similarity. On the bottom plot of figure 3.2, where we show the rat-
+ings of Frank versus those of Catherine, the lines diverge and are far apart, which is in 
+accordance with the low similarity value that we got during our calculation. 
+
+  The  lines  for  Frank  and  Constantine  are  close,  depicting  the  similarity  between 
+them. If you look at the code in the  plot method of  MusicUser,  you’ll  see  that  we 
+sort these ratings in order of increasing difference. If you have a lot of these ratings, 
+you’ll see the difference between the two lines increase as you look at the plot from 
+left to right.
+
+1 Source: ScholarPedia (http://www.scholarpedia.org/article/Similarity_measures)
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

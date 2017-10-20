@@ -1,0 +1,63 @@
+156
+
+CHAPTER 4  Clustering: grouping things together
+
+D
+
+E
+
+F
+G
+H
+I
+
+J
+
+If there aren’t enough data points in the epsilon neighborhood of p then it’s either 
+noise or a border point. Treat it temporarily as noise and if it’s a border point we’ll 
+change its label later. At this stage, no cluster has been created for p.
+If the number of data points in the epsilon neighborhood is greater than or equal to 
+the minimum number of data points minPoints, we can proceed. But first, we need to 
+remove the given data point (p) from its own set of cluster points.
+Iterate through all the data points other than p.
+Find its epsilon neighborhood and determine whether it’s directly density reachable. 
+If it’s a border point, we should assign it to the cluster.
+This point isn’t noise but we must examine whether it’s a core point, so we add it to 
+the original list to find its epsilon neighborhood, and we assign it to the cluster that we 
+examine
+Before we continue with the next data point from the neighborhood of p, we remove 
+the data point that we just examined
+As you might expect from this description, the choice of eps and minPoints is impor-
+tant. The best way to identify good values for these two parameters is to experiment 
+with your data for some known cluster formations. If you deal with a two-dimensional 
+dataset (the data points have two attributes), a reasonable choice for minPoints is 4. 
+You can use that value as your starting point and then take a few more values to exam-
+ine whether the results of the clustering are improving. The case of multidimensional 
+datasets is harder because the properties of multidimensional spaces are quite differ-
+ent from those of the lower-dimensional spaces; we’ll discuss that in appendix C. The 
+choice of eps will be easier if you can leverage the following factors:
+
+■ Data normalization. You should use normalized data whenever possible, espe-
+
+cially for more than two dimensions. 
+
+■ Availability of statistics about the intrapoint distances.
+■ Dataset dimensionality—how many attributes do your data points have?
+
+Provide  an  initial  value  for  eps  such  that  you’d  consider  the  distance  between  two 
+points in the set to be “close.” Then create a few increments in geometric progression, 
+say, factors of 2 and cluster again. How do the results change as the eps value changes? 
+If the results don’t change significantly then you’re done; select the average value as 
+your eps. If the results do change, there are two possibilities:
+■ The results get better, or worse, as the value increases.
+■ The  results  don’t  show  a  consistent  behavior—for  example,  you  double  the 
+value of eps and the results get worse; you double it again and the results get 
+better!
+
+The  first  case  is  easy.  If  the  clustering  results  are  better  as  the  value  increases  then 
+select the maximum value, or keep increasing the value—provided that you have time 
+and resources—until you don’t get good results. 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

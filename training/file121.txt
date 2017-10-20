@@ -1,0 +1,80 @@
+References
+
+231
+
+ Gasevic, D., D. Djuric, V. Devedzic. Model Driven Architecture and Ontology Development. Springer, 
+
+2006.
+
+ Gómez-Pérez, A., M. Fernández-López, and O. Corcho. Ontological Engineering: with examples 
+from the areas of Knowledge Management, e-Commerce and the Semantic Web. Springer, 2004.
+
+ Hastie, T., R. Tibshirani, and J. Friedman. The Elements of Statistical Learning: Data Mining, Infer-
+
+ence, and Prediction. Springer, 2001.
+
+ Hill, T. (1996). “A note on distributions of true versus fabricated data.” Perceptual and Motor 
+
+Skills. Vol 83, pp.776-778. http://www.math.gatech.edu/~hill/publications/cv.dir/ 
+truvsfab.pdf.
+
+ Holmström, L., P. Koistinen, J. Laaksonen, and E. Oja. “Neural and statistical classifiers—taxon-
+omy and two case studies.” IEEE Transactions on Neural Networks, Vol 8 (1), pp. 5-17, 1997.
+ Maier, K.D., C. Beckstein, R. Blickhan, W. Erhard, and D. Fey. “A multi-layer-perceptron neural 
+network hardware based on 3D massively parallel optoelectronic circuits.” Proceedings of 
+the 6th International Conference on Parallel Interconnects, pp. 73-80, 1999. 
+
+ MacKay, D.J.C.. Information Theory, Inference, & Learning Algorithms. Cambridge University Press, 
+
+2003.
+
+ Neapolitan, R.E. Learning Bayesian Networks. Prentice Hall, 2003.
+ Papoulis, A., and S.U. Pillai. Probability, Random Variables, and Stochastic Processes, Fourth Edition. 
+
+McGraw-Hill, 2002.
+
+ Rish, I. “An empirical study of the naïve Bayes classifier.” IBM Research Report, RC22230 (W0111-
+
+014). http://www.cc.gatech.edu/~isbell/classes/reading/papers/Rish.pdf.
+
+ Russell, S., and P. Norvig. Artificial Intelligence: A Modern Approach (Second Edition). Prentice 
+
+Hall, 2002. 
+
+ Staab, S., and R. Studer. Handbook on Ontologies. Springer, 2004.
+ 
+ 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComCombining classifiers
+
+This chapter covers:
+■ Evaluating baselines for classifiers
+■ Comparing classifiers and understanding 
+
+complex datasets
+
+■ The nuts and bolts of bootstrap aggregating
+■ Basics of boosting
+
+Epictetus, an ancient Greek philosopher, proclaimed “One must neither tie a ship 
+to a single anchor, nor life to a single hope.” Similarly, we don’t have to rely on a 
+single classifier. No single classifier can provide infallible decision-making capabil-
+ity.  In  fact,  there  are  plenty  of  examples  that  demonstrate  the  great  potential  of 
+combining classifiers, and this chapter will provide an introduction to that fascinat-
+ing  subject.  In  the  context  of  recommendation  systems  (see  chapter  3),  Bell, 
+Koren, and Volinsky have recently employed similar ideas with great success.
+
+  The  main  idea  behind  combining  classifiers  is  achieving  better  classification 
+results at the expense of computational complexity and higher computational cost 
+(for example, longer computational times or additional computational resources). 
+The combination of classifiers is divided into two general categories—classifier fusion
+and classifier selection. In the category of classifier fusion, all classifiers contribute to 
+a given classification; so, every classifier must cover the entire domain of possible 
+
+232
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

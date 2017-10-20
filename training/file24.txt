@@ -1,0 +1,60 @@
+18
+
+1.6.2
+
+1.6.3
+
+1.6.4
+
+1.6.5
+
+CHAPTER 1  What is the intelligent web?
+
+Fallacy #2: Inference happens instantaneously
+Computing a solution takes time, and the responsiveness of your application may be 
+crucial  for  the  financial  success  of  your  business.  You  shouldn’t  assume  that  all 
+algorithms, on  all  datasets,  will  run  within  the  response  time  limits  of  your  applica-
+tion.  You  should  test  the  performance  of  your  algorithm  within  the  range  of  your 
+operating characteristics.
+
+Fallacy #3: The size of data doesn’t matter
+When we talk about intelligent applications, size does matter! The size of your data
+comes into the picture in two ways. The first is related to the responsiveness of the 
+application as mentioned in fallacy #2. The second is related to your ability to obtain 
+meaningful results on a large dataset. You may be able to provide excellent movie or 
+music recommendations for a set of users when the number of users is around 100, 
+but  the  same  algorithm  may  result  in  poor  recommendations  when  the  number  of 
+users involved is around 100,000. 
+
+ Conversely, in some cases, the more data you have, the more intelligent your appli-
+cation can be. Thus, the size of the data matters in more than one way and you should 
+always ask: Do I have enough data? What’s the impact to the quality of my intelligent 
+application if I must handle 10 times more data?
+
+Fallacy #4: Scalability of the solution isn’t an issue
+Another fallacy that’s related to, but distinct from, fallacies #2 and #3 is the assump-
+tion  that  an  intelligent  application  solution  can  scale  by  simply  adding  more 
+machines. Don’t assume that your solution is scalable. Some algorithms are scalable 
+and others aren’t. Let’s say that we’re trying to find groups of similar headline news 
+among billions of titles. Not all clustering algorithms (see chapter 4) can run in paral-
+lel.  You  should  consider  scalability  during  the  design  phase  of  your  application.  In 
+some cases, you may be able to split the data and apply your intelligent algorithm on 
+smaller datasets in parallel. The algorithms that you select in your design may have 
+parallel  (concurrent)  versions,  but  you  should  investigate  this  from  the  outset, 
+because typically, you’ll build a lot of infrastructure and business logic around your 
+algorithms.
+
+Fallacy #5: Apply the same good library everywhere
+It’s tempting to use the same successful technique many times over to solve diverse 
+problems related to the intelligent behavior of your application. Resist that tempta-
+tion  at  all  costs!  I’ve  encountered  people  who  were  trying  to  solve  every  problem 
+under the sun using the Lucene search engine. If you catch yourself doing something 
+like that, remember the expression: When you’re holding a hammer, everything looks 
+like a nail. 
+
+ Intelligent application software is like every other piece of software—it has a cer-
+tain area of applicability and certain limitations. Make sure that you test thoroughly 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

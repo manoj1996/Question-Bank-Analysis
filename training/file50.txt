@@ -1,0 +1,29 @@
+Creating suggestions 
+ and recommendations
+
+This chapter covers:
+■ Finding the distance and similarity between objects
+■ Understanding recommendation engines based on 
+
+users, items, and content
+
+■ Finding recommendations about friends, articles, and 
+
+news stories
+
+■ Creating recommendations for sites similar to Netflix
+
+In today’s world, we’re overwhelmed with choices; a plethora of options are avail-
+able for nearly every aspect of our lives. We need to make choices on a daily basis, 
+from  automobiles  to  home  theatre  systems,  from  finding  Mr.  or  Ms.  “Perfect”  to 
+selecting attorneys or accountants, from books and newspapers to wikis and blogs, 
+from movies to songs, and so on. In addition, we’re constantly being bombarded by 
+information—and occasionally misinformation! Under these conditions, the ability 
+to recommend a choice is valuable, even more so if that choice doesn’t deviate sig-
+nificantly from the preferences of the person who receives the recommendation.
+
+69
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

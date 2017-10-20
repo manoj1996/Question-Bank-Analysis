@@ -1,0 +1,147 @@
+114
+
+CHAPTER 3  Creating suggestions and recommendations
+
+Listing 3.21  Calculation of a rating involves data renormalization and rescaling
+
+private double estimateItemBasedRating(User user, Item item) {
+
+  double itemRating = item.getAverageRating();
+
+  int itemId = item.getId();
+  int userId = user.getId();
+
+  double itemAvgRating = item.getAverageRating();
+  double weightedDeltaSum = 0.0;
+
+  int sumN=0;
+
+  // check if the user has already rated the item
+  Rating existingRatingByUser = user.getItemRating(item.getId());
+
+  if (existingRatingByUser != null) {
+
+    itemRating = existingRatingByUser.getRating();
+
+  } else {
+
+           double similarityBetweenItems = 0;
+
+           double weightedDelta = 0;
+           double delta = 0;
+
+           for (Item anotherItem : dataSet.getItems()) {   
+
+       // only consider items that were rated by the user
+         Rating anotherItemRating = 
+➥    anotherItem.getUserRating(userId);
+
+         if (anotherItemRating != null) {
+
+Iterate through 
+all items
+
+Perform data 
+renormalization
+
+             delta = itemAvgRating - anotherItemRating.getRating();   
+
+           similarityBetweenItems = 
+➥    itemSimilarityMatrix.getValue(itemId, anotherItem.getId());   
+
+              if (Math.abs(similarityBetweenItems) > 
+➥    similarityThreshold) {                             
+
+B
+
+              weightedDelta = similarityBetweenItems * delta;
+
+Get similarity 
+between two 
+items
+
+              weightedDeltaSum += weightedDelta;
+
+              sumN++;
+              }
+         }
+       }
+
+       if (sumN > 0) {
+         itemRating = itemAvgRating – 
+➥    (weightedDeltaSum/(double) sumN)   
+       }
+   }
+
+C
+
+   return itemRating;
+}
+
+public List<PredictedItemRating> getTopNRecommendations(
+➥  List<PredictedItemRating> recommendations, int topN) {
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComLarge-scale implementation and evaluation issues
+
+115
+
+  PredictedItemRating.sort(recommendations);
+
+  double maxR = recommendations.get(0).getRating();
+  double scaledR;
+
+  List<PredictedItemRating> topRecommendations = 
+➥  new ArrayList<PredictedItemRating>();
+
+    for(PredictedItemRating r : recommendations) {
+
+     if( topRecommendations.size() >= topN ) { 
+       // have enough recommendations.
+       break;
+     }
+
+     scaledR = r.getRating() * (5/maxR);            
+     r.setRating(scaledR);
+
+     topRecommendations.add(r);
+  }
+
+  return topRecommendations;
+}
+
+3.5
+
+We  weigh  the  deviation  B  from  the  mean  value  based  on  the  similarity  of  the  two 
+items and assign C a rating based on the item’s mean value and the sum of weighted 
+deviations.
+
+  Data  renormalization  refers  to  the  fact  that  our  similarities  were  built  around  the 
+item’s average rating, so in order to calculate the predicted item rating, we need to 
+renormalize from differences (delta) to actual ratings. One drawback of this kind of 
+data normalization is that the maximum value of the predicted rating can fall outside 
+the  range  of  the  acceptable  values.  Thus,  a  rescaling  of  the  predicted  ratings  is 
+required, as shown inside the method getTopNRecommendations.
+
+Large-scale implementation and evaluation issues
+Commercial  recommendation  systems  operate  under  demanding  conditions.  The 
+number of users is typically on the order of millions, and the number of items on the 
+order of hundreds of thousands. An additional requirement is the capability to pro-
+vide recommendations in real-time (typically, subsecond response times) without sac-
+rificing the quality of the recommendations. As we’ve seen, by accumulating ratings 
+from each user, it’s possible to enhance the accuracy of our predictions over time. But 
+in real life, it’s imperative that we give excellent recommendations to new users for 
+which, by definition, we don’t have a lot of ratings. Another stringent requirement for 
+state-of-the-art  recommendation  systems  is  the  ability  to  update  their  predictions 
+based on incoming ratings. In large commercial sites, there may be thousands of rat-
+ings and purchases that take place in a few hours, and perhaps tens of thousands in 
+the course of a single day. The ability to update the recommendation system with that 
+additional information is important and must happen online—without downtime. 
+
+ Let’s say that you wrote a recommender and you’re satisfied with its speed and the 
+amount  of  data  that  it  can  handle.  Is  this  a  good  recommender?  It’s  not  useful  to 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

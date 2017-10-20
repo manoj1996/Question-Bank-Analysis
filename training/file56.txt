@@ -1,0 +1,223 @@
+88
+
+CHAPTER 3  Creating suggestions and recommendations
+
+        }
+
+        throw new RuntimeException("Unknown type:" + type);
+    }
+
+The method estimateUserBasedRating is the user-based implementation for predict-
+ing the rating of a user. If we know the rating of a user there’s no reason for any calcu-
+lation. This isn’t possible in the execution flow that we described in listing 3.6 because 
+we invoke the method call only for those items that the user hasn’t yet rated. But the 
+code was written in a way that handles independent calls to this method as well.  
+
+Listing 3.8  Evaluating user-based similarities
+
+private double estimateUserBasedRating(User user, Item item) {   
+
+   double estimatedRating = Double.NaN;
+
+   int itemId = item.getId();
+   int userId = user.getId();
+
+   double similaritySum = 0.0;
+
+   double weightedRatingSum = 0.0;
+
+   // check if user has already rated this item
+   Rating existingRatingByUser = user.getItemRating(item.getId());
+
+   if (existingRatingByUser != null) {
+
+     estimatedRating = existingRatingByUser.getRating();
+
+   } else {
+
+        for (User anotherUser : dataSet.getUsers()) {   
+
+Get rating for 
+same item
+
+Loop over all 
+other users
+
+            Rating itemRating = anotherUser.getItemRating(itemId);   
+
+            // only consider users that rated this book
+            if (itemRating != null) {
+
+Get similarity 
+between two users
+
+               double similarityBetweenUsers =                                          
+
+                  similarityMatrix.getValue(userId, anotherUser.getId());   
+
+               double ratingByNeighbor = itemRating.getRating(); 
+
+               double weightedRating =                
+➥ similarityBetweenUsers * ratingByNeighbor;   
+
+Scale rating according 
+to similarity
+
+               weightedRatingSum += weightedRating;
+
+               similaritySum += similarityBetweenUsers;
+            }
+         }
+
+Estimate rating as ratio of 
+direct and scaled sum
+
+         if (similaritySum > 0.0) {
+             estimatedRating = weightedRatingSum / similaritySum;      
+         }
+    }
+
+    return estimatedRating;
+}
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComHow do recommendation engines work?
+
+89
+
+In the more interesting case where the user hasn’t yet rated a specific item, we loop 
+over  all  users  and  identify  those  who’ve  rated  the  specific  item.  Each  one  of  these 
+users contributes to the weighted average rating in direct proportion to his similarity 
+with our reference user. The similaritySum variable is introduced for normalization
+purposes—the weights must add up to 1.  
+
+ As you can see in listings 3.4 through 3.6, this way of creating recommendations 
+can become extremely difficult if the number of users in your system becomes large, 
+which is often the case in large online stores. Opportunities for optimizing this code 
+abound.  We  already  mentioned  storage  optimization,  but  we  can  also  implement 
+another  structural  change  that  will  result  in  both  space  and  time  efficiency  during 
+runtime. While calculating the similarity between users, we can store the top N similar 
+users and create our weighted rating (prediction) based on the ratings of these users 
+alone rather than taking into account the ratings of all users that have rated a given 
+item; that’s the version known as kNN, where NN stands for nearest neighbors and k
+denotes how many of them we should consider. Creating recommendations based on 
+user similarity is a reliable technique, but it may not be efficient for large number of 
+users; in this case, the use of item-based similarity is preferred.
+
+3.2.2 Recommendations based on similar items
+
+Collaborative filtering based on similar items works in much the same way as CF based 
+on similar users, except that the similarity between users is replaced by the similarity 
+between  items.  Let’s  configure  Delphi  to  work  based  on  the  similarity  between  the 
+items (music songs) and see what we get. Listing 3.9 shows the script that we use for 
+that purpose. We load the data that we saved in listing 3.3 and request recommenda-
+tions for the same user in order to compare the results. We also request the list of sim-
+ilar items for the song “La Bamba,” which appears on both lists.
+
+Listing 3.9  Creating recommendations based on similar items
+
+BaseDataset ds = BaseDataset
+➥  .load("C:/iWeb2/deploy/data/ch3_2_dataset.ser");   
+
+Load same data 
+as in listing 3.3
+
+Delphi delphi = new Delphi(ds,RecommendationType.ITEM_BASED);     
+delphi.setVerbose(true);
+
+MusicUser mu1 = ds.pickUser("Bob");
+delphi.recommend(mu1);                    
+
+Recommend a 
+few items to Bob
+
+MusicItem mi = ds.pickItem("La Bamba");
+delphi.findSimilarItems(mi);                 
+
+Find items similar 
+to La Bamba
+
+Create item-based 
+recommendation 
+engine
+
+Figure 3.5 shows the results of execution for listing 3.9. If you compare these results 
+with the results shown in figure 3.4, you’ll see that the recommendations are the same 
+but the order has changed. There’s no guarantee that the recommendations based on 
+user similarity will be identical to those based on item similarity. In addition, the scores 
+will almost certainly be different. The interesting part in the specific example of our 
+artificially  generated  data  is  that  the  ordering  of  the  recommendations  has  been 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com90
+
+CHAPTER 3  Creating suggestions and recommendations
+
+bsh % MusicUser mu1 = ds.pickUser("Bob");
+bsh % delphi.recommend(mu1);
+
+Recommendations for user Bob:
+
+    Item: Sunday, Bloody Sunday  , predicted rating: 4.483900
+    Item: La Bamba               , predicted rating: 4.396600
+    Item: I Love Rock And Roll   , predicted rating: 4.000000
+    Item: Wind Beneath My Wings  , predicted rating: 4.000000
+
+bsh % MusicItem mi = ds.pickItem("La Bamba");
+bsh % delphi.findSimilarItems(mi);
+
+Items like item La Bamba:
+
+    name: Yesterday                    , similarity: 0.615385
+name: Fiddler On The Roof              , similarity: 0.588235
+name: Vivaldi: Four Seasons            , similarity: 0.555556
+name: Singing In The Rain              , similarity: 0.529412
+name: You've Lost That Lovin' Feelin'  , similarity: 0.529412
+
+Figure 3.5  Discovering similar items and providing recommendations with Delphi based on item 
+similarity
+
+inverted. That’s not a general result; it just happened in this case. In other cases, and 
+particularly in real datasets, the results can have any other ordering; run the scripts a 
+few times to see how the results vary each time you generate a different dataset.
+
+  The  code  for  creating  recommendations  based  on  item  similarity  is  much  the 
+same, with the exception that we use items instead of users, of course. The calculation 
+takes place in the method calculate of the class ItemBasedSimilarity.  
+
+Listing 3.10  Calculating the item-based similarity
+
+protected void calculate(Dataset dataSet) {
+
+  int nItems = dataSet.getItemCount();       
+
+Defines size of 
+similarity matrix
+
+  int nRatingValues = 5;                                  
+
+  similarityValues = new double[nItems][nItems];
+
+Defines size of rating 
+count matrix
+
+  if( keepRatingCountMatrix ) {
+      ratingCountMatrix = new RatingCountMatrix[nItems][nItems];
+  }
+
+  // if mapping from itemId to index then generate index for every itemId
+  if( useObjIdToIndexMapping ) {
+     for(Item item : dataSet.getItems() ) {
+         idMapping.getIndex(String.valueOf(item.getId()));
+     }
+  }
+
+  for (int u = 0; u < nItems; u++) {
+
+    int itemAId = getObjIdFromIndex(u);
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

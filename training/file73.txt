@@ -1,0 +1,354 @@
+124
+
+CHAPTER 4  Clustering: grouping things together
+
+Table 4.1  Artificial data for cluster analysis of users that participate in an online community (continued)
+
+Username
+
+Age
+
+Income range
+
+Education
+
+Skills
+
+Social
+
+Paid work
+
+Carl
+
+Catherine
+
+Charlie
+
+Constantine
+
+Dmitry
+
+Elena
+
+Eric
+
+Frank
+
+George
+
+Jack
+
+John
+
+Maria
+
+Lukas
+
+30
+
+31
+
+30
+
+37
+
+35
+
+38
+
+37
+
+39
+
+42
+
+43
+
+45
+
+43
+
+45
+
+0
+
+1
+
+1
+
+1
+
+2
+
+1
+
+2
+
+3
+
+2
+
+3
+
+4
+
+2
+
+3
+
+2
+
+1
+
+2
+
+1
+
+2
+
+1
+
+2
+
+1
+
+2
+
+1
+
+2
+
+1
+
+2
+
+4
+
+3
+
+3
+
+3
+
+1
+
+3
+
+2
+
+3
+
+2
+
+1
+
+1
+
+3
+
+1
+
+2
+
+3
+
+2
+
+2
+
+1
+
+2
+
+2
+
+1
+
+1
+
+1
+
+1
+
+1
+
+1
+
+0
+
+0
+
+0
+
+0
+
+1
+
+0
+
+0
+
+1
+
+1
+
+1
+
+1
+
+0
+
+1
+
+4.1.2
+
+Our objective is straightforward: identify, if possible, groups of individuals that partici-
+pate in open source projects based on the values of these attributes. In the next two 
+sections, we’ll present two naïve approaches that can help us achieve our objective in 
+order of increasing complexity and effectiveness. 
+
+Finding groups with a SQL order by clause
+The  simplest  approach  to  achieving  our  objective  would  be  to  load  our  data  in  a 
+table—if it isn’t already in a database table—and write a SQL query to find possible 
+user groups (clusters) of interest. We loaded the data in MySQL, but you can use the 
+database of your choice to reproduce our results; the  README.txt file in the folder 
+data/ch04 contains the SQL statements for loading the data in MySQL.
+
+  Figure  4.1  shows  the  results  of  executing  the  following  query:  select  *  from 
+sf_users order by IncomeRange, Education;. As you can see, the plain SQL works great 
+for a single attribute. We can easily identify five groups based on the attribute Income-
+Range; the clusters are (Albert, Babis, Athena, Bill, Carl), (Elena, Constantine, Cathe-
+rine, Bob, Charlie, Aurora, Alexandra), (Maria, Dmitry, Eric, George), and so on. We 
+can obtain similar results for any other attribute. But note that as we add more attributes 
+to the order by clause, we can’t easily identify other groups. The first attribute domi-
+nates the results of the query, and additional attributes result in further segmentation 
+of the clusters that were discovered based on previous attributes in the SQL clause. 
+
+ If we assume that we can identify useful clusters merely by visual examination we 
+need to answer the following question: what’s the most appropriate attribute ordering
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComThe need for clustering
+
+125
+
+mysql> select * from sf_users order by IncomeRange, Education;
++-------------+-----+--------+-----+--------+--------+--------+
+| Name        | Age | Income | Edu | Skills | Social | isPaid |
+|             |     | Range  |     |        |        |        |
++-------------+-----+--------+-----+--------+--------+--------+
+| Albert      |  23 |    0   |  0  |    3   |   3    |   0    |
+| Babis       |  21 |    0   |  0  |    3   |   4    |   0    |
+| Athena      |  24 |    0   |  1  |    3   |   4    |   0    |
+| Carl        |  30 |    0   |  2  |    4   |   2    |   0    |
+| Elena       |  38 |    1   |  1  |    3   |   2    |   0    |
+| Constantine |  37 |    1   |  1  |    3   |   2    |   0    |
+| Catherine   |  31 |    1   |  1  |    3   |   3    |   0    |
+| Bob         |  32 |    1   |  1  |    3   |   1    |   1    |
+| Bill        |  31 |    1   |  2  |    4   |   2    |   0    |
+| Charlie     |  30 |    1   |  2  |    3   |   2    |   0    |
+| Aurora      |  23 |    1   |  2  |    5   |   2    |   0    |
+| Alexandra   |  25 |    1   |  2  |    4   |   2    |   0    |
+| Maria       |  43 |    2   |  1  |    3   |   1    |   0    |
+| Dmitry      |  35 |    2   |  2  |    1   |   1    |   1    |
+| George      |  42 |    2   |  2  |    2   |   1    |   1    |
+| Eric        |  37 |    2   |  2  |    2   |   2    |   0    |
+| Frank       |  39 |    3   |  1  |    3   |   1    |   1    |
+| Jack        |  43 |    3   |  1  |    1   |   1    |   1    |
+| Lukas       |  45 |    3   |  2  |    1   |   1    |   1    |
+| John        |  45 |    4   |  2  |    1   |   1    |   1    |
++-------------+-----+--------+-----+--------+--------+--------+
+20 rows in set (0.03 sec)
+
+Figure 4.1  Using SQL queries to identify clusters
+
+that’ll allow us to identify useful clusters? There’s no simple answer. What if the data 
+contains thousands of records? And what happens if we need to consider a dozen or 
+more attributes, not just two or three? In these cases, unless we have a priori knowl-
+edge  about  the  data,  our  task  will  become  arduous,  if  not  impossible.  If  you  think 
+about it, it should become clear that using SQL queries can’t take us very far.
+
+ The fundamental problem with the SQL approach is that discovering the clusters is 
+difficult to automate and impractical to implement for more than a couple of attri-
+butes. Identifying clusters is easier with enumerated data, but it becomes more com-
+plicated  with  continuous  variables  and  almost  impossible  for  text  data  that  hasn’t 
+been cleansed. More importantly, it’s not easy to identify groups using more than one 
+attribute, because the results will vary greatly depending on the ordering of the attri-
+butes in the query. The plain SQL approach is quite limited for clustering.
+
+ Nonetheless, the combination of SQL with more advanced algorithms can lead to 
+viable implementations of clustering, because a number of operations can be done 
+efficiently in SQL for large datasets. See the description and the references about the 
+SQLEM algorithm in our “To do” section. 
+
+4.1.3
+
+Finding groups with array sorting
+You might be thinking that the problems of the SQL approach may go away if we load 
+the data in our Java code and use a custom comparator to create a meaningful ordering 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com126
+
+CHAPTER 4  Clustering: grouping things together
+
+of the raw multidimensional data. If our data is in some kind of an array equipped with 
+our custom comparator, then we should be able to sort it and reveal any clusters that may 
+be present, right? Let’s do that and see what happens. Figure 4.2 shows the results that 
+we get from an array with custom sorting. 
+
+ These results look great, but defining the boundaries between the clusters remains 
+an exercise for the user of the algorithm. We could have added a few lines of code that 
+create  one  cluster  for  every  four  names,  but  that  could  be  deceiving.  People  who 
+belong to the same age group tend to be similar to each other, but it would be pre-
+sumptuous to think that these results are reflective of what will happen in the general 
+case. Listing 4.1 shows the two lines of code that create the output shown in figure 4.2. 
+The first command loads the data from table 4.1. The second command uses the class 
+SortedArrayClustering for identifying clusters in our data.
+
+Listing 4.1 
+
+Identifying clusters by sorting an array of DataPoints 
+
+SFDataset ds = SFData.createDataset();
+
+SortedArrayClustering.cluster(ds.getData());
+
+Listing 4.2 shows the content of the class SortedArrayClustering. In principle, this is 
+similar to the SQL statement approach, because all we do is sort the data and print it 
+on the screen. But we’ve transferred the responsibility of ordering the set of points 
+from  the  SQL  order  by statement to our custom  Comparator  definition.  So,  there’s 
+something fundamental that these two approaches don’t capture. 
+
+ Sorting is an efficient and appropriate technique for clustering when we deal with 
+a single dimension. The multidimensional nature of our data was suppressed in the 
+
+bsh % SortedArrayClustering.cluster(ds.getData());
+John       ([45.0, 4.0, 2.0, 1.0, 1.0, 1.0])
+Lukas      ([45.0, 3.0, 2.0, 1.0, 1.0, 1.0])
+Maria      ([43.0, 2.0, 1.0, 3.0, 1.0, 0.0])
+Jack       ([43.0, 3.0, 1.0, 1.0, 1.0, 1.0])
+George     ([42.0, 2.0, 2.0, 2.0, 1.0, 1.0])
+Frank      ([39.0, 3.0, 1.0, 3.0, 1.0, 1.0])
+Elena      ([38.0, 1.0, 1.0, 3.0, 2.0, 0.0])
+Eric       ([37.0, 2.0, 2.0, 2.0, 2.0, 0.0])
+Constantine([37.0, 1.0, 1.0, 3.0, 2.0, 0.0])
+Dmitry     ([35.0, 2.0, 2.0, 1.0, 1.0, 1.0])
+Bob        ([32.0, 1.0, 1.0, 3.0, 1.0, 1.0])
+Bill       ([31.0, 1.0, 2.0, 4.0, 2.0, 0.0])
+Catherine  ([31.0, 1.0, 1.0, 3.0, 3.0, 0.0])
+Carl       ([30.0, 0.0, 2.0, 4.0, 2.0, 0.0])
+Charlie    ([30.0, 1.0, 2.0, 3.0, 2.0, 0.0])
+Alexandra  ([25.0, 1.0, 2.0, 4.0, 2.0, 0.0])
+Athena     ([24.0, 0.0, 1.0, 3.0, 4.0, 0.0])
+Aurora     ([23.0, 1.0, 2.0, 5.0, 2.0, 0.0])
+Albert     ([23.0, 0.0, 0.0, 3.0, 3.0, 0.0])
+Babis      ([21.0, 0.0, 0.0, 3.0, 4.0, 0.0])
+
+Figure 4.2  Clustering data by sorting the elements of an array with a custom Comparator class
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

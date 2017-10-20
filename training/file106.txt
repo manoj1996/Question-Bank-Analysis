@@ -1,0 +1,879 @@
+174
+
+CHAPTER 5  Classification: placing things where they belong
+
+5.3
+
+be called a metaclassifier scheme. This approach is gaining ground in the industry and 
+has provided consistently better results in a wide range of applications. We’ll discuss 
+combining classifiers in chapter 6.
+
+ In the production stage we’re using our classifier in a live system to produce classi-
+fications on-the-fly. Typically, the parameters of the classifier don’t change during the 
+production stage. But it’s possible to enhance the results of the classifier by embed-
+ding (into the production stage) a short-lived training stage that’s based on human-in-
+the-loop feedback. These three steps are repeated as we get more data from our pro-
+duction system and as we come up with better ideas for our classifier.
+
+ We’ve now seen the big picture about classification algorithms. In the literature, 
+you can find many different overviews of classification algorithms (such as Holmström 
+et al.). In the following section, we’ll introduce one of the most celebrated statistical 
+classification algorithms: the naïve Bayes classifier. In particular, we’ll demonstrate the 
+use of classification for categorizing legitimate email messages and filtering out spam.
+
+Automatic categorization of emails and spam filtering
+In this section, we want to achieve two objectives. Our first objective is coarse in its 
+scope—we  want  to  be  able  to  distinguish  between  legitimate  email  messages  and 
+spam, which is an example of binary classification. Our second objective is to achieve a 
+finer granularity of sorting email messages. we want to refine our classification results 
+and be able to categorize nonspam email messages into one of the following catego-
+ries: business, world, usa, and sports. This is an example of a multiclass classification. 
+
+ Email doesn’t require special introduction. It was one of the first applications that 
+became available with the advent of the internet, and it’s perhaps the most common 
+application  in  use  today.  For  most  users,  all  messages  go  straight  to  the  inbox. 
+Wouldn’t it be nice if you could define your own folders and have your emails (auto-
+matically) distributed in the appropriate folders? You could have a folder with an icon 
+that depicts hell and send all your spam email (also known as unsolicited bulk email) 
+straight to that folder! 
+
+ Your email client probably already does that. Most email clients today implement at 
+least some form of a rule-based classification. Due to this, most of these clients aren’t 
+very good at learning, in the sense that they don’t generalize from previously “seen” 
+and  manually  categorized  email  messages.  Web  email  clients  offer  unprecedented 
+opportunities in that respect, because algorithms that can generalize can quickly cover 
+a much broader range of emails messages such as brand new spam messages. 
+
+ The algorithms that we’ll discuss here are applicable for an arbitrary collection of 
+documents.  You  could  use  them  in  an  application  that  allows  users  to  upload  their 
+Word or  PDF files and offers automatic categorization (another marketing term for 
+classification) of the documents into a list of user-provided categories. 
+
+ In our example for this section, the email collection is generated from the same 
+files that we used in chapter 2 for searching through web pages. For each web page 
+from chapter 2, we’ve created an email that corresponds to it. If you read that chapter 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComAutomatic categorization of emails and spam filtering
+
+175
+
+then you’re already familiar with the content. If you didn’t read it yet, we should tell 
+you that our emails include the following (the choice of content was random and the 
+temporal context was November 2006):
+
+■ Seven emails that are related to business news. Three are related to Google’s 
+expansion into newspaper advertisement, another three primarily discuss NVidia 
+stock, and one talks more generally about stock price and index movements.
+
+■ Three emails that are related to Lance Armstrong’s attempt to run the mara-
+
+thon in New York. 
+
+■ Four emails that are related to U.S. politics and, in particular, the congressional 
+
+elections.
+
+■ Five emails that are related to world news; four of them are about Ortega win-
+
+ning the elections in Nicaragua and one about global warming. 
+
+■ Four emails that are spam.
+
+Email classification is interesting in many respects. One peculiarity is there’s “some-
+one out there” trying to beat your classifier. In fact, the spammers may use the same 
+techniques that we describe here to beat your email classification scheme, so keep an 
+eye on the competition! We use the term scheme intentionally. You’d hardly ever use 
+only a classifier to write an email-filtering application or an email organizer. Here’s a 
+list of things that complement the classifiers:
+
+■ Header tests
+■ Automatic email address white- and blacklists
+■ Manual email address white- and blacklists
+■ Collaborative spam identification databases
+■ Real-time blackhole lists (RBLs) 
+■ Character set and locale identification
+
+Our  focus  is  on  the  intelligent  aspects  of  email  classification  systems,  so  we  won’t 
+cover the other techniques that we mentioned. For an example of a useful module, 
+look at the Apache project Spam Assassin (http://spamassassin.apache.org/). We’ll 
+present  two  classification  methods  that  you’d  use  to  create  such  systems.  The  first 
+classification method will be based on the naïve Bayes classifier that we introduced in 
+chapter 2. The second classification method will be based on rules and we’ll use the 
+Drools rules engine.
+
+5.3.1 NaïveBayes classification
+
+In this section, we’ll use a statistical classifier that’s encapsulated in the EmailClassi-
+fier class. As we mentioned earlier, it employs what’s known as the naïve Bayes algo-
+rithm by extending the NaiveBayes class, which is a general-purpose implementation 
+of the naïve Bayes algorithm. In general, classifiers are agnostic with respect to the 
+objects of classification; they’re only concerned with Concepts, Instances, and Attri-
+butes. A classifier’s job is to assign a Concept to an Instance; that’s all it does. In order 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com176
+
+CHAPTER 5  Classification: placing things where they belong
+
+to know what Concept should be assigned to a particular Instance, a classifier reads a 
+TrainingSet—a set of Instances that already have Concepts assigned to them. Upon 
+loading  those  Instances,  the  classifier  trains  itself;  put  another  way  it  learns  how  to 
+map a Concept to an Instance based on the assignments in the TrainingSet. The way 
+that each classifier trains depends on the classifier. In this chapter, we’ll use the terms 
+concept, class, and category interchangeably. 
+SAMPLING EMAIL MESSAGES AND TRAINING THE CLASSIFIER
+Let’s start by demonstrating how to load the emails and train our email classifier. List-
+ing 5.1 shows the BeanShell script that you can run to accomplish the loading of the 
+emails and the training of the classifier.
+
+Listing 5.1  Loading the email training set and training the NaiveBayes classifier
+
+EmailDataset trainEmailDS = EmailData.createTrainingDataset();   
+
+B
+
+trainEmailDS.printEmail("biz-04.html");
+trainEmailDS.printEmail("spam-biz-03.html");   
+
+C
+
+EmailClassifier emailFilter = new EmailClassifier(trainEmailDS, 10);   
+
+D
+
+emailFilter.train();   
+
+E
+
+B
+
+C
+
+D
+
+e
+
+The class EmailData is responsible for loading the HTML files that we used in chap- 
+ter 2 and translating them into instances of the Email class, which is a simple class that 
+encapsulates an email message based on the attributes from, to, subject, and text-
+Body.  The  method  createTrainingDataset()  loads  the  list  of  documents  that  we 
+want to use for training our classifier. That list is given by the two-dimensional String
+array TRAINING_DATA; the testing dataset is determined by the two-dimensional String
+array TEST_DATA. You can change the content of these lists and observe the effect on 
+the results of classification. An honest evaluation should use different sets of files for 
+training and testing.
+This  step  prints  the  content  of  two  emails—one  legitimate  and  one  spam—just  to 
+make sure that our data loaded properly before we proceed, and gauge the kind of 
+content that we’re working with.
+We instantiate EmailClassifier by passing the EmailDataset reference and the num-
+ber of terms that should be taken into consideration in the analysis of the emails. For 
+each email, we analyze the content and retain the top 10 (in this example) most fre-
+quent terms. 
+We train the classifier. This is a sanity check to ensure that we have instances to train 
+on;  it  sets  the  attributes  on  which  we  want  to  train  the  classifier,  calls  the  train()
+method  of  the  NaiveBayes  parent  class,  and  sets  an  ad  hoc  level  of  probability  for 
+attribute values that we haven’t seen before.  
+THE EMAIL CLASSIFIER IN ACTION
+Once we have our classifier trained we’re ready to test it. Listing 5.2 is the continua-
+tion of listing 5.1; so, you need to execute it within the same shell. Note how easy it is 
+to use the classifier at this level. It’s literally two lines of code!
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComAutomatic categorization of emails and spam filtering
+
+177
+
+Listing 5.2  Using the naïve Bayes classifier for detecting spam emails 
+
+EmailDataset testEmailDS = EmailData.createTestDataset();                 
+
+email = testEmailDS.findEmailById("biz-01.html");                  
+emailFilter.classify(email);                             
+Classify 
+legitimate 
+email
+
+email = testEmailDS.findEmailById("sport-01.html"); 
+emailFilter.classify(email); 
+
+Load 
+emails 
+from 
+testing 
+dataset
+
+email = testEmailDS.findEmailById("usa-01.html");
+emailFilter.classify(email); 
+
+email = testEmailDS.findEmailById("world-01.html");
+emailFilter.classify(email); 
+
+email = testEmailDS.findEmailById("spam-biz-01.html");
+emailFilter.classify(email);
+
+Retrieve 
+email by 
+filename
+
+The results are shown in figure 5.4. Note that all emails are classified properly. This 
+provides a baseline for experimenting with the settings. It also allows you to compare 
+the change in the accuracy of the classifier as you augment or reduce the training set.
+ Note that it’s not hard to be successful in classifying our emails if all the unseen emails 
+are similar to the ones that we have in our training set. In general, if our training set is 
+
+*** Classifying instance: biz-01.html
+P(NOT SPAM|biz-01.html) = 0.944444444444445
+P(SPAM|biz-01.html) = 0.055555555555556
+
+Classified biz-01.html as NOT SPAM
+
+*** Classifying instance: sport-01.html
+P(NOT SPAM|sport-01.html) = 0.894736842105263
+P(SPAM|sport-01.html) = 0.105263157894737
+
+Classified sport-01.html as NOT SPAM
+
+*** Classifying instance: usa-01.html
+P(NOT SPAM|usa-01.html) = 0.882352941176471
+P(SPAM|usa-01.html) = 0.117647058823529
+
+Classified usa-01.html as NOT SPAM
+
+*** Classifying instance: world-01.html
+P(NOT SPAM|world-01.html) = 0.962264150943396
+P(SPAM|world-01.html) = 0.037735849056604
+
+Classified world-01.html as NOT SPAM
+
+*** Classifying instance: spam-biz-01.html
+P(NOT SPAM|spam-biz-01.html) = 0.468750000000000
+P(SPAM|spam-biz-01.html) = 0.531250000000000
+
+Classified spam-biz-01.html as SPAM 
+
+Figure 5.4  Email spam filtering results (binary classification) for the classifier that’s based on the 
+naïve Bayes algorithm
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com178
+
+CHAPTER 5  Classification: placing things where they belong
+
+very similar to our testing set, it’s not difficult to achieve high levels of accuracy. That’s 
+typically due to overfitting; see to-do item 3 for more details on the tradeoff between spe-
+cialization and generalization. 
+
+ At this point, it may be helpful to repeat these steps by changing the number of 
+frequent terms (listing 5.1, step 3), retrain the classifier, and observe the impact that 
+this change has on the results of the classification. You could execute the classification 
+steps of listing 5.2 at once, by calling the method sample() of the EmailClassifier. 
+
+ As we mentioned, a classifier’s job is to assign a Concept to an Instance; for the 
+EmailClassifier, the concepts are SPAM and NOT SPAM in the case of email filtering 
+(binary classification), and the names of the email categories in the case of email cate-
+gorization  (multiclass  classification).  The  email  instances  are  encapsulated  by  the 
+class  EmailInstance,  which  extends  the  BaseInstance  class.  This  example  demon-
+strates the specialization of the general base classes that we provide in order to meet 
+specific needs (emails).
+
+ The EmailClassifier obtains its TrainingSet through the method getTraining-
+Set of the EmailDataset instance. Upon loading those Instances, the classifier trains
+itself (learns how) to map a Concept to an Instance based on the assignments in the 
+TrainingSet. The EmailClassifier doesn’t use all the email information for its train-
+ing. It uses a single attribute whose value is evaluated during the construction of an 
+EmailInstance as shown in listing 5.3.
+
+Listing 5.3  Creating an EmailInstance
+
+public EmailInstance(String emailCategory, Email email, int topNTerms) {
+  super();
+  this.id = email.getId();
+  this.setConcept(new BaseConcept(emailCategory));
+
+  String text = email.getSubject()+" "+email.getTextBody();
+  Content content = new Content(email.getId(), text, topNTerms);
+
+  Map<String, Integer> tfMap = content.getTFMap();
+
+  attributes = new StringAttribute[1];
+  String attrName = "Email_Text_Attribute";
+  String attrValue = "";
+
+  for(Map.Entry<String, Integer> tfEntry : tfMap.entrySet()) {
+      attrValue = attrValue + " " + tfEntry.getKey();
+  }
+
+  attributes[0] = new StringAttribute(attrName, attrValue);
+}
+
+First, we concatenate the text of the subject line and the email’s body. Then we use the 
+Content class (which we encountered in chapter 3) to analyze the result of the text 
+concatenation and create the list of the top N frequent terms. The textual analysis is 
+based on a custom analyzer that extends Lucene’s StandardAnalyzer class and uses 
+the PorterStemFilter class for tokenizing strings. Both Lucene classes can be found 
+in the package org.apache.lucene.analysis. 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComAutomatic categorization of emails and spam filtering
+
+179
+
+ As you can see, the only attribute of our instance (Email_Text_Attribute) takes as 
+a value the concatenation of the top N frequent terms. This is a simplifying modeling 
+assumption, of course. Despite its simplicity, this approach can provide good results in 
+many cases. Remember that when you design (or select) an intelligent algorithm for a 
+real  application,  you  should  always  start  with  the  simplest  possible  design  that  can 
+work. This is equivalent to the maxim of avoiding premature code optimization, if you 
+like to think in those terms. 
+
+ Even though the simple solution may not be the one that you’ll end up using, it’ll 
+allow you to understand the nature of your data and the difficulties related to your 
+problem, without complicating matters from the outset. Other choices abound. You 
+could select two attributes, one attribute value for the subject and one attribute value 
+for body of the email. You could also include the from attribute. If your email had a 
+timestamp, you could include whether the email was sent during normal business hours 
+or late at night. In the “To do” section, we invite you to explore these and other alter-
+natives (feel free to be creative) and compare the results, and the complexity involved, 
+as you consider more information from your emails for the training of the classifier.
+A CLOSER LOOK AT THE NAÏVE BAYES CLASSIFIER
+Now,  it’s  time  to  have  a  closer  look  at  the  implementation  of  the  naïve  Bayes  algo-
+rithm. Listing 5.4 shows the NaiveBayes class deprived of its straightforward construc-
+tor, its Javadoc comments, some logging output, and a couple of trivial getters. Other 
+than that, it’s all here, in just two pages of code: one of the most robust, successful, 
+and widely used classification algorithms of all time! 
+
+ Recall that a classifier learns the association between instances and classes from the 
+training  instances,  and  it  provides  the  class  that  a  given  instance  is  associated  with. 
+Naturally, the interface of a Classifier demands that every classifier implement the 
+method boolean train() and the method Concept classify(Instance instance). 
+Of course, every classifier implements these methods in their own way, so let’s see how 
+it works for NaiveBayes.
+
+Listing 5.4  NaiveBayes: a general Bayesian classifier
+
+public class NaiveBayes implements Classifier {
+
+  private String name; 
+
+  protected TrainingSet tSet; 
+
+  protected Map<Concept,Double> conceptPriors;   
+
+B
+
+  protected Map<Concept, Map<Attribute, AttributeValue>> p;   
+
+C
+
+  protected ArrayList<String> attributeList;   
+
+D
+
+  public boolean train() {     
+    boolean hasTrained = false;
+
+E
+
+    if ( attributeList == null || attributeList.size() == 0) {
+       System.out.print("Can't train the classifier 
+➥       without attributes for training!");
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com180
+
+CHAPTER 5  Classification: placing things where they belong
+
+       System.out.print("Use the method --> 
+➥       trainOnAttribute(Attribute a)");
+    } else {
+      calculateConceptPriors(); 
+
+      calculateConditionalProbabilities(); 
+
+      hasTrained = true;
+    }
+    return hasTrained;
+  }
+
+  public void trainOnAttribute(String aName) { 
+
+    if (attributeList ==null) {
+      attributeList = new ArrayList<String>();
+    }
+    attributeList.add(aName);
+  }
+
+  private void calculateConceptPriors() {   
+
+F
+
+    for (Concept c : tSet.getConceptSet()) {
+
+      int totalConceptCount=0;
+
+      for (Instance i : tSet.getInstances().values()) {
+
+        if (i.getConcept().equals(c)) {
+          totalConceptCount++;
+        }
+      }
+      conceptPriors.put(c, new Double(totalConceptCount));
+    }
+  }
+
+  protected void calculateConditionalProbabilities() {         
+    p = new HashMap<Concept, Map<Attribute, AttributeValue>>();
+
+G
+
+    for (Instance i : tSet.getInstances().values()) {
+
+      for (Attribute a: i.getAtrributes()) {
+
+        if (a != null && attributeList.contains(a.getName())) {
+
+          if ( p.get(i.getConcept())== null ) {
+
+            p.put(i.getConcept(), new HashMap<Attribute,
+➥    AttributeValue>());
+          }
+          Map<Attribute, AttributeValue> aMap = p.get(i.getConcept());
+          AttributeValue aV = aMap.get(a);
+          if ( aV == null ) {
+
+            aV = new AttributeValue(a.getValue()); 
+            aMap.put(a, aV);
+          } else {
+            aV.count();
+          }
+        }
+      }
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComAutomatic categorization of emails and spam filtering
+
+181
+
+    }    
+  }
+
+  public double getProbability(Instance i, Concept c) {   
+    double cP=1;
+
+H
+
+ 
+
+    for (Attribute a : i.getAtrributes()) {
+
+      if ( a != null && attributeList.contains(a.getName()) ) {
+
+        Map<Attribute, AttributeValue> aMap = p.get(c);
+        AttributeValue aV = aMap.get(a); 
+        if ( aV == null) {
+          cP *= ((double) 1 / (tSet.getSize()+1));
+        } else {
+          cP *= (double)(aV.getCount()/conceptPriors.get(c));
+        }
+      }
+    }  
+    return (cP == 1) ? (double)1/tSet.getNumberOfConcepts() : cP;
+  }
+
+ public double getProbability(Concept c, Instance i) {   
+    double cP=0;
+
+I
+
+    if (tSet.getConceptSet().contains(c)) {
+
+      cP = (getProbability(i,c)*getProbability(c))/getProbability(i); 
+
+    } else {
+      cP = 1/(tSet.getNumberOfConcepts()+1.0);
+    }
+    return cP;
+  }
+
+  public double getProbability(Instance i) { 
+    double cP=0;
+
+    for (Concept c : getTset().getConceptSet()) {
+
+      cP += getProbability(i,c)*getProbability(c);
+    }
+    return (cP == 0) ? (double)1/tSet.getSize() : cP;
+  }
+
+  public double getProbability(Concept c) {           
+      Double trInstanceCount = conceptPriors.get(c);
+      if( trInstanceCount == null ) {
+          trInstanceCount = 0.0;
+      }
+      return trInstanceCount/tSet.getSize();
+  }
+
+J
+
+  public Concept classify(Instance instance) {   
+    Concept bestConcept = null;
+    double bestP = 0.0;
+
+1)
+
+    for (Concept c : tSet.getConceptSet()) {
+        double p = getProbability(c, instance);
+        if( p >= bestP ) { 
+            bestConcept = c;
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com182
+
+CHAPTER 5  Classification: placing things where they belong
+
+            bestP = p;
+        }
+    }
+    return bestConcept;
+  }
+}
+
+This is a long listing. So, before we go into its details, let’s recap what we’ve seen in 
+chapter 2. The naïve Bayes algorithm evaluates what’s called the conditional probability
+of X given Y. That is, the probability that tells us how likely it is to observe Concept X
+provided  that  we  already  observed  Instance  Y.  In  particular,  this  classifier  uses  as 
+input the following:
+
+■ The probability of observing Concept X in general, also known as the prior prob-
+
+ability and denoted by p(X). 
+
+■ The probability of observing Instance Y provided that we randomly select an 
+
+Instance from Concept X, also known as the likelihood and denoted by p(Y|X).
+
+■ The probability of observing Instance Y in general, also known as the evidence
+
+and denoted by p(Y). 
+
+The  output  of  the  classifier  is  the  calculation  of  the  probability  that  an  observed 
+Instance Y belongs in Concept X, which is also known as the posterior probability and 
+denoted  by  p(X|Y).  The  calculation  is  performed  based  on  the  following  formula 
+(known as Bayes theorem): 
+p X Y(
+)p X(
+)
+------------------------------
+)
+p Y(
+
+p X Y(
+
+)
+
+=
+
+Until now we’ve systematically avoided presenting explicit mathematical formulas. But 
+despite its simple appearance, this formula is very powerful and is the basis of a large 
+number  of  classifiers,  ranging  from  implementations  that  use  the  naïve  Bayes  algo-
+rithm to implementations based on Gaussian processes and Bayesian belief networks
+(see McKay). If you’re going to remember one formula, learn this one well!
+
+ As far as we’re concerned with the classification per se, the evaluation of the evi-
+dence p(Y) isn’t required because its value doesn’t change for the various classes. The 
+classifier  works  by  calculating  the  posterior  probabilities  p(X|Y)  for  all  classes  and 
+selecting the class with the highest posterior probability. Whether or not we divide by 
+p(Y),  the  ordering  won’t  be  affected.  Since  it’s  computationally  cheaper  not  to  per-
+form the division, the implementation can avoid the division by p(Y).
+
+ Now, let’s examine one-by-one the main points of listing 5.4. First we set a name for 
+this instance of the  NaiveBayes classifier. If you use a single classifier this is redun-
+dant. But as you’ll see in chapter 6, quite often we want to create ensembles of classifi-
+ers and combine them in order to improve our results. Keeping an identifier for the 
+classifier will be useful later on. Of course, every classifier needs a training set. The 
+name of the classifier and its training set are intentionally set during the construction 
+phase. Once you’ve created an instance of the NaiveBayes classifier, you can’t reset its 
+TrainingSet, but you can always get the reference to it and add instances.
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComAutomatic categorization of emails and spam filtering
+
+183
+
+B
+
+C
+
+D
+
+E
+
+F
+
+G
+
+H
+
+The conceptPriors map stores the counts for each of the concepts in our training set. 
+We could have used it to store the prior probabilities, not just the counts. But we want 
+to reuse these counts, so in the name of computational efficiency, we store the counts; 
+the priors can be obtained by a simple division.
+The variable p stores the conditional probabilities—the probability of observing con-
+cept X given that we observed instance Y, or in the case of the user clicks, the probabil-
+ity that user A wants to see URL X provided that he submitted query Q. 
+This is the list of attributes that should be considered by the classifier for training. The 
+instances of a training set may have many attributes, and it’s possible that only a few 
+are relevant, so we keep track of what attributes should be used. The method train-
+OnAttribute(String) is used to populate this list.
+The train() method is responsible for training the classifier. After a quick check that 
+we have at least one attribute to train on, this method calculates the concept priors 
+and the conditional probabilities as dictated by the formula of the Bayes theorem. If 
+all goes well, it’ll return a true value; otherwise it’ll return false.
+This is the first part of the training, where we calculate the prior probabilities p(X). 
+For all the instances in the training set, we calculate how many times we’ve seen each 
+concept. We keep track of the count in this implementation. The real concept priors 
+are the counts divided by the total number of instances in the training set.
+This is the second part of the training, where we count the number of times that a spe-
+cific attribute value appears in a concept. This number is needed for the calculation 
+of the conditional probabilities p(Y|X), which occurs in getProbability(Instance I, 
+Concept c). For each instance in the training set and for each attribute that belongs in 
+the training attributes list, we count the number of times we’ve encountered a particu-
+lar value for a given concept.
+This is the calculation of the conditional probabilities p(Y|X). The term naïve has its 
+origin in this method. Note that we’re seeking the probability of occurrence for a par-
+ticular instance, given a particular concept. But each instance is uniquely determined 
+by the unique values of its attributes. The conditional probability of the instance is, in 
+essence, the joint probability of all the attribute value conditional probabilities. Each 
+attribute value conditional probability is given by the term (aV.getCount()/concept-
+Priors.get(c)). In the preceding implementation, it’s assumed that all these attri-
+bute values are statistically independent, so the joint probability is simply the product 
+of the individual probabilities for each attribute value. That’s the “naïve” part. In gen-
+eral,  without  the  statistical  independence  of  the  attributes,  the  joint  probability 
+wouldn’t be equal to that product. 
+
+ We use quotes around the word naïve because it turns out that the naïve Bayes 
+algorithm is very robust and widely applicable, even in problems where the attribute 
+independence assumption is clearly violated. In fact, it can be shown that the naïve 
+Bayes  algorithm  is  optimal  in  the  exact  opposite  case—when  there’s  a  completely 
+deterministic dependency among the attributes (see Rish).
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com184
+
+CHAPTER 5  Classification: placing things where they belong
+
+I
+
+J
+
+1)
+
+ In the case of attribute values that haven’t been encountered before, we assign an 
+arbitrary conditional probability that’s equal to the inverse of the number of instances 
+in  the  training  set  plus  one.  This  is  an  arbitrary  approximation;  you  could  add  the 
+value  of  two  or  three,  or  calculate  the  missing  attribute  value  probability  in  some 
+entirely different manner. Don’t underestimate the impact of this approximation in 
+the classification results, especially when the training set isn’t large. What do you think 
+should that value be for a small training set?
+This method calculates the posterior probability of a class. This is the output of the 
+Bayes theorem formula. The classification of a given instance is based on calling this 
+method repeatedly, once for each class. A possible optimization here is to avoid the 
+method  call  getProbability(i)  and  the  subsequent  division,  since  as  we  already 
+mentioned, the evaluation of the evidence (the term p(Y) in the Bayes theorem for-
+mula) 
+itself—getProbabil-
+ity(Instance)—could be ignored; we included it here for completeness.
+
+for  classification.  The  method 
+
+isn’t 
+
+required 
+
+  In  the  method  getProbability(Concept,  Instance)  we  check  whether  we’ve 
+seen  the  particular  concept.  If  we  used  the  NaiveBayes  class  for  classifying  with 
+respect to a fixed set of concepts, this step wouldn’t be necessary. But recall that we 
+used  the  same  class  in  chapter  2  in  the  context  of  learning  from  the  user’s  clicks, 
+where it was possible to pass a concept that wasn’t included in the training set.
+This method calculates the prior probability p(X) of class X, as the ratio of instances 
+that correspond in that class over the total number of instances in the training set. 
+The classify(Instance) method classifies the given instance by returning the class 
+with the highest probability of occurrence. You could use an array to store the values 
+of the probability for each class. Then you could sort them and return the best three 
+(or  five)  classes  in  the  case  of  multiclass  classification.  In  a  real-world  system,  this 
+would be preferable, because the probabilities may be very close to each other and the 
+application may show the end-user a range of choices for selection, rather than assign 
+automatically one. 
+A GENERAL-PURPOSE EMAIL CLASSIFIER
+Now, let’s take a closer look at the EmailClassifier class itself. Listing 5.5 shows the 
+code, except for the definition of instance variables, the constructor, and the classify 
+methods,  which  are  trivial.  Since  we’ve  just  explained  the  NaiveBayes  classifier  in 
+detail, we’ll focus on the overriding methods of that class.
+
+Listing 5.5  An email classifier based on the general-purpose NaiveBayes class
+
+public class EmailClassifier extends NaiveBayes {
+
+    public boolean train() {                  
+        if( emailDataset.getSize() == 0) {
+            System.out.println("Can't train classifier – 
+➥         training dataset is empty.");
+            return false;
+        }
+        for(String attrName : getTset().getAttributeNameSet()) {
+
+B
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComAutomatic categorization of emails and spam filtering
+
+185
+
+            trainOnAttribute(attrName);
+        }
+        super.train();
+
+        return true;
+    }
+
+    protected void calculateConditionalProbabilities() {
+
+        p = new HashMap<Concept, Map<Attribute, AttributeValue>>();
+
+        for (Instance i : tSet.getInstances().values()) {
+
+            Attribute a = i.getAtrributes()[0];               
+
+C
+
+            Map<Attribute, AttributeValue> aMap = p.get(i.getConcept());
+            if ( aMap == null ) {
+                aMap = new HashMap<Attribute, AttributeValue>();
+                p.put(i.getConcept(), aMap);
+            }
+
+            AttributeValue bestAttributeValue =
+➥    findBestAttributeValue(aMap, a)             
+
+D
+
+            if (bestAttributeValue != null ) { 
+                bestAttributeValue.count();
+            } else {
+                AttributeValue aV = new AttributeValue(a.getValue());
+                aMap.put(a, aV);
+            }
+        }       
+    }
+
+ public double getProbability(Instance i, Concept c) {
+      double cP=1;
+      for (Attribute a : i.getAtrributes()) {
+
+        if ( a != null && attributeList.contains(a.getName()) ) {
+
+          Map<Attribute, AttributeValue> aMap = p.get(c);
+          Attribute bestAttributeValue = findBestAttributeValue (aMap, a); 
+          if (bestAttributeValue == null) {                
+             cP *= ((double) 1 / (tSet.getSize()+1));   
+          } else {
+             cP *= (double)(bestAttributeValue.getCount()/conceptPriors.get(c));
+          }
+        }
+     }   
+     return (cP == 1) ? (double)1/tSet.getNumberOfConcepts() : cP;
+ }
+
+E
+
+ private Attribute findBestAttributeValue(Map<Attribute, 
+➥  AttributeValue> aMap, Attribute a) {
+
+    JaccardCoefficient jaccardCoeff = new JaccardCoefficient();   
+
+F
+
+    String aValue = (String)a.getValue();
+    String[] aTerms = aValue.split(" ");
+    Attribute bestMatch = null;
+    double bestSim = 0.0;
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com186
+
+CHAPTER 5  Classification: placing things where they belong
+
+    for(Attribute attr : aMap.keySet()) {
+      String attrValue = (String)attr.getValue();
+      String[] attrTerms = attrValue.split(" ");
+      double sim = jaccardCoeff.similarity(aTerms, attrTerms); 
+      if( sim > jaccardThreshold && sim > bestSim) {                
+          bestSim = sim;
+          bestMatch = attr;
+      }
+    }
+    return bestMatch;
+  }
+ }
+
+G
+
+B
+
+C
+
+D
+
+E
+
+F
+
+The purpose of this method is to make sure that we loaded some training data, to set 
+the  appropriate  training  attributes  from  the  training  dataset,  and  to  invoke  the 
+train() method of the NaiveBayes class for the actual training of the classifier.
+This statement is true only for this specific implementation. In general, you’d have 
+more than one attribute. One of the to-do items asks you to explore the email classifi-
+cation case by introducing more attributes. If you work on that, you must revisit this 
+part of the implementation.
+This step is needed because we’re using a pure-text representation for our emails. It’s 
+a general technique that you can employ when you deal with text. In our implementa-
+tion, the only attribute that we use takes its value from the string concatenation of the 
+email’s subject and body; don’t forget that this was processed by our custom analyzer 
+in order to reduce the noise and extract as much information as possible. If we con-
+sider  strict  string  equality  between  attribute  values,  every  email  from  our  sample 
+dataset will have its own attribute value. Instead, we consider two attribute values to 
+be equivalent if they match according to the algorithm of the  findBestAttribute-
+Value method 
+Our estimate, in the case of attribute values that haven’t been encountered before, is 
+the  same  as  in  the  NaiveBayes  class.  We  assign  an  arbitrary  conditional  probability 
+that’s  equal  to  the  inverse  of  the  number  of  instances  in  the  training  set  plus  one. 
+Don’t  underestimate  the  impact  of  this  approximation  in  the  classification  results, 
+especially  when  the  training  set  isn’t  large.  Remember  that  this  is  the  conditional 
+probability of encountering a particular attribute value. In certain cases, these values 
+are provided by human domain experts who use their experience to create an esti-
+mate that can be larger (or smaller) than the estimate that’s produced based on the 
+size of the training set. You could substitute this estimate with a small, constant num-
+ber (typically a small number such as 10-4 or 10-5 would serve you well) and observe its 
+impact on the results of the classification.
+You may recall the Jaccard coefficient from chapter 3 (the “To do” section) or chap-
+ter 4 (it’s used in the ROCK implementation). It’s a similarity metric based on the ratio 
+of the size of the intersection over the size of the union between two sets. In this case, 
+the two sets are the tokens that result from splitting the attribute values into individual 
+terms. You could use one of the many other similarity metrics that we’ve encountered 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

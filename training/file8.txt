@@ -1,0 +1,312 @@
+34
+
+CHAPTER 2  Searching
+
+Larry Page in a paper titled “The anatomy of a large-scale hypertextual Web search 
+engine.” Around the same time, Jon Kleinberg at IBM Almaden had discovered the 
+Hypertext Induced Topic Search (HITS) algorithm. Both algorithms are link analysis models, 
+although HITS didn’t have the degree of commercial success that PageRank did.
+
+ In this section, we’ll introduce the basic concepts behind the PageRank algorithm 
+and the mechanics of calculating ranking values. We’ll also examine the so-called tele-
+portation mechanism and the inner workings of the power method, which is at the heart of 
+the PageRank algorithm. Lastly, we’ll demonstrate  the  combination  of  index  scores 
+and PageRank scores for improving our search results.
+
+2.3.1
+
+An introduction to PageRank
+The key idea of PageRank is to consider hyper-
+links from one page to another as recommen-
+dations  or  endorsements.  So,  the  more  en-
+dorsements  a  page  has  the  higher  its  impor-
+tance should be. In other words, if a web page 
+is pointed to by other, important pages, then 
+it’s also an important page. Hold on a second! 
+If you need to know what pages are important 
+in  order  to  determine  the  important  pages, 
+how does it work? Let’s take a specific example 
+and work out the details.
+
+ Figure 2.5 shows the directed graph for all 
+our sample web pages that start with the pre-
+fix biz. The titles of these articles and their file 
+names are given in table 2.1. 
+
+Biz-01
+
+Biz-02
+
+Biz-07
+
+Biz-03
+
+Biz-04
+
+Biz-06
+
+Biz-05
+
+Figure 2.5  A directed graph that 
+represents the linkage between the 
+“biz” web pages.
+
+ If web page A has a link to web page B, there’s an arrow pointing from A to B. Based 
+on this figure, we’ll introduce the hyperlink matrix H and a row vector p (the PageRank 
+vector). Think of a matrix as nothing more than a table (a 2D array) and a vector as a 
+
+Title
+
+File name
+
+Links to
+
+Google Expands into Newspaper Ads
+
+biz-01.html
+
+biz-02, biz-03
+
+Google’s Sales Pitch to Newspapers
+
+biz-02.html
+
+(No outlink; dangling node)
+
+Google Sells Newspaper Ads
+
+biz-03.html
+
+biz-01, biz-02, biz-05
+
+NVidia Now a Supplier for MP3 Players
+
+biz-04.html
+
+biz-05, biz-06
+
+Nvidia Shares Up on PortalPlayer Buy
+
+biz-05.html
+
+biz-04, biz-06
+
+Chips Snap: Nvidia, Altera Shares Jump
+
+biz-06.html
+
+biz-04
+
+Economic Stimulus Plan Helps Stock Prices
+
+biz-07.html
+
+biz-02, biz-04
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComImproving search results based on link analysis
+
+35
+
+single array in Java. Each row in the matrix H is constructed by counting the number of 
+all the outlinks from page Pi , say N(i) and assigning to column j the value 1/N(i) if 
+there’s an outlink from page Pi to page Pj, or assigning the value 0 otherwise. Thus, for 
+the graph in Figure 2.5, our H matrix would look like table 2.2.
+
+0
+
+0
+
+1/3
+
+0
+
+0
+
+0
+
+0
+
+1/2
+
+0
+
+1/3
+
+0
+
+0
+
+0
+
+1/2
+
+1/2
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+1/2
+
+1
+
+1/2
+
+0
+
+0
+
+1/3
+
+1/2
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+1/2
+
+1/2
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+A couple of things stand out:
+
+■ There are a lot of zeros in that matrix—we call these matrices sparse. That’s not 
+a curse; it’s actually a good thing. It’s the result of the fact that a web page typi-
+cally links to only a small number of other web pages—small with respect to the 
+total  number  of  web  pages  on  the  internet.  Sparse  matrices  are  desirable 
+because their careful implementation can save a lot of storage space and com-
+putational time.
+
+■ All values in the matrix are less than or equal to 1. This turns out to be very 
+important.  There’s  a  connection  between  the  “random”  surfer  that  Brin  and 
+Page  envisioned  (see  section  2.3.2)  and  the  theory  of  transition  probability
+matrices, also known as Markov chain theory. That connection guarantees certain 
+desirable properties for the algorithm.
+
+2.3.2
+
+Calculating the PageRank vector
+The PageRank algorithm calculates the vector p using the following iterative formula:
+
+p (k+1) = p (k) * H
+
+The values of p are the PageRank values for every page in the graph. You start with a 
+set of initial values such as p(0) = 1/n, where n is the number of pages in the graph, 
+and use the formula to obtain p(1), then p(2), and so on, until the difference between 
+two  successive  PageRank  vectors  is  small  enough;  that  arbitrary  smallness  is  also 
+known as the convergence criterion or threshold. This iterative method is the power method
+as applied to H. That, in a nutshell, is the PageRank algorithm. 
+
+ For technical reasons—the convergence of the iterations to a unique PageRank vec-
+tor—the matrix H is replaced by another matrix, usually denoted by G (the Google 
+matrix), which has better mathematical properties. We won’t review the mathematical 
+details of the PageRank algorithm here, but let’s describe the rationale behind Page-
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com36
+
+CHAPTER 2  Searching
+
+Rank and the problems that lead us to alter the matrix so that you have a better idea 
+of what’s going on.
+
+ The PageRank algorithm begins by envisioning a user who “randomly” surfs the 
+Web. Our surfer can start from any given web page with outlinks. From there, by fol-
+lowing one of the provided outlinks, he lands on another page. Then, he selects a new 
+outlink to follow, and so on. After several clicks and trips through the graph, the pro-
+portion of time that our surfer spends on a given page is a measure of the relative 
+importance that the page has with respect to the other pages on the graph. If the surf-
+ing  is  truly  random—without  an  explicit  bias—our  surfer  will  visit  pages  that  are 
+pointed  to  by  other  pages,  thus  rendering  those  pages  more  important.  That’s  all 
+good and straightforward, but there are two problems. 
+
+ The first problem is that on the internet there are some pages that don’t point to 
+any other pages; in our example, such a web page is biz-02 in figure 2.5. We call these 
+pages of the graph dangling nodes. These nodes are a problem because they trap our 
+surfer;  without  outlinks,  there’s  nowhere  to  go!  They  correspond  to  rows  that  have 
+value equal to zero for all their cells in the H matrix. To fix this problem, we introduce 
+a random jump, which means that once our surfer reaches a dangling node, he may go 
+to the address bar of his browser and type the URL of any one of the graph’s pages. In 
+terms of the H matrix, this corresponds to setting all the zeros (of a dangling node 
+row) equal to 1/n, where n is the number of pages in the graph. Technically, this cor-
+rection of the H matrix is referred to as the stochasticity adjustment. 
+
+ The second problem is that sometimes our surfer may get bored, or interrupted, 
+and  may  jump  to  another  page  without  following  the  linked  structure  of  the  web 
+pages; the equivalent of Star Trek’s teleportation beam. To account for these arbitrary 
+jumps, we introduce a new parameter that, in our code, we call alpha. This parameter 
+determines the amount of time that our surfer will surf by following the links versus 
+jumping  arbitrarily  from  one  page  to  another  page;  this  parameter  is  sometimes 
+referred  to  as  the  damping  factor.  Technically,  this  correction  of  the  H  matrix  is 
+referred to as the primitivity adjustment. 
+
+  In  the  code,  you’ll  find  explicit  annotations  for  these  two  problems.  You  don’t 
+need  to  worry  about  the  mathematical  details,  but  if  you  do,  Google’s  PageRank  and 
+Beyond:  The  Science  of  Search  Engine  Rankings  by  Amy  Langville  and  Carl  Meyer  is  an 
+excellent reference. So, let’s get into action and get the H matrix by running some 
+code.  Listing  2.5  shows  how  to  load  just  the  web  pages  that  belong  to  the  business 
+news and calculate the PageRank that corresponds to them.
+
+Listing 2.5  Calculating the PageRank vector
+
+FetchAndProcessCrawler crawler = 
+➥  new FetchAndProcessCrawler("C:/iWeb2/data/ch02",5,200);
+
+crawler.setUrls("biz");   
+crawler.run(); 
+
+Load business web pages
+
+PageRank pageRank = new PageRank(crawler.getCrawlData());   
+
+Build PageRank 
+instance
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

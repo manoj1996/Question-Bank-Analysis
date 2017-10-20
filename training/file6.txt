@@ -1,0 +1,40 @@
+6
+
+CHAPTER 1  What is the intelligent web?
+
+1.3 What applications can benefit from intelligence?
+
+1.3.1
+
+The  ingredients  of  intelligence,  as  described  in  the  previous  section,  can  be  found 
+across  a  wide  spectrum  of  applications,  from  social  networking  sites  to  specialized 
+counterterrorism applications. In this section, we’ll describe examples from each cate-
+gory. Our list is certainly not complete, but it’ll demonstrate that the techniques of 
+this book can be widely useful, if not irreplaceable in certain cases.
+
+Social networking sites
+The websites that have marked the internet most prominently in the last few years are 
+the social networking sites. These are web applications that provide their users with 
+the ability to establish an online presence using nothing more than a browser and an 
+internet connection. The users can share files (presentations, video files, audio files) 
+with each other, comment on current events or other people’s pages, build their own 
+social network, or join an existing one based on their interests. The two most-visited3
+social networking sites are MySpace and Facebook, with hundreds of millions and tens 
+of millions of registered users, respectively. 
+
+  These  sites  are  content  aggregators  by  construction,  so  the  first  ingredient  for 
+building  intelligence  is  readily  available.  The  second  ingredient  is  also  present  in 
+those sites. For example, on MySpace, the content is categorized using top labels such 
+as “Books,” “Movies,” “Schools,” “Jobs,” and so on that are clearly visible on the site 
+(see figure 1.2). 
+
+ In addition, these top-level categories are further refined by lower-level structures 
+that  differentiate  content  related  to  “Classifieds”  from  content  related  to  “Polls”  or 
+
+Figure 1.2  This snapshot shows the categories on the MySpace websites.
+
+3 Based on traffic data captured by Alexa.com on December 2007.
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

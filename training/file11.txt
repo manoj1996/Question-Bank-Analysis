@@ -1,0 +1,135 @@
+42
+
+  }
+
+CHAPTER 2  Searching
+
+  // Report the final values
+  System.out.println(
+➥  "\n______________  Calculation Results  _______________\n");
+  for (int i=0; i < n; i++) {
+    System.out.println("Page URL: "+
+➥  matrixH.getIndexMapping().getValue(i)+"  -->  Rank: "+pR[i]);
+  }
+}
+
+Given the importance of this method, we’ve gone to great lengths to make this as easy 
+to  read  as  possible.  We’ve removed  some  Javadoc  associated  with  a  to-do  topic,  but 
+otherwise this snippet is intact. So, we start by getting the values of the matrix H based 
+on the links and then initialize the PageRank vector. Subsequently, we obtain the dan-
+gling node contribution and the teleportation contribution. Note that the dangling 
+nodes require a full 2D array, whereas our teleportation contribution requires only a 
+single double variable. Once we have all three components, we add them together. 
+This is the most efficient way to prepare the data for the power method, but instead of 
+full 2D arrays, you should use sparse matrices; we describe this enhancement in one of 
+the to-do topics at the end of the chapter.  
+
+  Once  the  new  H  matrix  has  been  computed,  we  begin  the  power  method—the 
+code inside the while loop. We know that we’ve attained the PageRank values if our 
+error is smaller than the arbitrarily small value  epsilon. Of course, that makes you 
+wonder:  What  if  I  change  epsilon?  Will  the  PageRank  values  change?  If  so,  what 
+should the value of epsilon be? Let’s take these questions one by one. First, let’s say 
+that  the  error  is  calculated  as  the  absolute  value  of  the  term  by  term  difference 
+between the new and the old PageRank vectors. Listing 2.8 shows the method norm, 
+from the iweb2.ch2.ranking.Rank class, which evaluates the error.
+
+Listing 2.8  Evaluation of the error between two consecutive PageRank vectors
+
+private double norm(double[] a, double[] b) {
+
+  double norm = 0;
+
+  int n = a.length;
+
+  for (int i=0; i < n; i++) {
+     norm += Math.abs(a[i]-b[i]);
+  }
+
+  return norm;
+}
+
+If you run the code a few times, or observe figure 2.6 closely, you’ll realize that the values 
+of the PageRank at the time of convergence change at the digit that corresponds to the 
+smallness of epsilon. So, the value of epsilon ought to be small enough to allow us to 
+separate all web pages according to the PageRank values. If we have 100 pages then a 
+value of epsilon equal to 0.001 should be sufficient. If we have the entire internet, about 
+1010 web pages, then we need a value of epsilon that is about 10-10 small.
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com2.3.5
+
+Improving search results based on link analysis
+
+43
+
+Combining the index scores and the PageRank scores
+Now that we’ve showed you how to implement the PageRank algorithm, we’re ready to 
+show you how to combine the Lucene search scores with the relevance of the pages as 
+given by the PageRank algorithm. We’ll use the same seven web pages that refer to busi-
+ness news, but this time we’ll introduce three spam pages (called spam-biz-0x.html, 
+where x stands for a numeral). The spam pages will fool the index-based search, but they 
+won’t fool PageRank.
+
+ Let’s run this scenario and see what happens. Listing 2.9 shows you how to
+■ Load the business web pages, as we did before.
+■ Add the three spam pages, one for each subject. 
+
+■
+
+Index all the pages. 
+■ Build the PageRank. 
+■ Compute  a  hybrid  ranking  score  that  incorporates  both  the  index  relevance 
+
+score (from Lucene) and the PageRank score.
+
+Listing 2.9  Combining the Lucene and PageRank scores for ranking web pages
+
+FetchAndProcessCrawler crawler = 
+➥  new FetchAndProcessCrawler("C:/iWeb2/data/ch02",5,200);
+
+crawler.setUrls("biz"); 
+
+crawler.addUrl("file:///c:/iWeb2/data/ch02/spam-biz-01.html");   
+crawler.addUrl("file:///c:/iWeb2/data/ch02/spam-biz-02.html");
+crawler.addUrl("file:///c:/iWeb2/data/ch02/spam-biz-03.html");
+crawler.run(); 
+
+Add spam 
+pages
+
+LuceneIndexer luceneIndexer = 
+➥  new LuceneIndexer(crawler.getRootDir());
+
+luceneIndexer.run();                                
+
+Index all 
+pages
+
+PageRank pageRank = new PageRank(crawler.getCrawlData());
+pageRank.setAlpha(0.99);
+pageRank.setEpsilon(0.00000001);
+pageRank.build();                        
+
+Build PageRank
+
+MySearcher oracle = new MySearcher(luceneIndexer.getLuceneDir());
+
+oracle.search("nvidia",5, pageRank);   
+
+Search using combined score
+
+The results of our search for “nvidia” are shown in figure 2.7. First, we print the result 
+set that’s based on Lucene alone, then we print the resorted results where we took 
+into account the PageRank values. As you can see, we have a talent for spamming! The 
+deceptive page comes first in our result set when we use Lucene alone. But when we 
+apply the hybrid ranking, the most relevant pages come up first. The spam page went 
+down  in  the  abyss  of  irrelevance  where  it  belongs!  You’ve  just  written  your  first 
+Google-like search engine. Congratulations!
+
+  The  code  that  combines  the  two  scores  can  be  found  in  the  class  MySearcher
+inside the overloaded method  search that uses the  PageRank class as an argument. 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

@@ -1,0 +1,82 @@
+xxii
+
+ABOUT THIS BOOK
+
+location that you unzipped the file. You’re now ready to run the BeanShell script as 
+described in appendix A.
+
+Author Online
+Purchase of Algorithms of the Intelligent Web includes free access to a private web forum 
+run  by  Manning  Publications  where  you  can  make  comments  about  the  book,  ask 
+technical  questions,  and  receive  help  from  the  authors  and  from  other  users.  To 
+access the forum and subscribe to it, point your web browser to www.manning.com/
+AlgorithmsoftheIntelligentWeb. This page provides information on how to get on the 
+forum once you are registered, what kind of help is available, and the rules of conduct 
+on the forum. It also provides links to the source code for the examples in the book, 
+errata, and other downloads. 
+
+ Manning’s commitment to our readers is to provide a venue where a meaningful dia-
+log between individual readers and between readers and the authors can take place. It 
+is not a commitment to any specific amount of participation on the part of the authors, 
+whose contribution to the Author Online remains voluntary (and unpaid). We suggest 
+you try asking the authors some challenging questions lest their interest stray! 
+
+ The Author Online forum and the archives of previous discussions will be accessi-
+
+ble from the publisher’s website as long as the book is in print.
+
+About the cover illustration
+The illustration on the cover of Algorithms of the Intelligent Web is taken from a French 
+book  of  dress  customs,  Encyclopedie  des  Voyages  by  J.  G.  St.  Saveur,  published  in  1796. 
+Travel  for  pleasure  was  a  relatively  new  phenomenon  at  the  time  and  illustrated 
+guides such as this one were popular, introducing both the tourist as well as the arm-
+chair traveler to the inhabitants of other far-off regions of the world, as well as to the 
+more familiar regional costumes of France and Europe.
+
+  The  diversity  of  the  drawings  in  the  Encyclopedie  des  Voyages  speaks  vividly  of  the 
+uniqueness and individuality of the world’s countries and peoples just 200 years ago. 
+This was a time when the dress codes of two regions separated by a few dozen miles 
+identified people uniquely as belonging to one or the other, and when members of a 
+social class or a trade or a tribe could be easily distinguished by what they were wear-
+ing. This was also a time when people were fascinated by foreign lands and faraway 
+places, even though they could not travel to these exotic destinations themselves.
+
+ Dress codes have changed since then and the diversity by region, so rich at the 
+time, has faded away. It is now often hard to tell the inhabitant of one continent from 
+another. Perhaps, trying to view it optimistically, we have traded a world of cultural 
+and visual diversity for a more varied personal life. Or a more varied and interesting 
+intellectual and technical life.
+
+ We at Manning celebrate the inventiveness, the initiative, and the fun of the com-
+puter business with book covers based on native and tribal costumes from two centu-
+ries ago brought back to life by the pictures from this travel guide. 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComWhat is 
+ the intelligent web?
+
+This chapter covers:
+■ Leveraging intelligent web applications
+■ Using web applications in the real world
+■ Building intelligence in your web
+
+So, what’s this book about? First, let’s say what it’s not. This book isn’t about build-
+ing a sleek UI, or about using JSON or XPath, or even about RESTful architectures. 
+There are several good books for Web 2.0 applications that describe how to deliver 
+AJAX-based designs and an overall rich UI experience. There are also many books 
+about  other  web-enabling  technologies  such  as  XSL  Transformations  (XSLT)  and 
+XML Path Language (XPath), Scalable Vector Graphics (SVG), XForms, XML User 
+Interface Language (XUL), and JSON (JavaScript Object Notation). 
+
+  The  starting  point  of  this  book  is  the  observation  that  most  traditional  web 
+applications are obtuse, in the sense that the response of the system doesn’t take 
+into account the user’s prior input and behavior. We refer not to issues related to 
+bad UI but rather to a fixed response of the system to a given input. Our main inter-
+est is building web applications that do take into account the input and behavior of 
+
+1
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

@@ -1,0 +1,61 @@
+Eight fallacies of intelligent applications
+
+17
+
+going to use them. You’re probably sufficiently motivated and anxious to dive into the 
+code. We won’t disappoint you. Every chapter other than the introduction is loaded 
+with new and valuable code.
+
+ But before we embark on our journey into the exciting and financially rewarding 
+(for  the  more  cynical  among  us)  world  of  intelligent  applications,  we’ll  present  a 
+number of mistakes, or fallacies, that are common in projects that embed intelligence 
+in their functionality. You may be familiar with the eight fallacies of distributed com-
+puting (if not, see the industry commentary by Van den Hoogen); it’s a set of com-
+mon but flawed assumptions made by programmers when first developing distributed 
+applications. Similarly, we’ll present a number of fallacies, and consistent with the tra-
+dition, we’ll present eight of them.
+
+1.6.1
+
+Fallacy #1: Your data is reliable
+There are many reasons your data may be unreliable. That’s why you should always 
+examine whether the data that you’ll work with can be trusted before you start consid-
+ering specific intelligent algorithmic solutions to your problem. Even intelligent peo-
+ple that use very bad data will typically arrive at erroneous conclusions.
+
+ The following is an indicative, but incomplete, list of the things that can go wrong 
+
+with your data:
+
+■ The data that you have available during development may not be representative 
+of the data that corresponds to a production environment. For example, you 
+may  want  to  categorize  the  users  of  a  social  network  as  “tall,”  “average,”  and 
+“short” based on their height. If the shortest person in your development data 
+is six feet tall (about 184 cm), you’re running the risk of calling someone short 
+because they’re “just” six feet tall.
+
+■ Your data may contain missing values. In fact, unless your data is artificial, it’s 
+almost  certain  that  it’ll  contain  missing  values.  Handling  missing  values  is  a 
+tricky business. Typically, you either leave the missing values as missing or you 
+fill them in with some default or calculated value. Both conditions can lead to 
+unstable implementations.
+
+■ Your data may change. The database schema may change or the semantics of 
+
+the data in the database may change.
+
+■ Your data may not be normalized. Let’s say that we’re looking at the weight of a 
+set of individuals. In order to draw any meaningful conclusions based on the 
+value of the weight, the unit of measurement should be the same for all individ-
+uals—in pounds or kilograms for every person, not a mix of measurements in 
+pounds and kilograms.
+
+■ Your data may be inappropriate for the algorithmic approach that you have in 
+mind. Data comes in various shapes and forms, known as data types. Some data-
+sets  are  numeric  and  some  aren’t.  Some  datasets  can  be  ordered  and  some 
+can’t. Some numeric datasets are discrete (such as the number of people in a 
+room) and some are continuous (the temperature of the atmosphere). 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

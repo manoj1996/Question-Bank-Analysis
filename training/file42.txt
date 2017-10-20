@@ -1,0 +1,166 @@
+54
+
+CHAPTER 2  Searching
+
+ 
+
+ 
+
+ 
+
+ 
+
+biz-
+
+-
+01.html  -->   
+
+bsh % UserQuery bQ = new UserQuery("babis", "google ads");
+bsh % oracle.search(bQ,5,pr); 
+ 
+Search results using Lucene index scores:
+Query: google ads 
+ 
+Document Title: Google Ads and the best drugs
+Document URL: file:/c:/iWeb2/data/ch02/spam-
+Relevance Score: 0.788674294948578 
+___________________________________________________________
+Document Title: Google Expands into Newspaper Ads
+Document URL: file:/c:/iWeb2/data/ch02/biz-01.html  -->   
+Relevance Score: 0.382 
+___________________________________________________________
+Documen t Title: Google sells newspaper ads
+Document URL: file:/c:/iWeb2/data/ch02/biz-03.html  -->   
+Relevance Score: 0.317 
+___________________________________________________________
+Document Title: Google's sales pitch to newspapers
+Document URL: file:/c:/iWeb2/data/ch02/biz-02.html  -->   
+Relevance Score: 0.291 
+___________________________________________________________
+Document Title: Economic stimulus plan helps stock prices
+Document URL: file:/c:/iWeb2/data/ch02/biz-07.html  -->  
+Relevance Score: 0.0314 
+___ ________________________________________________________
+ 
+Search results using combined Lucene scores, page rank scores 
+and user clicks: 
+Query: user=babis, query text=google ads 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ Document URL: file:/c:/iWeb2/data/ch02/biz-01.html       -->   
+Relevance Score: 0.00616 
+
+ Document URL: file:/c:/iWeb2/data/ch02/biz-03.html       -->   
+Relevance Score: 0.00407 
+
+ Document URL: file:/c:/iWeb2/data/ch02/spam-
+Relevance Score: 0.00393 
+
+biz-
+
+-
+
+01.html  -->    
+
+Document URL: file:/c:/iWeb2/data/ch02/biz-02.html       -->   
+ 
+Re levance Score: 0.00117 
+
+Figure 2.9  Lucene, PageRank, and user clicks together produce high-relevance search results  
+for Babis.
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com2.5
+
+Ranking Word, PDF, and other documents without links
+
+55
+
+That’s great! We now have a powerful improvement over the pure index-based search 
+that accounts for the structure of the hyperlinked documents and the preferences of the 
+users based on their clicks. But a large number of applications must search among doc-
+uments that aren’t explicitly linked to each other. Is there anything that we can do to 
+improve our search results in that case? Let’s examine exactly that case in what follows. 
+
+Ranking Word, PDF, and other documents  
+without links
+Let’s  say  that  you  have  hundreds  of  thousands  of  Word  or  PDF  documents,  or  any 
+other type of document that you want to search through. At first, it may seem that 
+indexing is your only option and, at best, you may be able to do some user-click analy-
+sis too. But we’ll show you that it’s possible to extend the same ideas of link analysis
+that we applied to the Web. Hopefully, we’ll get you thinking and develop an even bet-
+ter method. By the way, to the best of our knowledge, the technique that we describe 
+here has never been published before.
+
+ To demonstrate that it’s possible to introduce ranking in documents without links, 
+we’ll take the HTML documents and create Word documents with identical content. 
+This willl allow us to compare our results with those in section 2.3 and identify any 
+similarities  or  differences  in  the  two  approaches.  Parsing  Word  documents  can  be 
+done easily using the open source library TextMining; note that the name has changed 
+to tm-extractor. The license of this library starting with the 1.0 version is LGPL, which 
+makes 
+it  business  friendly.  You  can  obtain  the  source  code  from  http://
+code.google.com/p/text-mining/source/checkout.  We’ve  written  a  class  called 
+MSWordDocumentParser that encapsulates the parsing of a Word document in that way.
+
+2.5.1
+
+An introduction to DocRank
+In listing 2.14 we use the same classes to read the Word documents as we did to read 
+the  HTML  documents  (the  FetchAndProcessCrawler  class)  and  we  use  Lucene  to 
+index the content of these documents. 
+
+Listing 2.14  Ranking documents based on content
+
+FetchAndProcessCrawler crawler = 
+➥  new FetchAndProcessCrawler("C:/iWeb2/data/ch02",5,200);
+
+crawler.setUrls("biz-docs");                                           
+
+Load business 
+Word documents
+
+crawler.addDocSpam(); 
+crawler.run(); 
+
+LuceneIndexer luceneIndexer = 
+➥  new LuceneIndexer(crawler.getRootDir());   
+
+Build Lucene 
+index
+
+luceneIndexer.run(); 
+
+MySearcher oracle = new MySearcher(luceneIndexer.getLuceneDir());   
+oracle.search("nvidia",5); 
+
+DocRank docRank = new DocRank(luceneIndexer.getLuceneDir(),7); 
+
+Create 
+plain 
+search 
+engine
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

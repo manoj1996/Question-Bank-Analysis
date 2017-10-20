@@ -1,0 +1,197 @@
+Classification: placing 
+ things where they belong
+
+This chapter covers:
+■ Understanding classification techniques based 
+
+on probabilities and rules
+
+■ Automatically categorizing email messages
+■ Detecting fraudulent financial transactions  
+
+with neural networks
+
+“What is this?” is the question children perhaps ask most frequently. The popularity 
+of that question among children—whose inquisitive nature is as wonderful as it is 
+persistent—shouldn’t be surprising. In order to understand the world around us, we 
+organize our perceptions into groups and categories (labeled groups, possibly struc-
+tured). In the previous chapter, we presented a number of clustering algorithms that 
+can help us group data points together. In this chapter, we’ll present a number of 
+classification algorithms that’ll help us assign each data point to an appropriate cate-
+gory, also referred to as a class (hence the term classification). The act of classification 
+would answer a child’s question by providing a statement in the form “This is a boat,” 
+“This is a tree,” “This is a house,” and so on. Classification relies on a priori reference 
+structures that divide the space of all possible data points into a set of classes that are 
+
+164
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComThe need for classification
+
+165
+
+usually, but not necessarily, nonoverlapping. Contrast this with the arbitrary nature of 
+the clusters that we described in the previous chapter.
+
+ We could argue that, as part of our mental processing, clustering precedes classifi-
+cation because the reference structures that we need for classification are much richer 
+representations  of  knowledge  than  a  statement  of  the  sort  “X  belongs  in  the  same 
+group as Y.” The term ontology is typically used for a reference structure that consti-
+tutes a knowledge representation of the world or a part of the world that’s of interest 
+in our application. A practical aspect of classification that’s usually not discussed is the 
+maintenance of an ontology. There are many books that exclusively address aspects of 
+ontology  engineering  and  ontology  management  (see  Staab  and  Studer;  Gómez-Pérez, 
+Fernández-López, and Corcho).
+
+ In section 5.1, we provide a number of real-world examples where classification is 
+important. We also provide the definition of an abstract ontology structure and pres-
+ent  an  analogy  between  ontology  structures  and  the  structure  of  Java  code!  Suffi-
+ciently  motivated,  we  proceed  to  section  5.2,  where  we  present  an  overview  of 
+classifiers.  We  clearly  can’t  cover  all  known  classifiers  in  this  book,  so  the  overview 
+should help you orient yourself in the related literature.
+
+ In section 5.3, you’ll learn the naïve Bayes classification algorithm, one of the most 
+celebrated and well-known classification algorithms of all time. We’ll discuss both the 
+specific case of filtering spam messages and a more general case of placing email mes-
+sages  in  several  appropriate  folders.  This  is  a  good  example  of  classifying  freeform 
+text with a statistical classification algorithm.
+
+ But the most common classification algorithms for email messages are based on 
+rules. Section 5.3.2 covers email classification from the perspective of a rules engine. We 
+introduce all the relevant concepts and demonstrate the use of rules by employing the 
+Drools (JBoss) rules engine. In section 5.4, we tackle fraud detection as a classification 
+problem.  In  that  context,  we  introduce  another  broadly  used  classification 
+approach—classification through neural networks.
+
+ How can we tell whether we assigned the most appropriate class to a data point? 
+How can we tell whether classifier A is better than classifier B? If you ever read bro-
+chures of business intelligence tools you may be familiar with statements such as “our 
+classifier is 75% accurate.” What’s the meaning of such a statement? Is it useful? These 
+questions  will  be  addressed  in  section  5.5.  We’ll  discuss  classifying  large  volumes  of 
+data points, classifying with respect to very large ontology structures, and doing effi-
+cient  online  classification.  Each  of  these  three  mutually  nonexclusive  categories 
+requires special attention, and is common in real-world applications.
+
+ Let’s now begin by discussing the potential applications of classification and pres-
+ent of technical terms that we’ll encounter repeatedly along the way. So, what’s classi-
+fication good for? What practical problems can it solve for us? 
+
+5.1
+
+The need for classification
+Whether we realize it or not, we encounter classification on a daily basis. In our every-
+day experiences, we can list the food items on a restaurant’s menu, which are classified 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com166
+
+CHAPTER 5  Classification: placing things where they belong
+
+according to menu categories—salads, appetizers, specialties, pastas, seafood, and so 
+on. The articles in a newspaper or a newsgroup on the internet are classified based on 
+their subject—politics, sports, business, world, entertainment, and so on. 
+
+ The books in a library carry a call number, which consists of two numbers: the Dewey 
+classification number and the Cutter number. The top categories of that system are things 
+such  as  generalities,  religion,  natural  science  and  mathematics,  and  so  forth.  The 
+Library of Congress in the United States has its own classification system that was first 
+developed  in  the  late  nineteenth  and  early  twentieth  centuries  to  organize  and 
+arrange its book collections. 
+
+  Over  the  course  of  the  twentieth  century,  the  Library  of  Congress  system  was 
+adopted  for  use  by  other  libraries  as  well,  especially  large  academic  libraries  in  the 
+United  States.  We  mention  two  systems  of  classifying  books  because  the  Library  of 
+Congress classification system isn’t strictly hierarchical as the Dewey classification sys-
+tem  is,  where  the  hierarchical  relationships  between  the  topics  are  reflected  in  the 
+numbers of the classification. As we’ll see, it’s important to distinguish between refer-
+ence structures that are hierarchical and those that aren’t.
+
+ In medicine, a plethora of classification systems are used to diagnose injuries or 
+diseases. For example, the Schatzker classification system is used by radiologists and 
+orthopedic surgeons to classify tibial plateau fractures (a complex knee injury). Simi-
+larly,  there  are  classification  systems  for  spinal  cord  injuries;  for  coma,  concussion, 
+and traumatic brain injuries; and so on. 
+
+ The Occupational Injury and Illness Classification (OIIC) manual provides a classi-
+fication system for coding the characteristics of injuries, illnesses, and fatalities in the 
+Survey of Occupational Injuries and Illnesses (SOII) and the Census of Fatal Occupa-
+tional Injuries (CFOI), according to the U.S. government. The ICD-10, by the World 
+Health  Organization  (WHO),  was  endorsed  by  the  43rd  World  Health  Assembly  in 
+May 1990, and came into use in member states as of 1994. It’s used to classify diseases 
+and other health problems recorded on many types of health and vital records includ-
+ing death certificates and hospital records. After your visit to the doctor’s office, that’s 
+what  your  insurance  company  consults  to  determine  the  amount  of  coverage.  Top-
+level  categories  include  certain  infectious  and  parasitic  diseases;  neoplasms;  endo-
+crine, nutritional, and metabolic diseases; and so on. In biological sciences, the Lin-
+naean  classification  system  uses  two  attributes  for  classifying  all  living  things—genus
+and species. You must have heard of the term Homo sapiens, of which Homo is our genus 
+and sapiens is our species. This classification can, and typically is, extended to include 
+other attributes such as family, order, class, phylum, and so forth. 
+
+ Let’s digress to alarm you about the number of attributes. Generally speaking, the 
+more attributes you use, the finer the degree of classification is going to be. A “large” 
+number of attributes is usually a good thing, but there are caveats to this general prin-
+ciple. One notorious symptom of dealing with many attributes is the curse of dimension-
+ality,  which  was  discussed  in  section  4.6.2.  Typically,  a  large  number  of  attributes 
+means that we’re dealing with more than sixteen. 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComThe need for classification
+
+167
+
+  As  you  may  recall,  the  curse  of  dimensionality  refers  to  the  fact  that  our  space 
+becomes more and more homogenous as the number of attributes increases. In other 
+words, the distance between any two points will be roughly the same no matter which 
+points  you  select  and  what  metric  you  apply  to  measure  the  distances.  If  that’s  the 
+case,  it  becomes  increasingly  difficult  to  distinguish  which  category  is  “closer”  to  a 
+given data point, since no matter where you “stand” in our space, everything seems to 
+be the same distance apart! You can always add attributes to your ontology, so that you 
+can have all your domain knowledge in one place and later select the attributes that 
+should be used for classification.
+
+ It should be clear from these examples that flat reference structures aren’t as “rich” as 
+hierarchical reference structures. In turn, the hierarchical reference structures are less rich 
+than  those  that  are  hierarchical  and  semantically  enriched.  This  observation  falls 
+again under our discussion of ontologies. We didn’t provide a clear definition of the 
+term ontology because it doesn’t seem that there’s consensus on that matter. 
+
+  For  the  purposes  of  this  book,  an  ontology  consists  of  three  things:  concepts, 
+
+instances, and attributes. 
+
+ In figure 5.1, we depict a minute segment of a (rudimentary) general ontology by 
+focusing on the concepts of “vehicle.” Concepts are depicted as ellipses, instances are 
+depicted as rectangles, and attributes are depicted as rounded rectangles. Note the 
+hereditary property of attribute assignment. If attribute 1 is assigned to the root of the 
+concept tree then it cascades to the concept leaf nodes. Thus, values for attribute 1 can 
+be assigned to instances of a boat and an automobile. Only an automobile instance can 
+have values for attribute 2. Attribute 1 could be the attribute Name, which for practical 
+reasons you always want to have, whereas attribute 2 could be the attribute Number of 
+wheels. Attributes are defined at the level of the concepts, but only instances have con-
+crete and unique values because only instances represent real “things.”
+
+ Think of concepts as analogous to Java classes, instances as analogous to instances 
+of Java classes, and attributes as variables of Java classes. Clearly, a source code base 
+that uses packages to group together classes by functionality or component, that uses 
+inheritance  to  abstract  common  structure  and  behavior,  and  that  properly  uses 
+encapsulation, is superior to a source code base that doesn’t have these qualities. Sim-
+ilar to attributes, in our definition of an ontology, when you define a class, you define 
+the data type of the variables but you don’t assign a value to a variable (unless it’s a 
+constant). This is a good working definition that’ll serve you well 80% to 90% of the 
+time. If you’re ever in doubt, you can consult this analogy to obtain some insight into 
+your structure. 
+
+ We could obviously go on with more classification systems; they’re everywhere. The 
+point is that classifying data is equivalent to structuring or organizing it. Classification 
+systems  improve  communication  by  reducing  errors  due  to  ambiguities.  They  also 
+help us organize our thoughts and plan our actions. The reference structure, which is 
+used for organizing our data, can be as simple as a set of labels or as advanced as a 
+semantic ontology. Have you heard of the semantic Web? At the heart of the semantic Web 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

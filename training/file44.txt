@@ -1,0 +1,241 @@
+60
+
+CHAPTER 2  Searching
+
+keeping the importance factor within reasonable limits. The hyperbolic tangent takes 
+values between 0 and 1, so the final rounding will ensure that each term can either be 
+neglected or count for one unit of importance. That’s the rationale behind building 
+the formula by using these functions.
+
+ Figure 2.11 shows that a search for “nvidia” returns the file biz-05.doc as the high-
+est-ranked result; that’s a legitimate file (not spam) and related to nvidia! The spam 
+
+ 
+
+ 
+
+ 
+
+-
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+02.doc  -->  
+biz-
+ 
+-
+
+bsh % oracle.search("nvidia",5,dr);
+ 
+Search results using Lucene index scores:
+Query: nvidia 
+ 
+Document Title: NVIDIA shares plummet into cheap medicine for 
+you! 
+ 
+Document URL: file:/c:/iWeb2/data/ch02/spam
+Relevance Score: 0.4582
+___________________________________________________________
+Document Title: Nvidia shares up on PortalPlayer buy
+ 
+-->  
+Document URL: file:/c:/iWeb2/data/ch02/biz-05.doc       
+Relevance Score: 0.3240
+___________________________________________________________
+Document Title: NVidia Now a Supplier for MP3 Players
+ 
+-->  
+Document URL: file:/c:/iWeb2/data/ch02/biz-04.doc       
+Relevance Score: 0.1944
+___________________________________________________________
+ 
+Document Title: Chips Snap: Nvidia, Altera Shares Jump
+ 
+-->  
+Document URL: file:/c:/iWeb2/data/ch02/biz-06.doc       
+Relevance Score: 0.1852
+_____________________________________________
+ 
+ 
+Search results using combined Lucene scores and page rank scores:
+Query: nvidia 
+ 
+-->  
+Document URL: file:/c:/iWeb2/data/ch02/biz-05.doc       
+Relevance Score: 0.03858
+ 
+Document URL: file:/c:/iWeb2/data/ch02/spam
+Relevance Score: 0.03515
+ 
+-->  
+Document URL: file:/c:/iWeb2/data/ch02/biz-04.doc       
+Relevance Score: 0.02925
+ 
+-->  
+Document URL: file:/c:/iWeb2/data/ch02/biz
+06.doc       
+ 
+-
+Relevance Score: 0.02233
+___________________________________________________________  
+
+biz-
+02.doc  -->  
+-
+
+______________ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+-
+
+-
+
+Figure 2.11 
+
+Index and ranking based search for “nvidia” on the Word documents
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com2.6
+
+Large-scale implementation issues
+
+61
+
+page survived because the number of our  documents is small, but we did get addi-
+tional value. The Lucene index had the exact same information all along, but its met-
+ric of relevance has been skewed by the ersatz news document. DocRank helped us to 
+increase the relevance of the biz-05.doc document, and in more realistic situations it 
+can help you identify the most pertinent documents in a collection. The DocRank val-
+ues, like the PageRank values, need to be calculated only once, but can be reused for 
+all queries. 
+
+ There are other means of enhancing the search of plain documents, and we pro-
+vide the related references at the end of this chapter. DocRank is a more powerful 
+algorithm when applied to data from a relational database. To see this, let’s say that we 
+have two tables—table A and table B—that are related to each other through table C; 
+this is a common case. For example, you may have a table that stores users, another 
+table that stores groups, and another that stores the relationship between users and 
+groups by relating the IDs of each entry. In effect, you have one graph that connects 
+the users based on their groups and another graph that connects the groups based on 
+their users. Every time you have a linked representation of entities, it’s worthwhile to 
+try the DocRank algorithm or a similar variant. Don’t be afraid to experiment! There’s 
+no single answer to this kind of problem, and sometimes the answer may surprise you.
+
+Large-scale implementation issues
+Everything that we’ve discussed so far can be used across the functional areas and the 
+various domains of web applications. But if you’re planning to process vast amounts of 
+data, and you have the computational resources to do it, you’re going to face issues 
+that fall largely into two categories. The first category is related to the mathematical 
+properties of the algorithms; the second is related to the software engineering aspects 
+of manipulating data on the scale of terabytes or even petabytes! 
+
+ The first symptom of large-scale computing constraints is the lack of addressable 
+memory. In other words, your data is so large that the data structures don’t fit in mem-
+ory anymore; that would be particularly true for an interpreted language, like Java, 
+because even if you manage to fit the data, you’d probably have to worry about gar-
+bage  collection.  In  large-scale  computing,  there  are  two  basic  strategies  for  dealing 
+with that problem. The first is the construction of more efficient data structures, so 
+that the data does fit in memory; the second is the construction of efficient, distrib-
+uted, I/O infrastructure for accessing and manipulating the data in situ. For very large 
+datasets, with sizes similar to what Google handles, you should implement both strate-
+gies because you want to squeeze every bit of efficiency out of your system.
+
+ In terms of representing data more efficiently, consider the structures that we used 
+for  storing  the  H  matrix.  The  part  of  the  original  link  structure  required  a  dou-
+ble[n][n] and the part of the dangling node matrix required another double[n][n], 
+where n is the number of pages (or documents for DocRank). If you think about it, 
+that’s a huge waste of resources when n is very large, because most of these double val-
+ues are zero. A more efficient way to store that information would be by means of an 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com62
+
+CHAPTER 2  Searching
+
+adjacency list. In Java, you can easily implement an adjacency list using a  Hashtable
+that will contain HashSets. So, the definition of the variable matrix in the class Page-
+RankMatrixH would look as follows:
+
+Hashtable<Integer, HashSet<Integer,Double>> matrix;
+
+One  of  the  exercises  that  we  propose  is  to  rewrite  our  algorithmic  implementation 
+using these efficient structures. You could even compress the data in the adjacency list 
+by reference encoding or other techniques (see Boldi and Vigna). Reference encoding 
+relies on the similarity of web pages and sacrifices simplicity of implementation for 
+memory efficiency. 
+
+ Another implementation aspect for large-scale searching is the accuracy that you’re 
+going to have for the PageRank values (or any other implementation of the Rank base 
+class). To differentiate between values of the PageRank for any two web pages among 
+N, you’ll need a minimum of 1/N accuracy in your numerical calculation. So, if you 
+deal with N = 1000 pages then even 10-4 accuracy should suffice. If you want to get the 
+rankings of billions of pages, the accuracy should be on the order of 10-10 for the Page-
+Rank values.
+
+ Consider a situation where the dangling nodes make up a large portion of your 
+fetched web pages. This could happen if you want to build a dedicated search engine 
+for a central site such as the Apache set of projects, or something less ambitious such as 
+the  Jakarta  project  alone.  Brin  and  Page  realized  that  handling  a  large  number  of 
+nodes that are, in essence, artificial—because their entries in the H matrix don’t reflect 
+the link structure of the web but rather help the matrix to conform with certain nice 
+mathematical properties—isn’t going to be very efficient. They suggested you could 
+remove the dangling nodes during the computation of the PageRank, and add them 
+back after the values of the remaining PageRanks have converged sufficiently. 
+
+  We  don’t  know,  of  course,  the  actual  implementation  of  the  Google  search 
+engine—such secrets are closely guarded—but we can say with certainty that an equi-
+table  treatment  of  all  pages  will  require  inclusion  of  the  dangling  nodes  from  the 
+beginning to the end of the calculation of PageRank. In an effort to be both fair and 
+efficient, we can use methods that rely on the symmetric reordering of the H matrix. 
+These techniques appear to converge at the same rate as the original PageRank algo-
+rithm while acting on a smaller problem, which means that you can have significant 
+gains in computational time; for more details see Google’s PageRank and Beyond: The Sci-
+ence of Search Engine Rankings.
+
+ Implicit in all discussions with respect to large-scale computations of search are con-
+cerns about memory and speed. One speed factor is the number of iterations for the 
+power method, which as we’ve seen depends on the value of alpha as well as the number 
+of the linked pages. Unfortunately, in practitioner’s books similar to ours, we found 
+statements asserting that the initial value of the PageRank vector doesn’t matter and that 
+you could set all the values equal to 1. Strictly speaking, that’s not true and it can have 
+dramatic implications when you work with large datasets whose composition changes 
+periodically. The closer the initial vector is to the unique PageRank values, the fewer the 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

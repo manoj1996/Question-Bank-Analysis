@@ -1,0 +1,58 @@
+128
+
+CHAPTER 4  Clustering: grouping things together
+
+4.2
+
+ You could go back and manipulate the distance that we used so that you achieve 
+the desirable effect of excluding Maria from that cluster. If you did that, you’d destroy 
+the simplicity of the approach, and in all likelihood, you wouldn’t be able to use the 
+algorithm successfully in a different set.
+
+ Deciding what are the “right” clusters for a given set of data is a difficult problem 
+to solve and is an area of active research. The two naïve approaches—SQL and array 
+sorting—as well as all the algorithms that we’ll present in the following sections have 
+certain advantages and disadvantages. In the end, it’s the nature of the data that deter-
+mines the success of the algorithms. 
+
+ This isn’t a conclusion that applies specifically to clustering, and you should always 
+keep it in mind when designing intelligent applications. Clustering is the hardest case, 
+because there’s no direct measure of success that the machine can use. Clusters aren’t 
+known a priori; if they were you wouldn’t need a clustering algorithm to begin with! 
+This is why clustering belongs in the category of machine learning known as unsuper-
+vised learning. 
+
+ The next section will provide an overview of clustering and a categorization of the 
+algorithms  based  on  a  number  of  criteria,  such  as  the  resulting  structure  of  the 
+clusters, the structure and type of data considered, and the size of the data that need 
+to be clustered.
+
+An overview of clustering algorithms 
+We presented the SQL approach and sorted arrays as a prelude to clustering so you 
+can consider clustering to be a generalization of sorting. Yes, that’s right! When we 
+sort a list of objects, in effect, we line up all the objects and use the comparator to pick 
+the first object on the line, the second, and so on. As a result of that process, we iden-
+tify the immediate neighbors of every object on that line. 
+
+ When we cluster a set of objects, we also identify the immediate neighborhood of 
+an object, but our objects can retain their multidimensional nature. They could be 
+points on a plane or in 3D space, or they could be points in a more general geometric 
+construct depending on the number of attributes that we want to consider and the 
+notion of distance that we want to adopt.
+
+ The goal of clustering algorithms is identifying groups in a way that doesn’t suffer 
+from the drawbacks of the SQL approach or the simple array-sorting approach, and 
+can thus extend to many dimensions and arbitrary object spaces. Members of a cluster 
+should be very similar to each other (their neighbors) and very dissimilar to the mem-
+bers of any other cluster in the entire set. Clustering is applicable in a wide range of 
+problems, ranging from biology and medicine to finance and marketing.
+
+ Clustering algorithms come in a lot of shapes and forms, and it’s difficult to cre-
+ate a categorization for them on the basis of a single criterion. For that reason we’ll 
+provide  an  overview  of  clustering  algorithms  before  we  proceed  to  specific  imple-
+mentations  and  lose  track  of  the  big  picture.  The  first  categorization  of  clustering 
+algorithms  that  we  present  is  based  on  the  nature  of  the  cluster  structure.  Is  the 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

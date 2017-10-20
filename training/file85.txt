@@ -1,0 +1,69 @@
+Link-based algorithms
+
+141
+
+    int minJ = -1;
+
+    for( int i = 0, n = a.length; i < n; i++ ) {
+
+       if( mstV[i] == true ) { 
+
+          for(int j = 0, k = a.length; j < k; j++) {
+
+             if( mstV[j] == false ) { 
+
+                if( minW > a[i][j]) {
+
+                     minW = a[i][j];
+                     minI = i;
+                     minJ = j;
+                }
+             }
+          }
+       }
+     }
+
+     if( minI > -1 ) {
+       e = new Edge(minI, minJ, minW);
+     }
+     return e;
+  }
+}
+
+To shorten the listing, we didn’t include an inner class called Edge, which is a rudi-
+mentary class that encapsulates the edges of the graph and their weight; see the com-
+plete source code for the details. As you can see, this is a simple algorithm for finding 
+the minimum spanning tree and it’s known as the Prim-Jarník algorithm. The algo-
+rithm can be summarized in the following steps:
+
+1
+
+2
+
+Initialize a vector that indicates whether an element belongs to the MST (allV).
+Initialize the MST matrix (variable mst) to some default negative value (such as 
+–1). 
+
+3 Start from any node and find the edge that emanates from that node and has 
+the minimum length compared to all other edges that emanate from that node.
+4 The node that’s on the other end of the edge with minimum length is added to 
+
+the MST nodes.
+
+5 Repeat steps 3 and 4 until all nodes have been included; the tree must span the 
+
+graph.
+
+In other words, Prim’s algorithm augments a spanning tree from an arbitrary starting 
+node, iteratively adding an edge of least weight between a node that’s already part of 
+the MST and a node that’s not yet part of the MST, and it finishes when all nodes are 
+part of the MST. The MST resulting from one execution of Prim’s algorithm may vary 
+from the MST resulting from another execution. There is a way to consistently obtain 
+the same MST regardless of what node you considered to be first. Can you figure out 
+under what conditions that’s possible? Of course, this isn’t the only algorithm avail-
+able  for  identifying  a  minimum  spanning  tree.  Two  more  algorithms  are  well-
+known—Kruskal’s algorithm and Boru˚vka’s algorithm.
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

@@ -1,0 +1,6 @@
+Discuss Naïve Bayes classifier with an algorithm.
+Explain how McNemar's test is used for comparing two classifiers
+Discuss the importance of Cockran's Q test and Fisher test.
+Explain bootstrap aggregating.
+Explain how searching for new stories is carried out with example.
+Discuss how dynamic content based user rating are evaluated in web.

@@ -1,0 +1,112 @@
+118
+
+CHAPTER 3  Creating suggestions and recommendations
+
+For  example,  if  X  =  {baseball,  basketball,  volleyball,  tennis,  golf}  and  Y  = 
+{baseball,  basketball,  cricket,  running}  then  the  Tanimoto  metric  has  a  value 
+equal to 2/((5+4)–2), which is approximately equal to 0.2857. Work out the for-
+mula in the case of vectors (Java arrays double[] x and double[] y). Hint: the 
+intersection corresponds to the inner product of the two vectors and the union 
+to the sum of their magnitudes.
+
+Another interesting similarity measure is the city block metric. Its name stems 
+from the fact that the values of the vectors, X and Y, are assumed to be coordi-
+nates on a multidimensional orthogonal grid. When the vectors are two-dimen-
+sional, it resembles the way that a taxi driver would give you instructions in a 
+city: “the Empire State Building is two blocks south and three blocks east from 
+here.” If you like that metric or want to study the cases where it’s most applica-
+ble,  Taxicab  Geometry:  An  Adventure  in  Non-Euclidean  Geometry  by  Eugene  F. 
+Krause provides a detailed exposition. 
+
+2 Varying the range of prediction.  Did you ever wonder why various websites want 
+you to rate movies, songs, and other products by assigning one integer value 
+between 1 and 5 (inclusive)? Why not pick a value between 1 and 10? Or even 
+between  1  and  100?  Wouldn’t  that  give  you  more  flexibility  to  express  the 
+degree of your satisfaction with the product? To take this one step further, why 
+not rate different aspects about a product? In the case of a movie, we could rate 
+the plot, the performance of the actors, the soundtrack, and the visual effects. 
+You  can  extend  the  code  that  we  presented  in  this  chapter  and  experiment 
+along these lines. Can you identify any potential issues? 
+Improving recommendations through ensemble methods.  A technique that’s becom-
+ing  increasingly  popular  consists  of  combining  independent  techniques  in 
+order  to  improve  the  combined  recommendation  accuracy.  There  are  many 
+good theoretical reasons for pursuing ensemble methods; if you’re interested 
+in  that  topic,  you  could  read  the  article  by  Dietterich.  In  addition  to  theory, 
+there’s empirical evidence that ensemble methods may produce better results 
+than individual techniques. Bell and Korren are leading the Netflix prize com-
+petition  (at  the  time  of  this  writing),  and  their  assessment  was  the  following: 
+“We found no perfect model. Instead, our best results came from combining 
+predictions of models that complemented each other.” 
+
+3
+
+How about combining some of the recommenders that we’ve given you in 
+this chapter, as well as those that you may invent, and comparing their results to 
+the  results  of  each  individual  recommender?  If  the  results  are  better,  your 
+“soup”  worked!  If  not,  investigate  what  recommenders  you  used  and  to  what 
+extent they capture a different aspect of the problem. 
+
+4 Minimizing the roundoff error.  As you may know, the typical numerical types in 
+Java and most other languages store the values with finite precision. The repre-
+sentation of an integer or long number is exact, even though the range of their 
+values is finite and determined by the number of bits associated with each type. 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.ComReferences
+
+119
+
+But enter floating-point arithmetic (float and double) and a number of issues 
+crop up due to the inexactness of the numerical representations. At best, you 
+don’t have to worry about them, and at worst, you can use double throughout. 
+Nevertheless, in intelligent applications, the heavy use of numerical calcula-
+tions requires that you be aware of the implications that the finite precision of 
+real numbers has on the result of computations, especially the results that are 
+produced  as  a  result  of  accumulations  or  multiplications  with  very  small  or 
+large numbers. Let’s consider the roundoff error mentioned in the evaluation 
+of the standard deviation of the class PearsonCorrelation. The smallest float-
+ing-point number that gives a result other than 1.0, when added to 1.0, is called 
+the  machine  accuracy  (⑀).  Nearly  every  arithmetic  operation  between  floating 
+numbers  introduces  a  fractional  error  on  the  order  of  magnitude  of ε.  That 
+error is called the roundoff error.
+
+Read  the  article  on  the  corrected  two-pass  algorithm  of  Chan,  Golub,  and 
+LeVeque,  and  implement  the  computation  of  the  standard  deviation  accord-
+ingly. You can also find a brief description of this algorithm in the monumental 
+Numerical Recipes: The Art of Scientific Computing. Do you see a perceptible differ-
+ence in the outcome? What do you think will happen if you use sets that are 
+even larger than the ones considered in this book? Note that the main points of 
+the algorithm apply equally well in the computation of the RMSE that we con-
+ducted for evaluating the accuracy of our recommendations.
+
+5 Nonparametric or rank correlation.  Correlations that belong in this category are 
+useful  if  you  have  reason  to  question  the  validity  of  the  linearity  assumption 
+underlying the Pearson correlation metric. You can create new similarity classes 
+based on this type of metric, which trade off some information about the data 
+for an assurance about the presence of a true correlation between two sets of 
+data—in our case, two sets of ratings. The main idea behind nonparametric cor-
+relation is substituting the values of a variable with the rank of that value in the 
+dataset. The best-known nonparametric correlation coefficients are the Spear-
+man rank-order correlation coefficient (rs) and the Kendall’s tau (␶). You can read all 
+about these coefficients in the masterly written book Numerical Recipes: The Art of 
+Scientific Computing.
+
+In the case of movie ratings from 1 to 5, you’ll get a lot of conflicts in the 
+rank of values; for example, there will  be a lot of movies whose value will be 
+exactly 4. But this presents an opportunity to be creative about using these cor-
+relations. What if you use the time of the rating to break the tie of the values? 
+Implement such an approach and compare with the results that you get from 
+using the plain vanilla Pearson’s correlation.
+
+3.8
+
+References
+ Bell, R.M., and Y. Koren. “Scalable Collaborative Filtering with Jointly Derived Neighborhood 
+
+Interpolation Weights.” IEEE International Conference on Data Mining (ICDM’07), 
+2007. http://www.research.att.com/~yehuda/pubs/BellKorIcdm07.pdf.
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

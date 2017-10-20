@@ -1,0 +1,54 @@
+224
+
+CHAPTER 5  Classification: placing things where they belong
+
+extremes. In practice, the latter scenario is more likely; we could call it the semiempir-
+ical approach to supervised learning. The empirical aspect of it is that, along the way 
+to assessing the completeness of your training set, you make a number of reasonable 
+assumptions  that  reflect  your  understanding  and  experience  of  the  data  that  your 
+application is using. The scientific aspect of it is that you should collect some basic sta-
+tistical information about your data, such as minimum and maximum values, mean 
+values,  median  values,  valid  outliers,  percentage  of  missing  data  in  attribute  values, 
+and so on. You can use that information to sample previously unseen data from your 
+application and include it in your training set.
+
+ The case of multiclass classification is similar in principle to the case of binary clas-
+sification. But in addition to the guidelines that we mentioned previously, we’re now 
+faced with an additional complexity . Our new challenge is that we need to select our 
+training instances so that all classes are represented equivalently in the training set. 
+Discriminating  between  1,000  different  classes  is  a  much  harder  problem  to  solve 
+compared to binary selection. The case of multidimensional (many attributes) multi-
+class classification has the additional drawbacks that result from the curse of dimen-
+sionality (see chapter 4).
+
+ If your database contains 100 million records you’d naturally want to take advan-
+tage of all the data and leverage the information contained there. In the design phase 
+of your classifier, you should consider the scaling characteristics of the training and 
+validation stages for your classifier. If you double the size of your training data then 
+ask yourself:
+
+■ How much longer does it take me to train the classifier?
+■ What’s the accuracy of my classifier on the new (larger) set?
+
+You probably want to include more quality metrics than just accuracy, and you proba-
+bly want to take a few more data sizes (four times the original size, eight times the 
+original, and so on) but you get the idea. It’s possible that your classifier works great 
+(it’s trained quickly and provides good accuracy) in a small sample dataset but its per-
+formance degrades significantly when it’s trained over a substantially larger dataset. 
+This  is  important  because  time  to  market  is  always  important,  and  the  “intelligent” 
+modules of your application should obey the same production rules as the other parts 
+of your software. 
+
+ The same principle holds for the runtime performance of the classifier during the 
+third stage of its lifecycle—in production. It’s possible that your classifier was trained 
+quickly and provides good accuracy, but it’s all for naught if it doesn’t scale well in 
+production!  In  the  validation  stage  of  the  classifier,  you  should  measure  its  perfor-
+mance and its dependency on the size of the data. Let’s say that you use a classifier 
+whose  dependence  on  the  size  of  the  data  is  quadratic—if  the  data  doubles  in  size 
+then the time that it takes to process the data is four times larger. Let’s further assume 
+that your intelligent module will use the classifier in the background to detect fraudu-
+lent transactions. If you used 10,000 records for your validation and all records were 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

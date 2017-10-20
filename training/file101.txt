@@ -1,0 +1,20 @@
+168
+
+CHAPTER 5  Classification: placing things where they belong
+
+Figure 5.1  An example that depicts the basic elements of a reference structure (a rudimentary ontology)
+
+(see Antoniou and van Harmelen) lie a number of technologies and formal specifica-
+tions related to creating, using, and maintaining semantic ontologies. Ontologies are 
+also useful in model-driven architectures (see Gasevic, Djuric, and Devedzic), which is 
+a  software  design  initiative  of  the  Object  Management  Group  (OMG)  (http://
+www.omg.org/).
+
+  Look  at  your  database.  Your  application  could  be  an  online  store,  an  intranet 
+document management system, an internet mashup, or any other kind of web applica-
+tion. When you think about your data and the ways it could be organized, you’ll realize 
+the value of a classification system for your application. Starting with section 5.3 and 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

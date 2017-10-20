@@ -1,0 +1,80 @@
+Searching
+
+This chapter covers:
+■ Searching with Lucene
+■ Calculating the PageRank vector
+■ Large-scale computing constraints
+
+Let’s say that you have a list of documents and you’re interested in reading about 
+those that are related to the phrase “Armageddon is near”—or perhaps something 
+less macabre. How would you implement a solution to that problem? A brute force, 
+and naïve, solution would be to read each document and keep only those in which 
+you  can  find  the  term  “Armageddon  is  near.”  You  could  even  count  how  many 
+times you found each of the words in your search term within each of the docu-
+ments and sort them according to that count in descending order. That exercise is 
+called information retrieval (IR) or simply searching. Searching isn’t new functional-
+ity;  nearly  every  application  has  some  implementation  of  search,  but  intelligent 
+searching goes beyond plain old searching.
+
+ Experimentation can convince you that the naïve IR solution is full of problems. 
+For example, as soon as you increase the number of documents, or their size, its per-
+formance will become unacceptable for most purposes. Fortunately, there’s an enor-
+mous amount of knowledge about IR and fairly sophisticated and robust libraries are 
+
+21
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com22
+
+CHAPTER 2  Searching
+
+available that offer scalability and high performance. The most successful IR library in 
+the Java programming language is Lucene, a project created by Doug Cutting almost 10 
+years ago. Lucene can help you solve the IR problem by indexing all your documents 
+and  letting  you  search  through  them  at  lightning  speeds!  Lucene  in  Action  by  Otis 
+Gospodnetic´  and  Erik  Hatcher,  published by Manning, is a must-read, especially if you 
+want to know how to index data and introduces search, sorting, filtering and highlight-
+ing search results. 
+
+  State-of-the-art  searching  goes  well  beyond  indexing.  The  fiercest  competition 
+among search engine companies doesn’t involve the technology around indexing but 
+rather subjects such as link analysis, user click analysis, and natural-language process-
+ing. These techniques strengthen the searching functionality, sometimes to the tune 
+of billions of dollars, as was the case with Google. 
+
+  In  this  chapter,  we’ll  summarize  the  features  of  the  Lucene  library  and  demon-
+strate  its  use.  We’ll  present  the  PageRank  algorithm,  which  has  been  the  most  suc-
+cessful link analysis algorithm so far, and we’ll present a probabilistic technique for 
+conducting  user  click  analysis.  We’ll  combine  all  these  techniques  to  demonstrate 
+the improvement in the search results due to the synergies among them. The mate-
+rial is presented in a successive manner, so you can learn as much as you want about 
+searching and come back to it later if you don’t have enough time now. Without fur-
+ther ado, let’s collect a number of documents and search for various terms in them 
+by using Lucene. 
+
+Searching with Lucene
+Searching with Lucene will be our baseline for the rest of the chapter. So, before we 
+embark on advanced intelligent algorithms, we need to learn the traditional IR steps. 
+On our journey, we’ll show you how to use Lucene to search a set of collected docu-
+ments, we’ll present some of the inner workings of Lucene, and we’ll provide an over-
+view of the basic stages for building a search engine.
+
+ The data that you want to search could be in your database, on the internet, or on 
+any other network that’s accessible to your application. You can collect data from the 
+internet by using a crawler. A number of crawlers are freely available, but we’ll use a 
+crawler that we wrote for the purposes of this book. We’ll use a number of pages that 
+we collected on November 6, 2006, so we can modify them in a controlled fashion and 
+observe the effect of these changes in the results of the algorithms.
+
+ These pages have been cleaned up and changed to form a tiny representation of 
+the internet. You can find these pages under the data/ch02/ directory. It’s important 
+to know the content of these documents, so that you can appreciate what the algo-
+rithms do and understand how they work. Our 15 documents are (the choice of con-
+tent was random):
+
+2.1
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com

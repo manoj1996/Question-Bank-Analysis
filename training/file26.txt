@@ -1,0 +1,49 @@
+20
+
+CHAPTER 1  What is the intelligent web?
+
+1.8
+
+present in the next chapters and, in particular, their relation with the fields of artifi-
+cial intelligence, machine learning, data mining, and soft computing. 
+
+ Finally, we presented a list of eight design pitfalls that occur frequently in practice. 
+These  are  given  as  broad  empirical  guidelines  rather  than  as  rigorously  established 
+facts. We believe that knowing these eight guidelines can save you a lot of time and 
+reduce your caffeine consumption. In the rest of the book we will examine, one by 
+one, a number of techniques that can add intelligent behavior in your own applica-
+tion. Additional material for each of these techniques is provided in the end of each 
+chapter in a “To Do” section.
+
+References
+ Buchanan, B.G. “A (Very) Brief History of Artificial Intelligence.” AI Magazine. Volume 26. 
+
+issue 4, 2005.
+
+ Gómez-Pérez, A., M. Fernández-López, O. Corcho. Ontological Engineering: With Examples from 
+
+the Areas of Knowledge Management, E-commerce and the Semantic Web. Springer, 2005.
+
+ Hart, P.E., N.J. Nilsson, and B. Raphael. “A Formal Basis for the Heuristic Determination  
+
+of Minimum Cost Paths.” IEEE Transactions on Systems Science and Cybernetics. Volume 4, 
+issue 2, 1968.
+
+ Hart, P.E., N.J. Nilsson, and B. Raphael. Correction to “A Formal Basis for the Heuristic  
+
+Determination of Minimum Cost Paths.” SIGART Newsletter 37, 1972.
+
+ Richardson, L. and S. Ruby. RESTful Web Services. O’Reilly Media, 2007.
+ Russell, S. and P. Norvig. Artificial Intelligence: A Modern Approach (2nd Edition). Prentice  
+
+Hall, 2002. 
+
+ Van Den Hoogen, I. “Deutsch’s fallacies, 10 Years After.” Java Developer’s Journal, 2004.  
+
+http://java.sys-con.com/read/38665.htm.
+
+ 
+
+Licensed to Deborah Christiansen <pedbro@gmail.com>
+
+Download at Boykma.Com
